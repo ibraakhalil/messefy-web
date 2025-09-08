@@ -72,8 +72,8 @@ const COLOR_CLASSES = {
 export const Hero = () => {
   return (
     <section className="relative">
-      <div className="container max-w-7xl py-20 md:py-28">
-        <div className="grid items-center gap-12 md:grid-cols-2">
+      <div className="tablet:py-28 container max-w-7xl py-20">
+        <div className="tablet:grid-cols-2 grid items-center gap-12">
           {/* Left Column - Content */}
           <div className="reveal">
             {/* Badge */}
@@ -89,7 +89,7 @@ export const Hero = () => {
             </div>
 
             {/* Heading */}
-            <h1 className="text-pure text-5xl leading-tight tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="text-pure tablet:text-6xl laptop:text-7xl text-5xl leading-tight tracking-tight">
               Run your mess like a{' '}
               <span className="relative">
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">

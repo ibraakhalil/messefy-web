@@ -30,16 +30,14 @@ const FAQ = () => {
       <div className="container max-w-4xl">
         <div className="reveal mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-extrabold sm:text-4xl">Frequently asked questions</h2>
-          <p className="mt-3 text-gray-600 dark:text-gray-300">
-            Everything you need to know about MessMate.
-          </p>
+          <p className="mt-3 text-gray-600">Everything you need to know about MessMate.</p>
         </div>
 
         <div className="mt-8 space-y-3">
           {FAQItems.map((item, index) => (
             <details
               key={index}
-              className="reveal group rounded-xl border border-gray-200 bg-white p-5 open:shadow-sm dark:border-gray-800 dark:bg-gray-900"
+              className="reveal group rounded-xl border border-gray-200 bg-white p-5 open:shadow-sm"
               open={openIndex === index}
               onClick={(e) => {
                 e.preventDefault()
@@ -49,12 +47,12 @@ const FAQ = () => {
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
                 <span className="font-semibold">{item.question}</span>
                 <span
-                  className={`rounded-md border border-gray-200 p-1 text-gray-600 transition-transform duration-200 dark:border-gray-800 dark:text-gray-300 ${openIndex === index ? 'rotate-180' : ''}`}
+                  className={`rounded-md border border-gray-200 p-1 text-gray-600 transition-transform duration-200 ${openIndex === index ? 'rotate-180' : ''}`}
                 >
                   <ChevronDown size={18} />
                 </span>
               </summary>
-              <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">{item.answer}</p>
+              <p className="mt-3 text-sm text-gray-600">{item.answer}</p>
             </details>
           ))}
         </div>
