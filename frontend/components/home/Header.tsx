@@ -1,6 +1,6 @@
 'use client'
 
-import { Menu, Moon, Sun } from 'lucide-react'
+import { Menu, Moon, Sun, Sparkles } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useState } from 'react'
 
@@ -14,53 +14,85 @@ export const Header = () => {
   }
 
   return (
-    <header id="top" className="sticky top-0 z-50 w-full backdrop-blur-md">
-      <div className="container flex items-center justify-between py-4">
-        {/* Brand */}
-        <a href="#top" className="group inline-flex items-center gap-2">
-          <span className="bg-primary text-primary-fg inline-flex h-9 w-9 items-center justify-center rounded-lg shadow-lg">
-            M
+    <header
+      id="top"
+      className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/80 backdrop-blur-lg"
+    >
+      <div className="container flex max-w-7xl items-center justify-between px-4 py-4">
+        {/* Enhanced Brand */}
+        <a href="#top" className="group inline-flex items-center gap-3">
+          <div className="relative">
+            <div className="flex h-10 w-10 transform items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 shadow-lg transition-transform duration-300 group-hover:scale-105">
+              <Sparkles className="h-5 w-5 text-white" />
+            </div>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 opacity-30 blur-lg transition-opacity duration-300 group-hover:opacity-50"></div>
+          </div>
+          <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-xl font-bold text-transparent">
+            MessMate
           </span>
-          <span className="text-lg font-extrabold tracking-tight">MessMate</span>
         </a>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-8 md:flex">
-          <a href="#features" className="text-subtitle hover:text-pure text-sm font-medium">
-            Features
-          </a>
-          <a href="#how" className="text-subtitle hover:text-pure text-sm font-medium">
-            How it works
-          </a>
-          <a href="#pricing" className="text-subtitle hover:text-pure text-sm font-medium">
-            Pricing
-          </a>
-          <a href="#faq" className="text-subtitle hover:text-pure text-sm font-medium">
-            FAQ
-          </a>
-        </nav>
-
-        {/* Actions */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="border-border-color text-icon hover:bg-secondary-background inline-flex h-9 w-9 items-center justify-center rounded-lg border"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
-          </button>
+        <nav className="tablet:flex hidden items-center gap-8">
           <a
-            href="#"
-            className="border-border-color text-pure hover:bg-secondary-background hidden rounded-lg border px-4 py-2 text-sm font-semibold md:inline-block"
+            href="#features"
+            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
           >
-            Sign in
+            Features
+            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+          <a
+            href="#how"
+            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
+          >
+            How it works
+            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
           </a>
           <a
             href="#pricing"
-            className="bg-primary text-primary-fg inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold shadow-lg"
+            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
+          >
+            Pricing
+            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+          <a
+            href="#faq"
+            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
+          >
+            FAQ
+            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        </nav>
+
+        {/* Enhanced Actions */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+
+          <a
+            href="#"
+            className="tablet:inline-flex hidden items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
+          >
+            Sign in
+          </a>
+
+          <a
+            href="#pricing"
+            className="group inline-flex transform items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:from-emerald-700 hover:to-teal-700 hover:shadow-xl hover:shadow-emerald-200/50"
           >
             Get Started
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            >
               <path
                 d="M5 12h14M13 5l7 7-7 7"
                 stroke="currentColor"
@@ -70,52 +102,57 @@ export const Header = () => {
               />
             </svg>
           </a>
+
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="border-border-color text-icon hover:bg-secondary-background inline-flex h-9 w-9 items-center justify-center rounded-lg border md:hidden"
+            className="tablet:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >
-            <Menu className="size-5" />
+            <Menu className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Enhanced Mobile menu */}
       <div
-        className={`container ${isMenuOpen ? '' : 'hidden'} border-border-color bg-primary-background border-t py-3 md:hidden`}
+        className={`container max-w-7xl px-4 ${
+          isMenuOpen ? 'block' : 'hidden'
+        } tablet:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-lg`}
       >
-        <nav className="grid gap-2">
+        <nav className="space-y-1 py-4">
           <a
             href="#features"
-            className="text-subtitle hover:bg-secondary-background hover:text-pure rounded-md px-3 py-2 text-sm font-medium"
+            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
           >
             Features
           </a>
           <a
             href="#how"
-            className="text-subtitle hover:bg-secondary-background hover:text-pure rounded-md px-3 py-2 text-sm font-medium"
+            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
           >
             How it works
           </a>
           <a
             href="#pricing"
-            className="text-subtitle hover:bg-secondary-background hover:text-pure rounded-md px-3 py-2 text-sm font-medium"
+            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
           >
             Pricing
           </a>
           <a
             href="#faq"
-            className="text-subtitle hover:bg-secondary-background hover:text-pure rounded-md px-3 py-2 text-sm font-medium"
+            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
           >
             FAQ
           </a>
-          <a
-            href="#"
-            className="border-border-color text-pure hover:bg-secondary-background mt-1 rounded-md border px-3 py-2 text-sm font-semibold"
-          >
-            Sign in
-          </a>
+          <div className="mt-2 border-t border-gray-200/50 pt-2">
+            <a
+              href="#"
+              className="block rounded-xl border border-gray-200/60 bg-gray-50/50 px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100/80 hover:text-gray-900"
+            >
+              Sign in
+            </a>
+          </div>
         </nav>
       </div>
     </header>
