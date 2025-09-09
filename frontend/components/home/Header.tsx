@@ -75,14 +75,14 @@ export const Header = () => {
           </button>
 
           <a
-            href="#"
+            href="/auth/login"
             className="tablet:inline-flex hidden items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
           >
             Sign in
           </a>
 
           <a
-            href="#pricing"
+            href="/auth/signup"
             className="group inline-flex transform items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:from-emerald-700 hover:to-teal-700 hover:shadow-xl hover:shadow-emerald-200/50"
           >
             Get Started
