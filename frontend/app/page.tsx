@@ -6,7 +6,7 @@ import Pricing from '@/components/home/Pricing'
 import FAQ from '@/components/home/FAQ'
 import CTA from '@/components/home/CTA'
 import Footer from '@/components/home/Footer'
-import RevealOnScroll from '@/components/common/RevealOnScroll'
+import RevealOnScroll from '@/components/common/reveal-on-scroll'
 
 export default function Home() {
   return (
