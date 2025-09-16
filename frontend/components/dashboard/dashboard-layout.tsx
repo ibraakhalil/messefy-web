@@ -5,20 +5,17 @@ import {
   BellIcon,
   Calendar,
   CalendarDays,
-  CalendarPlus,
   ChevronDown,
-  DollarSign,
   Home,
   LogOut,
   Menu,
   MoreHorizontal,
   PieChart,
-  Receipt,
+  PlusCircle,
   Settings,
   Trash2,
-  UserPlus,
   Users,
-  Utensils,
+  Wallet,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -85,29 +82,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               Dashboard
             </NavItem>
           </Link>
-          <Link href="/dashboard/add-member">
-            <NavItem icon={UserPlus} isActive={path.includes('/add-member')}>
-              Add Member
+          <Link href="/dashboard/data-entry">
+            <NavItem icon={PlusCircle} isActive={path.includes('/data-entry')}>
+              Data Entry
             </NavItem>
           </Link>
-          <Link href="/dashboard/add-deposit">
-            <NavItem icon={DollarSign} isActive={path.includes('/add-deposit')}>
-              Add Deposit
+          <Link href="/dashboard/current-month">
+            <NavItem icon={Calendar} isActive={path.includes('/current-month')}>
+              Current Month
             </NavItem>
           </Link>
-          <Link href="/dashboard/add-meal">
-            <NavItem icon={Utensils} isActive={path.includes('/add-meal')}>
-              Add Meal
-            </NavItem>
-          </Link>
-          <Link href="/dashboard/add-cost">
-            <NavItem icon={Receipt} isActive={path.includes('/add-cost')}>
-              Add Cost
-            </NavItem>
-          </Link>
-          <Link href="/dashboard/active-month">
-            <NavItem icon={Calendar} isActive={path.includes('/active-month')}>
-              Active Month Details
+          <Link href="/dashboard/member-balances">
+            <NavItem icon={Wallet} isActive={path.includes('/member-balances')}>
+              Member Balances
             </NavItem>
           </Link>
           <Link href="/dashboard/members">
@@ -115,27 +102,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               All Members
             </NavItem>
           </Link>
-          <Link href="/dashboard/change-manager">
-            <NavItem icon={Users} isActive={path.includes('/change-manager')}>
-              Change Manager
-            </NavItem>
-          </Link>
 
-          {/* Options Dropdown */}
+          {/* Management Dropdown */}
           <div className="space-y-1">
             <div className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
               <MoreHorizontal className="size-5" />
-              <span>Options</span>
+              <span>Management</span>
               <ChevronDown className="ml-auto size-4" />
             </div>
             <div className="ml-8 space-y-1">
-              <Link href="/dashboard/start-new-month">
-                <NavItem icon={CalendarPlus} isActive={path.includes('/start-new-month')}>
-                  Start New Month
+              <Link href="/dashboard/periods">
+                <NavItem icon={CalendarDays} isActive={path.includes('/periods')}>
+                  Period Management
                 </NavItem>
               </Link>
-              <Link href="/dashboard/all-months">
-                <NavItem icon={CalendarDays} isActive={path.includes('/all-months')}>
+              <Link href="/dashboard/history">
+                <NavItem icon={Calendar} isActive={path.includes('/history')}>
                   All Months
                 </NavItem>
               </Link>
