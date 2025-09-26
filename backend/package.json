@@ -4,12 +4,35 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run --watch index.ts"
+    "dev": "bun run --watch index.ts",
+    "db:gen": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "NODE_ENV=development bun run db/seeds/index.ts",
+    "db:setup": "bun run db:push && bun run db:seed",
+    "studio": "drizzle-kit studio"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/pg": "^8.15.5",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "drizzle-kit": "^0.31.4",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.5"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@auth/core": "^0.40.0",
+    "@auth/drizzle-adapter": "^1.10.0",
+    "dotenv": "^17.2.2",
+    "drizzle-orm": "^0.44.5",
+    "hono": "^4.9.8",
+    "pg": "^8.16.3",
+    "postgres": "^3.4.7"
   }
 }

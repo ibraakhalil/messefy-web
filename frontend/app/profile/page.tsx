@@ -1,53 +1,49 @@
-'use client'
-
-import { useState } from 'react'
-import { FiUser, FiShield, FiBriefcase, FiActivity } from 'react-icons/fi'
-import ProfileSection from '@/components/profile/profile-section'
-import SecuritySection from '@/components/profile/security-section'
-import WorkspacesSection from '@/components/profile/workspace-section'
-import OverviewSection from '@/components/profile/overview-section'
+import { auth } from '@/auth'
 import PageWrapper from '@/components/common/page-wrapper'
+import { ProfileContents } from '@/components/profile/profile-contents'
+import Button from '@/components/ui/button'
+import { Plus, UserPlus } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 
-export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [isLoading] = useState(false)
-
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: FiActivity },
-    { id: 'profile', label: 'Profile', icon: FiUser },
-    { id: 'security', label: 'Security', icon: FiShield },
-    { id: 'workspaces', label: 'Workspaces', icon: FiBriefcase },
-  ]
+export default async function ProfilePage() {
+  const session = await auth()
+  const user = session?.user
 
   return (
-    <PageWrapper className="py-8 md:py-12">
-      {/* Navigation Tabs */}
-      <div className="mb-8 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-        <nav className="flex overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 border-b-2 px-6 py-4 text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                activeTab === tab.id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700'
-              }`}
-            >
-              <tab.icon className="size-4" />
-              <span>{tab.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
+    <PageWrapper className="py-8">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <div className="relative">
+            <Image
+              src={user?.image || '/images/avatar.png'}
+              alt="Profile avatar"
+              className="h-20 w-20 rounded-full object-cover"
+              width={100}
+              height={100}
+            />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">{user?.name}</h2>
+            <p className="text-gray-600">{user?.email}</p>
+          </div>
+        </div>
 
-      {/* Content Sections */}
-      <div className="space-y-12">
-        {activeTab === 'overview' && <OverviewSection onNavigate={setActiveTab} />}
-        {activeTab === 'profile' && <ProfileSection isLoading={isLoading} />}
-        {activeTab === 'security' && <SecuritySection isLoading={isLoading} />}
-        {activeTab === 'workspaces' && <WorkspacesSection isLoading={isLoading} />}
+        <div className="flex items-center gap-3">
+          <Link href="/onboarding">
+            <Button variant="secondary" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Create Mess
+            </Button>
+          </Link>
+          <span> Or</span>
+          <Button className="flex items-center gap-2">
+            <UserPlus className="h-4 w-4" />
+            Join Mess
+          </Button>
+        </div>
       </div>
+      <ProfileContents />
     </PageWrapper>
   )
 }

@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/auth'
 
 export const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'localhost:3000'
 
@@ -28,7 +29,7 @@ function extractSubdomain(request: NextRequest): string | null {
   return null
 }
 
-export async function middleware(request: NextRequest) {
+export default auth(async function middleware(request: NextRequest) {
   const subdomain = extractSubdomain(request)
 
   if (subdomain) {
@@ -38,7 +39,7 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: '/((?!api|_next|[\\w-]+\\.\\w+).*)',

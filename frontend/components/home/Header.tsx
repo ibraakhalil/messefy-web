@@ -1,8 +1,33 @@
 'use client'
 
-import { Menu, Moon, Sun, Sparkles } from 'lucide-react'
+import { Menu, Moon, Sparkles, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import Link from 'next/link'
 import { useState } from 'react'
+
+// Navigation items configuration
+const navItems = [
+  {
+    id: 'features',
+    label: 'Features',
+    href: '#features',
+  },
+  {
+    id: 'how',
+    label: 'How it works',
+    href: '#how',
+  },
+  {
+    id: 'profile',
+    label: 'Profile',
+    href: '/profile',
+  },
+  {
+    id: 'mess',
+    label: 'My Mess',
+    href: 'http://bachelor-point.localhost:3000',
+  },
+]
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -34,34 +59,16 @@ export const Header = () => {
 
         {/* Desktop nav */}
         <nav className="tablet:flex hidden items-center gap-8">
-          <a
-            href="#features"
-            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
-          >
-            Features
-            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a
-            href="#how"
-            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
-          >
-            How it works
-            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a
-            href="#pricing"
-            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
-          >
-            Pricing
-            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a
-            href="#faq"
-            className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
-          >
-            FAQ
-            <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
-          </a>
+          {navItems.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
+            >
+              {item.label}
+              <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+            </Link>
+          ))}
         </nav>
 
         {/* Enhanced Actions */}
@@ -121,33 +128,18 @@ export const Header = () => {
         } tablet:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-lg`}
       >
         <nav className="space-y-1 py-4">
-          <a
-            href="#features"
-            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
-          >
-            Features
-          </a>
-          <a
-            href="#how"
-            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
-          >
-            How it works
-          </a>
-          <a
-            href="#pricing"
-            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
-          >
-            Pricing
-          </a>
-          <a
-            href="#faq"
-            className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
-          >
-            FAQ
-          </a>
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={item.href}
+              className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
+            >
+              {item.label}
+            </a>
+          ))}
           <div className="mt-2 border-t border-gray-200/50 pt-2">
             <a
-              href="#"
+              href="/auth/login"
               className="block rounded-xl border border-gray-200/60 bg-gray-50/50 px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100/80 hover:text-gray-900"
             >
               Sign in

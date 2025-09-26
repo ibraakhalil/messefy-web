@@ -1,13 +1,12 @@
 'use client'
 
+import Button from '@/components/ui/button'
+import FormInput from '@/components/ui/form-input'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Calendar, Clock, Edit, Globe, Mail, MapPin, Phone, Save, User, X } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Camera, User, Mail, Phone, MapPin, Calendar, Edit, Save, X } from 'lucide-react'
-import FormInput from '@/components/ui/form-input'
-import Button from '@/components/ui/button'
-import Image from 'next/image'
 
 // Define the schema for profile form
 const profileSchema = z.object({
@@ -16,6 +15,9 @@ const profileSchema = z.object({
   phone: z.string().optional(),
   location: z.string().optional(),
   bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
+  timezone: z.string().optional(),
+  language: z.string().optional(),
+  dietaryPreferences: z.string().optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -42,7 +44,10 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
       email: 'john.doe@example.com',
       phone: '+1 (555) 123-4567',
       location: 'San Francisco, CA',
-      bio: 'Software engineer passionate about building great products.',
+      bio: 'Software engineer passionate about building great products and managing mess efficiently.',
+      timezone: 'America/New_York',
+      language: 'English',
+      dietaryPreferences: 'Vegetarian',
     },
   })
 
@@ -91,7 +96,7 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
             <div className="h-4 w-32 animate-pulse rounded bg-gray-200"></div>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
+        <div className="tablet:grid-cols-2 grid grid-cols-1 gap-4">
           <div className="space-y-2">
             <div className="h-4 w-16 animate-pulse rounded bg-gray-200"></div>
             <div className="h-10 animate-pulse rounded-md bg-gray-200"></div>
@@ -119,41 +124,9 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
 
   return (
     <div className="space-y-6">
-      {/* Avatar Section */}
-      <div className="flex items-center space-x-4">
-        <div className="relative">
-          <Image
-            src={avatarPreview || '/images/avatar.png'}
-            alt="Profile avatar"
-            className="h-20 w-20 rounded-full object-cover"
-            width={100}
-            height={100}
-          />
-          {isEditing && (
-            <label
-              htmlFor="avatar-upload"
-              className="absolute -right-2 -bottom-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-700"
-            >
-              <Camera className="h-4 w-4" />
-              <input
-                id="avatar-upload"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleAvatarChange}
-              />
-            </label>
-          )}
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">{watchedValues.fullName}</h2>
-          <p className="text-gray-600">{watchedValues.email}</p>
-        </div>
-      </div>
-
       {/* Profile Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
+        <div className="tablet:grid-cols-2 grid grid-cols-1 gap-4">
           <FormInput
             id="fullName"
             label="Full Name"
@@ -195,23 +168,87 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
             disabled={!isEditing}
             {...register('location')}
           />
+
+          <div>
+            <label htmlFor="timezone" className="mb-2 block text-sm font-medium text-gray-700">
+              Timezone
+            </label>
+            <div className="relative">
+              <Clock className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+              <select
+                id="timezone"
+                disabled={!isEditing}
+                className="block w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
+                {...register('timezone')}
+              >
+                <option value="America/New_York">Eastern Time (ET)</option>
+                <option value="America/Chicago">Central Time (CT)</option>
+                <option value="America/Denver">Mountain Time (MT)</option>
+                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                <option value="Asia/Dhaka">Bangladesh Time (BST)</option>
+                <option value="Asia/Kolkata">India Standard Time (IST)</option>
+                <option value="Europe/London">Greenwich Mean Time (GMT)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="language" className="mb-2 block text-sm font-medium text-gray-700">
+              Preferred Language
+            </label>
+            <div className="relative">
+              <Globe className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+              <select
+                id="language"
+                disabled={!isEditing}
+                className="block w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
+                {...register('language')}
+              >
+                <option value="English">English</option>
+                <option value="Bengali">Bengali</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
-            Bio
-          </label>
-          <div className="mt-1">
+        <div className="tablet:grid-cols-2 grid grid-cols-1 gap-4">
+          <div>
+            <label htmlFor="bio" className="mb-2 block text-sm font-medium text-gray-700">
+              Bio
+            </label>
             <textarea
               id="bio"
               rows={4}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm"
+              className="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
               placeholder="Tell us about yourself..."
               disabled={!isEditing}
               {...register('bio')}
             />
+            {errors.bio && <p className="mt-1 text-sm text-red-600">{errors.bio.message}</p>}
           </div>
-          {errors.bio && <p className="mt-1 text-sm text-red-600">{errors.bio.message}</p>}
+
+          <div>
+            <label
+              htmlFor="dietaryPreferences"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Dietary Preferences
+            </label>
+            <textarea
+              id="dietaryPreferences"
+              rows={4}
+              className="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+              placeholder="Any dietary restrictions or preferences for mess meals..."
+              disabled={!isEditing}
+              {...register('dietaryPreferences')}
+            />
+            {errors.dietaryPreferences && (
+              <p className="mt-1 text-sm text-red-600">{errors.dietaryPreferences.message}</p>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-between">

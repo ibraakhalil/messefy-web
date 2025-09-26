@@ -185,7 +185,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
               </div>
               <div>
                 <div className="flex items-center space-x-3">
-                  <h1 className="text-2xl font-bold text-gray-900">{messData.name} Mess</h1>
+                  <h1 className="text-2xl text-gray-900">{messData.name} Mess</h1>
                   <span
                     className={cn(
                       'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',

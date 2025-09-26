@@ -1,12 +1,17 @@
+import { auth } from '@/auth'
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'Authentication - MessMate',
   description: 'Login or sign up to MessMate',
 }
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth()
+  if (session?.user) return redirect('/profile')
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 py-12 dark:bg-gray-900">
       <div className="w-full max-w-md space-y-8 px-4 sm:px-6 lg:px-8">

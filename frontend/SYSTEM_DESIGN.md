@@ -1,7 +1,9 @@
 # Mess/Workspace Meal Accounting System
 
-## 🎯 Project Goal
+## 🎯 Project Flow
 
+- User initially open a account by signup/singin without creating mess workspace
+- Then if he wants, create a mess (as Owner) or join in another one (as mess member).
 - Manage mess/workspace meal accounting by month.
 - Track **daily meals, deposits, shared expenses**.
 - Auto-calculate **per-member balances**.
@@ -11,10 +13,9 @@
 
 ## 👥 Core Users & Roles
 
-- **Owner** → Full control of workspace.
-- **Manager/Admin** → Manage members, records, periods.
+- **Owner** → Full control of mess workspace.
+- **Manager** → Manage members, records, periods, meals, deposite etc.
 - **Member** → Add/view meals, see statements.
-- **Viewer** → Read-only access.
 
 ---
 
@@ -22,17 +23,16 @@
 
 - **Frontend**: Next.js (App Router)
   - SSR for dashboards, client mutations for edits.
-- **Backend**: Bun + Hono (REST), cookie-based session auth.
-- **Database**: Managed Postgres.
-- **Email (optional)**: Transactional (invites, password reset).
+- **Backend**: Bun + Hono (REST) + Drizzle, Auth.js based authentication: Google + Facebook + Email cradential.
+- **Database**: Postgres.
 
 ---
 
 ## 🏢 Multi-Tenancy
 
-- **Workspace** = tenant boundary.
-- All records carry **workspaceId**.
-- Access controlled by **workspaceId + role**.
+- **Mess Workspace** = tenant boundary.
+- All records carry **messId**.
+- Access controlled by **messId + role**.
 - **Period** = monthly accounting scope (`open` / `closed`).
 
 ---
@@ -41,7 +41,7 @@
 
 - **User** → Identity and login.
 - **Workspace** → Mess context; belongs to an owner.
-- **Member** → Person in a workspace (linked user or offline).
+- **Member** → Person in a workspace.
 - **Period** → Year+month with status.
 - **MealEntry** → Per member/day (breakfast, lunch, dinner, guests).
 - **Deposit** → Member payments.
@@ -77,9 +77,9 @@
 
 ## 🚀 MVP Features
 
-- Auth: email/password, session cookies.
+- Auth: Google, Facebook, email/password, session cookies.
 - Workspaces: create/update, invite, add offline members.
-- Periods: auto-create current month; open/close control.
+- Periods: manually create current month; open/close control.
 - Meals: daily grid entry + bulk actions.
 - Deposits: quick add per member.
 - Expenses: shared bazar (`by_meals`).
@@ -106,11 +106,11 @@
 - **Deposits & Expenses** → per period.
 - **Summary** → totals + statements.
 
-All requests **validated & scoped by workspaceId**.
+All requests **validated & scoped by messId**.
 
 ---
 
-## 📄 Frontend Pages
+## 📄 Frontend Pages (in future may change)
 
 - **Dashboard** → workspaces, periods, quick stats.
 - **Members** → add offline/online, invite, assign roles.
@@ -126,7 +126,7 @@ All requests **validated & scoped by workspaceId**.
 
 - Secure, httpOnly, same-site session cookies.
 - Role-based checks per action.
-- Server-side scoping by workspaceId.
+- Server-side scoping by messId.
 - Basic rate-limiting (auth + writes).
 - DB constraints & indexes for integrity.
 
@@ -135,8 +135,8 @@ All requests **validated & scoped by workspaceId**.
 ## 🗄 Data Integrity & Indexing
 
 - Unique: `(memberId, entryDate)` on MealEntry.
-- FKs: all tied to workspaceId.
-- Indexes: `(workspaceId, periodId)`, `(memberId, date)`.
+- FKs: all tied to messId.
+- Indexes: `(messId, periodId)`, `(memberId, date)`.
 - Monetary: fixed precision decimals (2dp).
 - Soft-delete/status for inactive members.
 
@@ -145,7 +145,7 @@ All requests **validated & scoped by workspaceId**.
 ## ⚙️ Operations
 
 - Separate environments: dev/staging/prod.
-- Observability: logs with workspaceId context.
+- Observability: logs with messId context.
 - Daily DB backups; restore last closed period.
 - CSV exports; optional S3 storage.
 
@@ -157,38 +157,3 @@ All requests **validated & scoped by workspaceId**.
 - Pagination for meals/expenses.
 - Precompute & store summary on period close.
 - Avoid N+1 with pre-aggregated totals.
-
----
-
-## ☁️ Deployment
-
-- **Frontend**: Next.js on Vercel.
-- **Backend**: Hono + Bun on Fly.io/Railway.
-- **DB**: Managed Postgres (Neon, Supabase).
-- **Cache/Queue**: Upstash Redis (optional).
-- **Email**: Resend (invites, reset).
-- **DNS**:
-  - `app.yourdomain.com` → Web app
-  - `api.yourdomain.com` → API
-
----
-
-## ✅ MVP Checklist
-
-- [ ] Workspaces & members (online/offline)
-- [ ] Auto current-month period
-- [ ] Add meals (grid)
-- [ ] Add deposits & expenses
-- [ ] Summary (meal rate + balances)
-- [ ] Role-based access
-- [ ] CSV export
-- [ ] Logging & backups
-
----
-
-## 📌 Key Early Decisions
-
-- Supported allocation methods in MVP (**recommend: by_meals only**).
-- Offline members (recommended).
-- Currency & locale defaults.
-- Period closing rules & reopening permissions.
