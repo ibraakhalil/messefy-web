@@ -1,8 +1,8 @@
 import { sql } from 'drizzle-orm';
 import { text, timestamp, pgTable, varchar, uuid, decimal, pgEnum } from 'drizzle-orm/pg-core';
-import { workspaces } from './workspace-schema';
-import { members } from './member-schema';
-import { periods } from './period-schema';
+import { workspaces } from './workspace.schema';
+import { members } from './member.schema';
+import { periods } from './period.schema';
 
 // Expense allocation type enum
 export const expenseAllocationEnum = pgEnum('expense_allocation', ['by_meals', 'by_head', 'custom', 'personal']);

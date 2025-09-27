@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { timestamp, pgTable, uuid, integer, pgEnum } from 'drizzle-orm/pg-core';
-import { workspaces } from './workspace-schema';
+import { workspaces } from './workspace.schema';
 
 // Period status enum
 export const periodStatusEnum = pgEnum('period_status', ['open', 'closed']);

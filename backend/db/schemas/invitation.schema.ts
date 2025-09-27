@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { timestamp, pgTable, varchar, uuid } from 'drizzle-orm/pg-core';
-import { workspaces } from './workspace-schema';
+import { workspaces } from './workspace.schema';
 
 export const invitations = pgTable('invitations', {
   id: uuid('id')

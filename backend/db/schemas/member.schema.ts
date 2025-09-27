@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { timestamp, pgTable, varchar, uuid, boolean } from 'drizzle-orm/pg-core';
-import { users } from './users';
-import { workspaces } from './workspace-schema';
+import { users } from './users.schema';
+import { workspaces } from './workspace.schema';
 
 export const members = pgTable('members', {
   id: uuid('id')

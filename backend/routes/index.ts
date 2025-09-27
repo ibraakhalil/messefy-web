@@ -1,20 +1,15 @@
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import { db } from '../db';
-import { users } from '../db/schemas';
-import { eq } from 'drizzle-orm';
+import { userRoute } from './user.route';
+import { Auth } from '@auth/core';
+import { authConfig } from '../config/auth';
 
 const router = new Hono();
 
-router.get('/', async (c) => {
-  const userss = await db.select().from(users).where(eq(users.preferredLanguage, 'bn')).limit(1000);
-  return c.json(userss);
-});
+router.route('/', userRoute);
 
-// Handle 404
 router.notFound((c) => c.json({ message: 'Abracadabra! The page you are looking for does not exist.' }, 404));
 
-// Handle errors
 router.onError((err, c) => {
   console.error('Server Error:', err);
 
@@ -30,6 +25,32 @@ router.onError((err, c) => {
     },
     status,
   );
+});
+
+router.all('/api/auth/*', async (c) => {
+  const request = c.req.raw;
+  const response = await Auth(request, authConfig);
+
+  // Copy headers from Auth.js response
+  response.headers.forEach((value, key) => {
+    c.header(key, value);
+  });
+
+  return c.body(await response.text(), response.status as any);
+});
+
+// Get session endpoint for client-side
+router.get('/api/session', async (c) => {
+  const request = c.req.raw;
+  const url = new URL('/api/auth/session', request.url);
+  const sessionRequest = new Request(url, {
+    headers: request.headers,
+  });
+
+  const response = await Auth(sessionRequest, authConfig);
+  const session = await response.json();
+
+  return c.json(session);
 });
 
 export default router;

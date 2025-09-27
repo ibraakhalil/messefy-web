@@ -1,8 +1,8 @@
 import { sql } from 'drizzle-orm';
 import { text, timestamp, pgTable, uuid, decimal } from 'drizzle-orm/pg-core';
-import { workspaces } from './workspace-schema';
-import { members } from './member-schema';
-import { periods } from './period-schema';
+import { workspaces } from './workspace.schema';
+import { members } from './member.schema';
+import { periods } from './period.schema';
 
 export const adjustments = pgTable('adjustments', {
   id: uuid('id')

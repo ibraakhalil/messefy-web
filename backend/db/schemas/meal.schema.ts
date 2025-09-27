@@ -1,8 +1,8 @@
 import { sql } from 'drizzle-orm';
 import { timestamp, pgTable, uuid, integer, date } from 'drizzle-orm/pg-core';
-import { workspaces } from './workspace-schema';
-import { members } from './member-schema';
-import { periods } from './period-schema';
+import { workspaces } from './workspace.schema';
+import { members } from './member.schema';
+import { periods } from './period.schema';
 
 export const mealEntries = pgTable('meal_entries', {
   id: uuid('id')
