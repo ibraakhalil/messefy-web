@@ -1,9 +1,10 @@
-'use client'
+'use client';
 
-import { Menu, Moon, Sparkles, Sun } from 'lucide-react'
-import { useTheme } from 'next-themes'
-import Link from 'next/link'
-import { useState } from 'react'
+import { Menu, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { useState } from 'react';
+import Logo from '../common/logo';
 
 // Navigation items configuration
 const navItems = [
@@ -27,16 +28,16 @@ const navItems = [
     label: 'My Mess',
     href: 'http://bachelor-point.localhost:3000',
   },
-]
+];
 
 export const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(newTheme)
-  }
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+  };
 
   return (
     <header
@@ -44,18 +45,7 @@ export const Header = () => {
       className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/80 backdrop-blur-lg"
     >
       <div className="container flex max-w-7xl items-center justify-between px-4 py-4">
-        {/* Enhanced Brand */}
-        <a href="#top" className="group inline-flex items-center gap-3">
-          <div className="relative">
-            <div className="flex h-10 w-10 transform items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 shadow-lg transition-transform duration-300 group-hover:scale-105">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 opacity-30 blur-lg transition-opacity duration-300 group-hover:opacity-50"></div>
-          </div>
-          <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-xl font-bold text-transparent">
-            MessMate
-          </span>
-        </a>
+        <Logo />
 
         {/* Desktop nav */}
         <nav className="tablet:flex hidden items-center gap-8">
@@ -82,7 +72,7 @@ export const Header = () => {
           </button>
 
           <a
-            href="/auth/login"
+            href="/auth/signin"
             className="tablet:inline-flex hidden items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
           >
             Sign in
@@ -148,7 +138,7 @@ export const Header = () => {
         </nav>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

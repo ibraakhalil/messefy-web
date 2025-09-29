@@ -1,29 +1,29 @@
-import { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react'
-import { LucideIcon } from 'lucide-react'
-import { cn } from '@/utils/cn'
+import { forwardRef, ButtonHTMLAttributes, ReactNode } from 'react';
+import { LucideIcon } from 'lucide-react';
+import { cn } from '@/utils/cn';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary'
-  isLoading?: boolean
-  leftIcon?: LucideIcon
-  rightIcon?: LucideIcon
-  children: ReactNode
+  variant?: 'primary' | 'secondary';
+  isLoading?: boolean;
+  leftIcon?: LucideIcon;
+  rightIcon?: LucideIcon;
+  children: ReactNode;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', isLoading = false, children, disabled, ...props }, ref) => {
     const variants = {
       primary:
-        'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:ring-blue-500 shadow-sm hover:shadow-md',
+        'bg-gradient-to-r text-center text-sm font-semibold text-primary-fg from-emerald-600 to-teal-600 ',
       secondary:
-        'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 active:bg-gray-100 focus:ring-gray-500 ',
-    }
+        'bg-white text-gray-700 border border-border-color hover:bg-gray-50 active:bg-gray-100 focus:ring-gray-500 ',
+    };
 
     return (
       <button
         ref={ref}
         className={cn(
-          'inline-flex h-10 cursor-pointer items-center justify-center rounded-md px-3 disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-10 cursor-pointer items-center justify-center gap-3 rounded-md px-3 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50',
           variants[variant],
           className,
         )}
@@ -32,10 +32,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {children}
       </button>
-    )
+    );
   },
-)
+);
 
-Button.displayName = 'Button'
+Button.displayName = 'Button';
 
-export default Button
+export default Button;

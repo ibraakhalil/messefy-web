@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   DropdownMenu,
@@ -8,42 +8,31 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/drop-down'
-import { ChevronDown, Settings, Sparkles, User as UserIcon } from 'lucide-react'
-import { SessionProviderProps, signIn, signOut } from 'next-auth/react'
-import Image from 'next/image'
-import Link from 'next/link'
+} from '@/components/ui/drop-down';
+import { ChevronDown, Settings, User as UserIcon } from 'lucide-react';
+import { SessionProviderProps, signIn, signOut } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import Logo from './logo';
 
 export type AppHeaderProps = {
-  session?: SessionProviderProps['session']
-  subdomain?: string
-}
+  session?: SessionProviderProps['session'];
+  subdomain?: string;
+};
 
-export default function AppHeader({ session, subdomain }: AppHeaderProps) {
-  const user = session?.user
-  const displayWorkspace = subdomain || 'Workspace'
-  const appName = 'Mess Mate'
+export default function AppHeader({ session }: AppHeaderProps) {
+  const user = session?.user;
+
   const essentials = [
     { label: 'Messes', value: '3' },
     { label: 'Members', value: '15' },
     { label: 'Admins', value: '2' },
-  ]
+  ];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-gray-200/60 bg-white/80 backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="group inline-flex items-center gap-2">
-            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-600 text-white shadow-md">
-              <Sparkles className="size-4" />
-            </span>
-            <span className="text-base font-semibold text-gray-900">{appName}</span>
-          </Link>
-          <span className="text-gray-400">/</span>
-          <span className="rounded-md bg-gray-100 px-2 py-1 text-sm font-medium text-gray-700">
-            {displayWorkspace}
-          </span>
-        </div>
+        <Logo />
 
         {/* Essentials (Owner quick stats) */}
         <div className="hidden items-center gap-4 md:flex">
@@ -127,5 +116,5 @@ export default function AppHeader({ session, subdomain }: AppHeaderProps) {
         )}
       </div>
     </header>
-  )
+  );
 }
