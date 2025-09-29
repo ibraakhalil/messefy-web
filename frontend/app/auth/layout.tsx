@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { auth } from '@/config/auth';
 import Logo from '@/components/common/logo';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';

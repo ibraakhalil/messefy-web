@@ -1,14 +1,14 @@
-import { auth } from '@/auth'
-import PageWrapper from '@/components/common/page-wrapper'
-import { ProfileContents } from '@/components/profile/profile-contents'
-import Button from '@/components/ui/button'
-import { Plus, UserPlus } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+import { auth } from '@/config/auth';
+import PageWrapper from '@/components/common/page-wrapper';
+import { ProfileContents } from '@/components/profile/profile-contents';
+import Button from '@/components/ui/button';
+import { Plus, UserPlus } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default async function ProfilePage() {
-  const session = await auth()
-  const user = session?.user
+  const session = await auth();
+  const user = session?.user;
 
   return (
     <PageWrapper className="py-8">
@@ -45,5 +45,5 @@ export default async function ProfilePage() {
       </div>
       <ProfileContents />
     </PageWrapper>
-  )
+  );
 }

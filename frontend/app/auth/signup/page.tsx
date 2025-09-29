@@ -14,6 +14,7 @@ import { signupSchema, type SignupFormValues } from '@/utils/validation';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { GoogleIcon } from '@/components/svg/google-icon';
+import { env } from '@/config/env';
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +42,7 @@ export default function SignupPage() {
         term: data.terms,
       };
 
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, signupData);
+      await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/signup`, signupData);
 
       toast.success('Account created successfully!');
       router.push('/auth/signin');

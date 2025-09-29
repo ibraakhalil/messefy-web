@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { BrandIcon } from '../svg/brand-logo';
 import { cn } from '@/utils/cn';
+import { BrandIcon } from '../svg/brand-logo';
 
 export default function Logo({ className }: { className?: string }) {
   return (
