@@ -15,6 +15,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { GoogleIcon } from '@/components/svg/google-icon';
 import { env } from '@/config/env';
+import { signIn } from 'next-auth/react';
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -164,7 +165,7 @@ export default function SignupPage() {
         </div>
       </div>
 
-      <Button type="button" variant="secondary" className="w-full">
+      <Button type="button" onClick={() => signIn('google')} variant="secondary" className="w-full">
         <GoogleIcon className="size-4.5" />
         Google
       </Button>
