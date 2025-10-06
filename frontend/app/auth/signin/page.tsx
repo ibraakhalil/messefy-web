@@ -12,10 +12,13 @@ import FormInput from '@/components/ui/form-input';
 import { loginSchema, type LoginFormValues } from '@/utils/validation';
 import { signIn } from 'next-auth/react';
 import { GoogleIcon } from '@/components/svg/google-icon';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const {
     register,
@@ -32,14 +35,19 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
+    setError(null);
+
     try {
-      signIn('credentials', {
+      const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
-        redirect: true,
-        callbackUrl: '/profile',
+        redirect: false,
       });
+
+      if (result?.ok) return router.push('/profile');
+      setError('Invalid email or password');
     } catch (error) {
+      setError('An unexpected error occurred. Please try again later.');
       console.error('Login failed:', error);
     } finally {
       setIsLoading(false);
@@ -52,13 +60,23 @@ export default function LoginPage() {
         <h2 className="text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h2>
         <p className="mt-2 text-sm text-gray-600">
           Or{' '}
-          <Link href="/auth/signup" className="font-medium text-emerald-600 hover:text-emerald-500">
-            create a new account
+          <Link
+            href="/auth/signup"
+            className="font-medium text-emerald-600 capitalize hover:text-emerald-500"
+          >
+            Create a new account
           </Link>
         </p>
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        {error && (
+          <div className="rounded-md bg-red-50 p-4">
+            <div className="flex">
+              <div className="text-sm text-red-700">{error}</div>
+            </div>
+          </div>
+        )}
         <FormInput
           id="email"
           type="email"
