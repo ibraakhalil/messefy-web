@@ -14,7 +14,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', isLoading = false, children, disabled, ...props }, ref) => {
     const variants = {
       primary:
-        'bg-gradient-to-r text-center text-sm font-semibold text-primary-fg from-emerald-600 to-teal-600 ',
+        'bg-gradient-to-r text-center font-semibold text-primary-fg from-emerald-600 to-teal-600 ',
       secondary:
         'bg-white text-gray-700 border border-border-color hover:bg-gray-50 active:bg-gray-100 focus:ring-gray-500 ',
     };
@@ -23,7 +23,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          'flex h-10 cursor-pointer items-center justify-center gap-3 rounded-md px-3 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-[15px] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50',
           variants[variant],
           className,
         )}

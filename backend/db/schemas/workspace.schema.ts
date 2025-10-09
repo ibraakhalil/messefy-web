@@ -9,7 +9,6 @@ export const workspaces = pgTable('workspaces', {
   name: varchar('name', { length: 255 }).notNull(),
   subdomain: varchar('subdomain', { length: 63 }).unique().notNull(),
   description: text('description'),
-  currency: varchar('currency', { length: 3 }).default('USD').notNull(),
 
   ownerId: uuid('owner_id')
     .references(() => users.id)
