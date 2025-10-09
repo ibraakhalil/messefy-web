@@ -129,7 +129,7 @@ export const Header = () => {
           ))}
           <div className="mt-2 border-t border-gray-200/50 pt-2">
             <a
-              href="/auth/login"
+              href="/auth/signin"
               className="block rounded-xl border border-gray-200/60 bg-gray-50/50 px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100/80 hover:text-gray-900"
             >
               Sign in

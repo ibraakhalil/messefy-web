@@ -4,6 +4,8 @@ import Credentials from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { env } from './env';
 
+const BASE_API_URL = env.API_INTERNAL_URL ?? env.NEXT_PUBLIC_API_URL;
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google({
@@ -15,9 +17,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       name: 'Credentials',
       async authorize(credentials) {
         try {
-          const { data } = await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/login`, credentials);
+          const { data } = await axios.post(`${BASE_API_URL}/auth/signin`, credentials);
           return data?.id ? data : null;
-        } catch {
+        } catch (error) {
+          console.log(error);
           return null;
         }
       },
@@ -28,7 +31,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user, account }) {
       try {
         if (account?.provider === 'credentials') return true;
-        const { data } = await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/sync-user`, user);
+        const { data } = await axios.post(`${BASE_API_URL}/auth/sync-user`, user);
         return data.ok === true;
       } catch (e) {
         console.error('Sync failed', e);
@@ -42,4 +45,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: '/auth/signin',
     signOut: '/',
   },
+  trustHost: true,
 });

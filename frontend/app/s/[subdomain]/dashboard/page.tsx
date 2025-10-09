@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import Button from '@/components/ui/button'
+import Button from '@/components/ui/button';
 import {
   AlertCircle,
   Calendar,
@@ -12,13 +12,10 @@ import {
   TrendingUp,
   Users,
   Utensils,
-} from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
-  const [isLoading] = useState(false)
-
   // Mock current month data
   const currentMonth = {
     name: 'December 2024',
@@ -29,7 +26,7 @@ export default function DashboardPage() {
     balance: 1250,
     mealRate: 26.21,
     daysRemaining: 16,
-  }
+  };
 
   // Mock recent activity data
   const recentActivity = [
@@ -48,14 +45,14 @@ export default function DashboardPage() {
       time: '1 day ago',
       icon: Receipt,
     },
-  ]
+  ];
 
   // Mock member balances (top outstanding)
   const memberBalances = [
     { name: 'Alice Brown', balance: -114.52, status: 'negative' },
     { name: 'Jane Smith', balance: -93.15, status: 'negative' },
     { name: 'Eva Martinez', balance: -88.31, status: 'negative' },
-  ]
+  ];
 
   const quickActions = [
     {
@@ -79,7 +76,7 @@ export default function DashboardPage() {
       icon: FileText,
       color: 'bg-purple-600 hover:bg-purple-700',
     },
-  ]
+  ];
 
   return (
     <div className="space-y-6 p-6">
@@ -166,7 +163,7 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <div className="tablet:grid-cols-3 grid grid-cols-1 gap-4">
         {quickActions.map((action) => {
-          const Icon = action.icon
+          const Icon = action.icon;
           return (
             <Link key={action.title} href={action.href}>
               <div
@@ -183,7 +180,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             </Link>
-          )
+          );
         })}
       </div>
 
@@ -227,7 +224,7 @@ export default function DashboardPage() {
             </div>
             <div className="space-y-3">
               {recentActivity.map((activity) => {
-                const Icon = activity.icon
+                const Icon = activity.icon;
                 return (
                   <div
                     key={activity.id}
@@ -243,7 +240,7 @@ export default function DashboardPage() {
                       <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           </div>
@@ -306,5 +303,5 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

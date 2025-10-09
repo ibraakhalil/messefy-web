@@ -75,6 +75,8 @@ export async function loginWithCredentials(c: Context) {
 export async function userSync(c: Context) {
   const { email, name, image, emailVerified } = await c.req.json();
 
+  console.log('Syncing user:', { email, name, image, emailVerified });
+
   const existing = await db.query.users.findFirst({
     where: (u, { eq }) => eq(u.email, email),
   });

@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import Button from '@/components/ui/button'
-import FormInput from '@/components/ui/form-input'
-import { zodResolver } from '@hookform/resolvers/zod'
+import Button from '@/components/ui/button';
+import FormInput from '@/components/ui/form-input';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AlertCircle,
   DollarSign,
@@ -12,10 +12,10 @@ import {
   Receipt,
   Save,
   Utensils,
-} from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+} from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const dataEntrySchema = z.object({
   entryType: z.enum(['meal', 'deposit', 'expense']),
@@ -40,14 +40,14 @@ const dataEntrySchema = z.object({
   expenseAmount: z.number().optional(),
   expenseCategory: z.string().optional(),
   expensePaidBy: z.string().optional(),
-})
+});
 
-type DataEntryFormValues = z.infer<typeof dataEntrySchema>
+type DataEntryFormValues = z.infer<typeof dataEntrySchema>;
 
 export default function DataEntryPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [entryType, setEntryType] = useState<'meal' | 'deposit' | 'expense'>('meal')
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [entryType, setEntryType] = useState<'meal' | 'deposit' | 'expense'>('meal');
 
   // Mock members data
   const members = [
@@ -57,7 +57,7 @@ export default function DataEntryPage() {
     { id: '4', name: 'Alice Brown' },
     { id: '5', name: 'Charlie Wilson' },
     { id: '6', name: 'Diana Prince' },
-  ]
+  ];
 
   const expenseCategories = [
     'Groceries',
@@ -68,7 +68,7 @@ export default function DataEntryPage() {
     'Gas/Fuel',
     'Cleaning Supplies',
     'Other',
-  ]
+  ];
 
   const {
     register,
@@ -96,25 +96,25 @@ export default function DataEntryPage() {
       expenseCategory: '',
       expensePaidBy: '',
     },
-  })
+  });
 
-  const watchedMemberMeals = watch('memberMeals')
+  const watchedMemberMeals = watch('memberMeals');
 
   const updateMemberCount = (index: number, change: number) => {
-    const currentCount = watchedMemberMeals?.[index]?.count || 0
-    const newCount = Math.max(0, currentCount + change)
-    setValue(`memberMeals.${index}.count`, newCount)
-  }
+    const currentCount = watchedMemberMeals?.[index]?.count || 0;
+    const newCount = Math.max(0, currentCount + change);
+    setValue(`memberMeals.${index}.count`, newCount);
+  };
 
   const setAllMeals = (count: number) => {
     members.forEach((_, index) => {
-      setValue(`memberMeals.${index}.count`, count)
-    })
-  }
+      setValue(`memberMeals.${index}.count`, count);
+    });
+  };
 
   const handleEntryTypeChange = (type: 'meal' | 'deposit' | 'expense') => {
-    setEntryType(type)
-    setValue('entryType', type)
+    setEntryType(type);
+    setValue('entryType', type);
     // Reset form values when switching types
     if (type === 'meal') {
       setValue(
@@ -124,23 +124,23 @@ export default function DataEntryPage() {
           name: member.name,
           count: 0,
         })),
-      )
+      );
     }
-  }
+  };
 
   const onSubmit = async (data: DataEntryFormValues) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      console.log('Data entry:', data)
-      setSuccess(true)
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.log('Data entry:', data);
+      setSuccess(true);
 
       // Reset form but keep date and entry type
-      const currentDate = data.date
-      const currentType = data.entryType
-      reset()
-      setValue('date', currentDate)
-      setValue('entryType', currentType)
+      const currentDate = data.date;
+      const currentType = data.entryType;
+      reset();
+      setValue('date', currentDate);
+      setValue('entryType', currentType);
 
       if (currentType === 'meal') {
         setValue(
@@ -150,44 +150,45 @@ export default function DataEntryPage() {
             name: member.name,
             count: 0,
           })),
-        )
+        );
       }
 
-      setTimeout(() => setSuccess(false), 3000)
+      setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
-      console.error('Error saving data:', error)
+      console.error('Error saving data:', error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const getIcon = (type: string) => {
     switch (type) {
       case 'meal':
-        return Utensils
+        return Utensils;
       case 'deposit':
-        return DollarSign
+        return DollarSign;
       case 'expense':
-        return Receipt
+        return Receipt;
       default:
-        return Plus
+        return Plus;
     }
-  }
+  };
 
   const getColor = (type: string) => {
     switch (type) {
       case 'meal':
-        return 'orange'
+        return 'orange';
       case 'deposit':
-        return 'emerald'
+        return 'emerald';
       case 'expense':
-        return 'red'
+        return 'red';
       default:
-        return 'blue'
+        return 'blue';
     }
-  }
+  };
 
-  const totalMeals = watchedMemberMeals?.reduce((sum, member) => sum + (member?.count || 0), 0) || 0
+  const totalMeals =
+    watchedMemberMeals?.reduce((sum, member) => sum + (member?.count || 0), 0) || 0;
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
@@ -196,8 +197,8 @@ export default function DataEntryPage() {
           className={`flex h-10 w-10 items-center justify-center rounded-lg bg-${getColor(entryType)}-100 text-${getColor(entryType)}-600 dark:bg-${getColor(entryType)}-900/20 dark:text-${getColor(entryType)}-400`}
         >
           {(() => {
-            const Icon = getIcon(entryType)
-            return <Icon className="h-6 w-6" />
+            const Icon = getIcon(entryType);
+            return <Icon className="h-6 w-6" />;
           })()}
         </div>
         <div>
@@ -242,7 +243,7 @@ export default function DataEntryPage() {
                 <button
                   key={type}
                   type="button"
-                  onClick={() => handleEntryTypeChange(type as any)}
+                  onClick={() => handleEntryTypeChange(type as 'meal')}
                   className={`rounded-lg border p-4 text-left transition-all ${
                     entryType === type
                       ? `border-${getColor(type)}-500 bg-${getColor(type)}-50 dark:bg-${getColor(type)}-900/20`
@@ -602,5 +603,5 @@ export default function DataEntryPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

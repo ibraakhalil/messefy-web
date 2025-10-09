@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import Button from '@/components/ui/button'
-import FormInput from '@/components/ui/form-input'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Clock, Edit, Globe, Mail, MapPin, Phone, Save, User, X } from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import Button from '@/components/ui/button';
+import FormInput from '@/components/ui/form-input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Calendar, Clock, Edit, Globe, Mail, MapPin, Phone, Save, User, X } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 // Define the schema for profile form
 const profileSchema = z.object({
@@ -18,25 +18,23 @@ const profileSchema = z.object({
   timezone: z.string().optional(),
   language: z.string().optional(),
   dietaryPreferences: z.string().optional(),
-})
+});
 
-type ProfileFormValues = z.infer<typeof profileSchema>
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 interface ProfileSectionProps {
-  isLoading?: boolean
+  isLoading?: boolean;
 }
 
 export default function ProfileSection({ isLoading = false }: ProfileSectionProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -49,42 +47,39 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
       language: 'English',
       dietaryPreferences: 'Vegetarian',
     },
-  })
-
-  const watchedValues = watch()
+  });
 
   const onSubmit = async (data: ProfileFormValues) => {
-    setIsSaving(true)
+    setIsSaving(true);
     try {
       // Simulate API call
-      console.log('Profile form submitted:', data)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      setIsEditing(false)
+      console.log('Profile form submitted:', data);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setIsEditing(false);
       // Success notification would go here
     } catch (error) {
-      console.error('Profile update failed:', error)
+      console.error('Profile update failed:', error);
       // Error notification would go here
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    reset()
-    setIsEditing(false)
-    setAvatarPreview(null)
-  }
+    reset();
+    setIsEditing(false);
+  };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setAvatarPreview(event.target?.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+  //   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const file = e.target.files?.[0];
+  //     if (file) {
+  //       const reader = new FileReader();
+  //       reader.onload = (event) => {
+  //         setAvatarPreview(event.target?.result as string);
+  //       };
+  //       reader.readAsDataURL(file);
+  //     }
+  //   };
 
   if (isLoading) {
     return (
@@ -119,7 +114,7 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
           <div className="h-24 animate-pulse rounded-md bg-gray-200"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -299,5 +294,5 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
         </div>
       </form>
     </div>
-  )
+  );
 }

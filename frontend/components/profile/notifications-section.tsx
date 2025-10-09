@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import Button from '@/components/ui/button'
-import FormInput from '@/components/ui/form-input'
-import { Bell, CheckCircle, ChefHat, Clock, Search, Trash2, UserPlus, XCircle } from 'lucide-react'
-import { useState } from 'react'
+import Button from '@/components/ui/button';
+import FormInput from '@/components/ui/form-input';
+import { Bell, CheckCircle, ChefHat, Clock, Search, Trash2, UserPlus, XCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface NotificationsSectionProps {
-  isLoading?: boolean
+  isLoading?: boolean;
 }
 
 // Mock notification data
@@ -98,142 +98,142 @@ const notifications = [
       currency: 'USD',
     },
   },
-]
+];
 
 export default function NotificationsSection({ isLoading = false }: NotificationsSectionProps) {
-  const [filter, setFilter] = useState<'all' | 'unread' | 'invitations' | 'requests'>('all')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [processingNotifications, setProcessingNotifications] = useState<Set<string>>(new Set())
+  const [filter, setFilter] = useState<'all' | 'unread' | 'invitations' | 'requests'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [processingNotifications, setProcessingNotifications] = useState<Set<string>>(new Set());
 
   const filteredNotifications = notifications.filter((notification) => {
     const matchesSearch =
       notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       notification.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      notification.messName.toLowerCase().includes(searchTerm.toLowerCase())
+      notification.messName.toLowerCase().includes(searchTerm.toLowerCase());
 
-    if (!matchesSearch) return false
+    if (!matchesSearch) return false;
 
     switch (filter) {
       case 'unread':
-        return !notification.isRead
+        return !notification.isRead;
       case 'invitations':
-        return notification.type === 'mess_invitation'
+        return notification.type === 'mess_invitation';
       case 'requests':
-        return notification.type.includes('request')
+        return notification.type.includes('request');
       default:
-        return true
+        return true;
     }
-  })
+  });
 
   const handleAcceptInvitation = async (notificationId: string) => {
-    setProcessingNotifications((prev) => new Set(prev).add(notificationId))
+    setProcessingNotifications((prev) => new Set(prev).add(notificationId));
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      console.log('Invitation accepted:', notificationId)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log('Invitation accepted:', notificationId);
       // Success notification would go here
     } catch (error) {
-      console.error('Failed to accept invitation:', error)
+      console.error('Failed to accept invitation:', error);
     } finally {
       setProcessingNotifications((prev) => {
-        const newSet = new Set(prev)
-        newSet.delete(notificationId)
-        return newSet
-      })
+        const newSet = new Set(prev);
+        newSet.delete(notificationId);
+        return newSet;
+      });
     }
-  }
+  };
 
   const handleRejectInvitation = async (notificationId: string) => {
-    setProcessingNotifications((prev) => new Set(prev).add(notificationId))
+    setProcessingNotifications((prev) => new Set(prev).add(notificationId));
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      console.log('Invitation rejected:', notificationId)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log('Invitation rejected:', notificationId);
       // Success notification would go here
     } catch (error) {
-      console.error('Failed to reject invitation:', error)
+      console.error('Failed to reject invitation:', error);
     } finally {
       setProcessingNotifications((prev) => {
-        const newSet = new Set(prev)
-        newSet.delete(notificationId)
-        return newSet
-      })
+        const newSet = new Set(prev);
+        newSet.delete(notificationId);
+        return newSet;
+      });
     }
-  }
+  };
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
       // Simulate API call
-      console.log('Marked as read:', notificationId)
+      console.log('Marked as read:', notificationId);
       // Update local state or refetch
     } catch (error) {
-      console.error('Failed to mark as read:', error)
+      console.error('Failed to mark as read:', error);
     }
-  }
+  };
 
   const handleDeleteNotification = async (notificationId: string) => {
-    setProcessingNotifications((prev) => new Set(prev).add(notificationId))
+    setProcessingNotifications((prev) => new Set(prev).add(notificationId));
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      console.log('Notification deleted:', notificationId)
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      console.log('Notification deleted:', notificationId);
       // Success notification would go here
     } catch (error) {
-      console.error('Failed to delete notification:', error)
+      console.error('Failed to delete notification:', error);
     } finally {
       setProcessingNotifications((prev) => {
-        const newSet = new Set(prev)
-        newSet.delete(notificationId)
-        return newSet
-      })
+        const newSet = new Set(prev);
+        newSet.delete(notificationId);
+        return newSet;
+      });
     }
-  }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'mess_invitation':
-        return <UserPlus className="h-5 w-5 text-blue-600" />
+        return <UserPlus className="h-5 w-5 text-blue-600" />;
       case 'join_request_approved':
-        return <CheckCircle className="h-5 w-5 text-green-600" />
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
       case 'join_request_rejected':
-        return <XCircle className="h-5 w-5 text-red-600" />
+        return <XCircle className="h-5 w-5 text-red-600" />;
       case 'meal_reminder':
-        return <ChefHat className="h-5 w-5 text-orange-600" />
+        return <ChefHat className="h-5 w-5 text-orange-600" />;
       case 'payment_due':
-        return <Clock className="h-5 w-5 text-yellow-600" />
+        return <Clock className="h-5 w-5 text-yellow-600" />;
       default:
-        return <Bell className="h-5 w-5 text-gray-600" />
+        return <Bell className="h-5 w-5 text-gray-600" />;
     }
-  }
+  };
 
   const getNotificationBg = (type: string) => {
     switch (type) {
       case 'mess_invitation':
-        return 'bg-blue-50'
+        return 'bg-blue-50';
       case 'join_request_approved':
-        return 'bg-green-50'
+        return 'bg-green-50';
       case 'join_request_rejected':
-        return 'bg-red-50'
+        return 'bg-red-50';
       case 'meal_reminder':
-        return 'bg-orange-50'
+        return 'bg-orange-50';
       case 'payment_due':
-        return 'bg-yellow-50'
+        return 'bg-yellow-50';
       default:
-        return 'bg-gray-50'
+        return 'bg-gray-50';
     }
-  }
+  };
 
   const formatTimeAgo = (timestamp: string) => {
-    const now = new Date()
-    const notificationTime = new Date(timestamp)
-    const diffInHours = Math.floor((now.getTime() - notificationTime.getTime()) / (1000 * 60 * 60))
+    const now = new Date();
+    const notificationTime = new Date(timestamp);
+    const diffInHours = Math.floor((now.getTime() - notificationTime.getTime()) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) return 'Just now'
-    if (diffInHours < 24) return `${diffInHours}h ago`
-    const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays}d ago`
-    return notificationTime.toLocaleDateString()
-  }
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    return notificationTime.toLocaleDateString();
+  };
 
   if (isLoading) {
     return (
@@ -245,10 +245,10 @@ export default function NotificationsSection({ isLoading = false }: Notification
           ))}
         </div>
       </div>
-    )
+    );
   }
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <div className="space-y-6">
@@ -267,7 +267,7 @@ export default function NotificationsSection({ isLoading = false }: Notification
           className="text-sm"
           onClick={() => {
             // Mark all as read
-            console.log('Mark all as read')
+            console.log('Mark all as read');
           }}
         >
           Mark All Read
@@ -294,7 +294,7 @@ export default function NotificationsSection({ isLoading = false }: Notification
           ].map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setFilter(key as any)}
+              onClick={() => setFilter(key as 'all')}
               className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 filter === key
                   ? 'bg-emerald-100 text-emerald-800'
@@ -319,7 +319,7 @@ export default function NotificationsSection({ isLoading = false }: Notification
           </div>
         ) : (
           filteredNotifications.map((notification) => {
-            const isProcessing = processingNotifications.has(notification.id)
+            const isProcessing = processingNotifications.has(notification.id);
 
             return (
               <div
@@ -417,7 +417,7 @@ export default function NotificationsSection({ isLoading = false }: Notification
                   </div>
                 </div>
               </div>
-            )
+            );
           })
         )}
       </div>
@@ -429,7 +429,7 @@ export default function NotificationsSection({ isLoading = false }: Notification
             className="text-sm"
             onClick={() => {
               // Load more functionality
-              console.log('Load more notifications')
+              console.log('Load more notifications');
             }}
           >
             Load More Notifications
@@ -437,5 +437,5 @@ export default function NotificationsSection({ isLoading = false }: Notification
         </div>
       )}
     </div>
-  )
+  );
 }

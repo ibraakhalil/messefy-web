@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import Button from '@/components/ui/button'
-import FormInput from '@/components/ui/form-input'
-import { zodResolver } from '@hookform/resolvers/zod'
+import Button from '@/components/ui/button';
+import FormInput from '@/components/ui/form-input';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   AlertCircle,
   CheckCircle,
@@ -12,16 +12,16 @@ import {
   Send,
   TrendingUp,
   Users,
-} from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+} from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 // Define schemas
 const joinRequestSchema = z.object({
   messCode: z.string().min(1, 'Mess code is required'),
   message: z.string().max(200, 'Message cannot exceed 200 characters').optional(),
-})
+});
 
 const mealEntrySchema = z.object({
   breakfast: z.boolean(),
@@ -29,13 +29,13 @@ const mealEntrySchema = z.object({
   dinner: z.boolean(),
   guestMeals: z.number().min(0, 'Guest meals cannot be negative').max(10, 'Maximum 10 guest meals'),
   date: z.string(),
-})
+});
 
-type JoinRequestFormValues = z.infer<typeof joinRequestSchema>
-type MealEntryFormValues = z.infer<typeof mealEntrySchema>
+type JoinRequestFormValues = z.infer<typeof joinRequestSchema>;
+type MealEntryFormValues = z.infer<typeof mealEntrySchema>;
 
 interface MessSectionProps {
-  isLoading?: boolean
+  isLoading?: boolean;
 }
 
 // Mock data
@@ -73,20 +73,19 @@ const userMesses = [
     lastMealEntry: '2023-12-30',
     messCode: 'STU-2024-003',
   },
-]
+];
 
 const todaysMeals = {
   breakfast: true,
   lunch: false,
   dinner: false,
   guestMeals: 0,
-}
+};
 
 export default function MessSection({ isLoading = false }: MessSectionProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'join' | 'meals'>('overview')
-  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false)
-  const [isSubmittingMeal, setIsSubmittingMeal] = useState(false)
-  const [selectedMess, setSelectedMess] = useState(userMesses[0])
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [isSubmittingMeal, setIsSubmittingMeal] = useState(false);
+  const [selectedMess, setSelectedMess] = useState(userMesses[0]);
 
   const joinForm = useForm<JoinRequestFormValues>({
     resolver: zodResolver(joinRequestSchema),
@@ -94,7 +93,7 @@ export default function MessSection({ isLoading = false }: MessSectionProps) {
       messCode: '',
       message: '',
     },
-  })
+  });
 
   const mealForm = useForm<MealEntryFormValues>({
     resolver: zodResolver(mealEntrySchema),
@@ -105,34 +104,34 @@ export default function MessSection({ isLoading = false }: MessSectionProps) {
       guestMeals: todaysMeals.guestMeals,
       date: new Date().toISOString().split('T')[0],
     },
-  })
+  });
 
   const onSubmitJoinRequest = async (data: JoinRequestFormValues) => {
-    setIsSubmittingRequest(true)
+    setIsSubmittingRequest(true);
     try {
-      console.log('Join request submitted:', data)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      joinForm.reset()
+      console.log('Join request submitted:', data);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      joinForm.reset();
       // Success notification would go here
     } catch (error) {
-      console.error('Join request failed:', error)
+      console.error('Join request failed:', error);
     } finally {
-      setIsSubmittingRequest(false)
+      setIsSubmittingRequest(false);
     }
-  }
+  };
 
   const onSubmitMealEntry = async (data: MealEntryFormValues) => {
-    setIsSubmittingMeal(true)
+    setIsSubmittingMeal(true);
     try {
-      console.log('Meal entry submitted:', data)
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      console.log('Meal entry submitted:', data);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       // Success notification would go here
     } catch (error) {
-      console.error('Meal entry failed:', error)
+      console.error('Meal entry failed:', error);
     } finally {
-      setIsSubmittingMeal(false)
+      setIsSubmittingMeal(false);
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -143,7 +142,7 @@ export default function MessSection({ isLoading = false }: MessSectionProps) {
           <div className="h-32 animate-pulse rounded-md bg-gray-200"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -328,7 +327,7 @@ export default function MessSection({ isLoading = false }: MessSectionProps) {
                       id={key}
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                      {...mealForm.register(key as any)}
+                      {...mealForm.register(key as 'breakfast' | 'lunch' | 'dinner')}
                     />
                     <label
                       htmlFor={key}
@@ -375,5 +374,5 @@ export default function MessSection({ isLoading = false }: MessSectionProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

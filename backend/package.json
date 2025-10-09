@@ -9,7 +9,8 @@
     "db:push": "drizzle-kit push",
     "db:seed": "NODE_ENV=development bun run db/seeds/index.ts",
     "db:setup": "bun run db:push && bun run db:seed",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "seed:user": "bun run db/seeds/user.seeder.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -29,6 +30,7 @@
   "dependencies": {
     "@auth/core": "^0.40.0",
     "@auth/drizzle-adapter": "^1.10.0",
+    "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "hono": "^4.9.8",

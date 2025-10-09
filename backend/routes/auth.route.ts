@@ -5,6 +5,6 @@ export const authRoute = new Hono();
 
 authRoute.post('/signup', userRegistration);
 
-authRoute.post('/login', loginWithCredentials);
+authRoute.post('/signin', loginWithCredentials);
 
 authRoute.post('/sync-user', userSync);

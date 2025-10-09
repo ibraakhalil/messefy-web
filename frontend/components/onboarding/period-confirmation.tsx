@@ -9,14 +9,14 @@ const PeriodConfirmation = () => {
   
   return (
     <div className="space-y-6">
-      <div className="rounded-md bg-blue-50 p-4 dark:bg-blue-900/30">
+      <div className="rounded-md bg-blue-50 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <Info className="h-5 w-5 text-blue-400" aria-hidden="true" />
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Period Information</h3>
-            <div className="mt-2 text-sm text-blue-700 dark:text-blue-200">
+            <h3 className="text-sm font-medium text-blue-800">Period Information</h3>
+            <div className="mt-2 text-sm text-blue-700">
               <p>A period represents a financial timeframe in your workspace. You can create multiple periods to track financial data over time.</p>
             </div>
           </div>
@@ -32,19 +32,19 @@ const PeriodConfirmation = () => {
           icon={<Calendar className="h-5 w-5 text-gray-400" />}
           {...register('periodName')}
         />
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-xs text-gray-500">
           This will be your first financial period
         </p>
       </div>
       
-      <div className="rounded-md bg-amber-50 p-4 dark:bg-amber-900/20">
+      <div className="rounded-md bg-amber-50 p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <Info className="h-5 w-5 text-amber-400" aria-hidden="true" />
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-amber-800 dark:text-amber-300">About Period Closing</h3>
-            <div className="mt-2 space-y-2 text-sm text-amber-700 dark:text-amber-200">
+            <h3 className="text-sm font-medium text-amber-800">About Period Closing</h3>
+            <div className="mt-2 space-y-2 text-sm text-amber-700">
               <p>
                 When you close a period, the following happens:
               </p>
@@ -71,13 +71,13 @@ const PeriodConfirmation = () => {
       </div>
       
       {understandPeriodClosing && (
-        <div className="rounded-md bg-emerald-50 p-4 dark:bg-emerald-900/20">
+        <div className="rounded-md bg-emerald-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <Info className="h-5 w-5 text-emerald-400" aria-hidden="true" />
             </div>
             <div className="ml-3">
-              <p className="text-sm text-emerald-700 dark:text-emerald-200">
+              <p className="text-sm text-emerald-700">
                 Great! You're ready to complete the setup process. Click the "Complete Setup" button below to finish.
               </p>
             </div>

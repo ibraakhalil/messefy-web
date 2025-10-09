@@ -22,7 +22,7 @@ const ProgressIndicator = ({ currentStep, totalSteps }: ProgressIndicatorProps) 
                   <div 
                     className={cn(
                       'h-1 flex-1', 
-                      isCompleted ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                      isCompleted ? 'bg-blue-600' : 'bg-gray-300'
                     )}
                   />
                 )}
@@ -33,7 +33,7 @@ const ProgressIndicator = ({ currentStep, totalSteps }: ProgressIndicatorProps) 
                     'flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium',
                     isActive && 'bg-blue-600 text-white',
                     isCompleted && 'bg-blue-600 text-white',
-                    !isActive && !isCompleted && 'bg-gray-300 text-gray-700 dark:bg-gray-600 dark:text-gray-300'
+                    !isActive && !isCompleted && 'bg-gray-300 text-gray-700'
                   )}
                 >
                   {isCompleted ? (
@@ -50,7 +50,7 @@ const ProgressIndicator = ({ currentStep, totalSteps }: ProgressIndicatorProps) 
                   <div 
                     className={cn(
                       'h-1 flex-1', 
-                      stepNumber < currentStep ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                      stepNumber < currentStep ? 'bg-blue-600' : 'bg-gray-300'
                     )}
                   />
                 )}
@@ -60,14 +60,13 @@ const ProgressIndicator = ({ currentStep, totalSteps }: ProgressIndicatorProps) 
               <span 
                 className={cn(
                   'mt-2 text-xs font-medium',
-                  isActive && 'text-blue-600 dark:text-blue-400',
-                  isCompleted && 'text-blue-600 dark:text-blue-400',
-                  !isActive && !isCompleted && 'text-gray-500 dark:text-gray-400'
+                  isActive && 'text-blue-600',
+                  isCompleted && 'text-blue-600',
+                  !isActive && !isCompleted && 'text-gray-500'
                 )}
               >
                 {stepNumber === 1 && 'Workspace'}
                 {stepNumber === 2 && 'Team'}
-                {stepNumber === 3 && 'Period'}
               </span>
             </div>
           );
@@ -76,15 +75,13 @@ const ProgressIndicator = ({ currentStep, totalSteps }: ProgressIndicatorProps) 
       
       {/* Current step description */}
       <div className="mt-4 text-center">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-lg font-semibold text-gray-900">
           {currentStep === 1 && 'Workspace Creation'}
           {currentStep === 2 && 'Team Member Setup'}
-          {currentStep === 3 && 'Period Confirmation'}
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500">
           {currentStep === 1 && 'Set up your workspace details'}
           {currentStep === 2 && 'Add team members to your workspace'}
-          {currentStep === 3 && 'Confirm your period settings'}
         </p>
       </div>
     </div>

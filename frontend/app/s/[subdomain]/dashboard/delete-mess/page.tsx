@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import Button from '@/components/ui/button'
-import FormInput from '@/components/ui/form-input'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertCircle, AlertTriangle, Database, Loader2, Shield, Trash2, Users } from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import Button from '@/components/ui/button';
+import FormInput from '@/components/ui/form-input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertCircle, AlertTriangle, Database, Loader2, Shield, Trash2, Users } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const deleteMessSchema = z.object({
   messName: z.string().min(1, 'Mess name confirmation is required'),
@@ -16,13 +16,12 @@ const deleteMessSchema = z.object({
   }),
   dataExport: z.boolean().default(true),
   notifyMembers: z.boolean().default(true),
-})
+});
 
-type DeleteMessFormValues = z.infer<typeof deleteMessSchema>
+type DeleteMessFormValues = z.infer<typeof deleteMessSchema>;
 
 export default function DeleteMessPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mock mess data
   const messData = {
@@ -32,7 +31,7 @@ export default function DeleteMessPage() {
     totalMonths: 6,
     currentBalance: 1250.75,
     totalTransactions: 124,
-  }
+  };
 
   const {
     register,
@@ -44,32 +43,32 @@ export default function DeleteMessPage() {
     defaultValues: {
       messName: '',
       password: '',
-      confirmationText: '' as any,
+      confirmationText: '' as 'DELETE',
       dataExport: true,
       notifyMembers: true,
     },
-  })
+  });
 
-  const watchedMessName = watch('messName')
-  const watchedConfirmation = watch('confirmationText')
+  const watchedMessName = watch('messName');
+  const watchedConfirmation = watch('confirmationText');
 
-  const isFormValid = watchedMessName === messData.name && watchedConfirmation === 'DELETE'
+  const isFormValid = watchedMessName === messData.name && watchedConfirmation === 'DELETE';
 
   const onSubmit = async (data: DeleteMessFormValues) => {
-    if (!isFormValid) return
+    if (!isFormValid) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 5000))
-      console.log('Delete mess data:', data)
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      console.log('Delete mess data:', data);
       // Redirect to home or show success message
-      alert('Mess deleted successfully. You will be redirected to the home page.')
+      alert('Mess deleted successfully. You will be redirected to the home page.');
     } catch (error) {
-      console.error('Error deleting mess:', error)
+      console.error('Error deleting mess:', error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-6">
@@ -339,5 +338,5 @@ export default function DeleteMessPage() {
         </p>
       </div>
     </div>
-  )
+  );
 }

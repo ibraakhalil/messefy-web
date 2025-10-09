@@ -2,11 +2,13 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { userRoute } from './user.route';
 import { authRoute } from './auth.route';
+import { testRoute } from './test.route';
 
 const router = new Hono();
 
 router.route('/', userRoute);
 router.route('/auth', authRoute);
+router.route('/test', testRoute);
 
 router.notFound((c) => c.json({ message: 'Abracadabra! The page you are looking for does not exist.' }, 404));
 

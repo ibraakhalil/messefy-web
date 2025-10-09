@@ -15,7 +15,7 @@ app.use(
 );
 app.route('/', router);
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 5000;
 console.log(`Server is running on port ${port}`);
 
 export default {
