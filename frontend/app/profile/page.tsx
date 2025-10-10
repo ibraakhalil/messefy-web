@@ -10,8 +10,6 @@ export default async function ProfilePage() {
   const session = await auth();
   const user = session?.user;
 
-  console.log('Profile Page Session:', session);
-
   return (
     <PageWrapper className="py-8">
       <div className="flex items-center justify-between">

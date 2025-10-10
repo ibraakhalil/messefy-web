@@ -1,53 +1,33 @@
+// lib/api.ts
 import axios from 'axios';
 import { env } from '@/config/env';
-import { getAuthToken, removeAuthToken } from './auth';
+import { getSession } from 'next-auth/react';
+import { auth } from '@/config/auth';
 
-// Create axios instance with base URL
 const api = axios.create({
   baseURL: env.NEXT_PUBLIC_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor for adding auth token
 api.interceptors.request.use(
-  (config) => {
-    // Get token using our auth utility
-    const token = getAuthToken();
-    const cookie = document.cookie;
+  async (config) => {
+    const session = typeof window === 'undefined' ? await auth() : await getSession();
 
-    console.log(cookie);
-
-    console.log('Request Token:', token);
-
-    // If token exists, add to headers
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (session?.accessToken) {
+      config.headers.Authorization = `Bearer ${session.accessToken}`;
     }
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
-// Response interceptor for handling token refresh or auth errors
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    // Handle 401 Unauthorized errors
-    if (error.response && error.response.status === 401) {
-      // Clear invalid token using our auth utility
-      removeAuthToken();
-
-      // Redirect to login if needed
-      // You can add additional logic here if needed
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      window.location.href = '/auth/signin';
     }
-
     return Promise.reject(error);
   },
 );

@@ -5,15 +5,15 @@ import { z } from 'zod';
 import Button from '../ui/button';
 import FormInput from '../ui/form-input';
 import { Info, Plus, X, Mail, Check } from 'lucide-react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import api from '@/utils/axios';
+import { useRouter } from 'next/navigation';
+import { env } from '@/config/env';
 
-// Define the schema for the consolidated form
 const onboardingSchema = z.object({
   name: z.string().min(1, 'Mess name is required'),
   description: z.string().optional(),
-  onlineMembers: z
+  members: z
     .array(
       z.object({
         email: z.string().email('Invalid email address'),
@@ -30,13 +30,14 @@ const OnboardingWizard = () => {
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newMemberRole, setNewMemberRole] = useState<string>('Member');
   const [emailError, setEmailError] = useState('');
+  const router = useRouter();
 
   const methods = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       name: '',
       description: '',
-      onlineMembers: [],
+      members: [],
     },
     mode: 'onChange',
   });
@@ -50,7 +51,7 @@ const OnboardingWizard = () => {
   } = methods;
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'onlineMembers',
+    name: 'members',
   });
 
   const validateEmail = (email: string) => {
@@ -70,7 +71,7 @@ const OnboardingWizard = () => {
     }
 
     // Check if email already exists
-    const members = watch('onlineMembers') || [];
+    const members = watch('members') || [];
     if (members.some((member) => member.email === newMemberEmail)) {
       setEmailError('This email has already been added');
       return;
@@ -89,10 +90,18 @@ const OnboardingWizard = () => {
     };
 
     api
-      .post(`${process.env.NEXT_PUBLIC_API_URL}/workspaces/create`, messData)
+      .post('/workspaces/create', messData)
       .then((response) => {
         toast.success('Workspace created successfully');
-        console.log('Workspace created:', response.data);
+
+        const subdomain = response.data.workspace.subdomain;
+        const rootDomain = env.NEXT_PUBLIC_ROOT_DOMAIN;
+
+        if (rootDomain.includes('localhost')) {
+          router.push(`http://${subdomain}.${rootDomain}`);
+        } else {
+          router.push(`https://${subdomain}.${rootDomain}`);
+        }
       })
       .catch((error) => {
         console.error('Error creating workspace:', error);

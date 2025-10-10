@@ -3,14 +3,13 @@ import { db } from '../db';
 import { workspaces } from '../db/schemas';
 
 export async function createWorkspace(c: Context) {
-  const { name, subdomain, description, ownerId } = await c.req.json();
+  const { name, subdomain, description } = await c.req.json();
+  const ownerId = c.get('ownerId');
 
-  // Validate required fields
   if (!name || !subdomain || !ownerId) {
     return c.json({ error: 'Name, subdomain and ownerId are required' }, 400);
   }
 
-  // Check if subdomain is already taken
   const existingWorkspace = await db.query.workspaces.findFirst({
     where: (w, { eq }) => eq(w.subdomain, subdomain),
   });
@@ -20,7 +19,6 @@ export async function createWorkspace(c: Context) {
   }
 
   try {
-    // Create new workspace
     const [newWorkspace] = await db.insert(workspaces).values({ name, subdomain, description, ownerId }).returning();
 
     if (!newWorkspace) {
