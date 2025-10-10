@@ -1,6 +1,6 @@
-import AppHeader from '@/components/common/app-header'
-import PageWrapper from '@/components/common/page-wrapper'
-import { cn } from '@/utils/cn'
+import AppHeader from '@/components/common/app-header';
+import PageWrapper from '@/components/common/page-wrapper';
+import { cn } from '@/utils/cn';
 import {
   ArrowUpDown,
   Calendar,
@@ -12,15 +12,15 @@ import {
   Users,
   Utensils,
   Wallet,
-} from 'lucide-react'
+} from 'lucide-react';
 
 interface SubdomainPageProps {
-  params: Promise<{ subdomain: string }>
+  params: Promise<{ subdomain: string }>;
 }
 
 export default async function SubdomainPage({ params }: SubdomainPageProps) {
-  const { subdomain } = await params
-  const pageTitle = `Meal Management Dashboard for ${subdomain}`
+  const { subdomain } = await params;
+  const pageTitle = `Meal Management Dashboard for ${subdomain}`;
 
   const messData = {
     statusNote: 'Please submit all remaining expenses by the 25th of this month.',
@@ -167,7 +167,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
       totalDays: 30,
       averageMealsPerDay: 15,
     },
-  }
+  };
 
   return (
     <div>
@@ -419,25 +419,25 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
 
           <div className="space-y-4">
             {messData.recentActivity.map((activity, index) => {
-              let icon
-              let iconColorClass
+              let icon;
+              let iconColorClass;
 
               switch (activity.type) {
                 case 'meal':
-                  icon = <Utensils className="h-4 w-4" />
-                  iconColorClass = 'bg-emerald-100 text-emerald-600'
-                  break
+                  icon = <Utensils className="h-4 w-4" />;
+                  iconColorClass = 'bg-emerald-100 text-emerald-600';
+                  break;
                 case 'expense':
-                  icon = <Receipt className="h-4 w-4" />
-                  iconColorClass = 'bg-red-100 text-red-600'
-                  break
+                  icon = <Receipt className="h-4 w-4" />;
+                  iconColorClass = 'bg-red-100 text-red-600';
+                  break;
                 case 'deposit':
-                  icon = <Wallet className="h-4 w-4" />
-                  iconColorClass = 'bg-purple-100 text-purple-600'
-                  break
+                  icon = <Wallet className="h-4 w-4" />;
+                  iconColorClass = 'bg-purple-100 text-purple-600';
+                  break;
                 default:
-                  icon = <Clock className="h-4 w-4" />
-                  iconColorClass = 'bg-gray-100 text-gray-600'
+                  icon = <Clock className="h-4 w-4" />;
+                  iconColorClass = 'bg-gray-100 text-gray-600';
               }
 
               return (
@@ -460,11 +460,11 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
                     <p className="text-sm text-gray-600">{activity.action}</p>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </section>
       </PageWrapper>
     </div>
-  )
+  );
 }

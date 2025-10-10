@@ -86,7 +86,7 @@ const OnboardingWizard = () => {
   const onSubmit = (data: OnboardingFormValues) => {
     const messData = {
       ...data,
-      subdomain: data.name.toLowerCase().replace(/\s+/g, '-'),
+      slug: data.name.toLowerCase().replace(/\s+/g, '-'),
     };
 
     api
@@ -94,13 +94,13 @@ const OnboardingWizard = () => {
       .then((response) => {
         toast.success('Workspace created successfully');
 
-        const subdomain = response.data.workspace.subdomain;
+        const slug = response.data.workspace.slug;
         const rootDomain = env.NEXT_PUBLIC_ROOT_DOMAIN;
 
         if (rootDomain.includes('localhost')) {
-          router.push(`http://${subdomain}.${rootDomain}`);
+          router.push(`http://${slug}.${rootDomain}`);
         } else {
-          router.push(`https://${subdomain}.${rootDomain}`);
+          router.push(`https://${slug}.${rootDomain}`);
         }
       })
       .catch((error) => {

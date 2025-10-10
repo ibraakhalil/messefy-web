@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
-import { createWorkspace, getWorkspaceById, getUserWorkspaces } from '../controllers/workspace.controller';
-import { ownerCheck } from '../middlewares/auth.middleware';
+import { createWorkspace, getWorkspaceById, getWorkspaceByUser } from '../controllers/workspace.controller';
+import { ownerCheck, userValidation } from '../middlewares/auth.middleware';
 
 export const workspaceRoute = new Hono();
 
 workspaceRoute.post('/create', ownerCheck, createWorkspace);
-workspaceRoute.get('/user/:userId', getUserWorkspaces);
-workspaceRoute.get('/:id', getWorkspaceById);
+workspaceRoute.get('/user', userValidation, getWorkspaceByUser);
+workspaceRoute.get('/:id', userValidation, getWorkspaceById);

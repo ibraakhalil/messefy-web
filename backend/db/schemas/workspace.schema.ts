@@ -7,7 +7,7 @@ export const workspaces = pgTable('workspaces', {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   name: varchar('name', { length: 255 }).notNull(),
-  subdomain: varchar('subdomain', { length: 63 }).unique().notNull(),
+  slug: varchar('slug', { length: 63 }).unique().notNull(),
   description: text('description'),
 
   ownerId: uuid('owner_id')

@@ -1,12 +1,22 @@
 'use client';
 
-import { Menu, Moon, Sun } from 'lucide-react';
+import { Menu, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useState } from 'react';
 import Logo from '../common/logo';
+import { Session } from 'next-auth';
+import Button from '../ui/button';
+import UserDropdown from '../common/user-dropdown';
+import { Workspace } from '@/types/workspace';
 
-// Navigation items configuration
+interface HeaderProps {
+  userData: {
+    user: Session['user'];
+    workspace: Workspace | undefined;
+  };
+}
+
 const navItems = [
   {
     id: 'features',
@@ -30,7 +40,20 @@ const navItems = [
   },
 ];
 
-export const Header = () => {
+function NavItem({ children }: { children: string }) {
+  return (
+    <span
+      key={children}
+      className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
+    >
+      {children}
+      <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+    </span>
+  );
+}
+
+export const Header = ({ userData }: HeaderProps) => {
+  const { user } = userData;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -50,55 +73,24 @@ export const Header = () => {
         {/* Desktop nav */}
         <nav className="tablet:flex hidden items-center gap-8">
           {navItems.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
-            >
-              {item.label}
-              <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
+            <Link href={item.href} key={item.id}>
+              <NavItem>{item.label}</NavItem>
             </Link>
           ))}
         </nav>
 
         {/* Enhanced Actions */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
+          <Button onClick={toggleTheme}>
+            <Moon className="h-5 w-5" />
+          </Button>
 
-          <a
-            href="/auth/signin"
-            className="tablet:inline-flex hidden items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
-          >
-            Sign in
-          </a>
-
-          <a
-            href="/auth/signup"
-            className="group inline-flex transform items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:from-emerald-700 hover:to-teal-700 hover:shadow-xl hover:shadow-emerald-200/50"
-          >
-            Get Started
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            >
-              <path
-                d="M5 12h14M13 5l7 7-7 7"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </a>
+          {!user && (
+            <Link href="/auth/signin">
+              <Button>Get Started</Button>
+            </Link>
+          )}
+          {user && <UserDropdown userData={userData} />}
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}

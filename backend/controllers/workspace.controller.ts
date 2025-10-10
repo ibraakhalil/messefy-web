@@ -3,25 +3,25 @@ import { db } from '../db';
 import { workspaces } from '../db/schemas';
 
 export async function createWorkspace(c: Context) {
-  const { name, subdomain, description } = await c.req.json();
+  const { name, slug, description } = await c.req.json();
   const ownerId = c.get('ownerId');
 
-  if (!name || !subdomain || !ownerId) {
+  if (!name || !slug || !ownerId) {
     return c.json(
       {
-        error: 'Missing required fields: name, subdomain, and owner ID must be provided',
+        error: 'Missing required fields: name, slug, and owner ID must be provided',
       },
       400,
     );
   }
 
-  const workspaceWithSubdomain = await db.query.workspaces.findFirst({
-    where: (w, { eq }) => eq(w.subdomain, subdomain),
+  const workspaceWithSlug = await db.query.workspaces.findFirst({
+    where: (w, { eq }) => eq(w.slug, slug),
   });
-  if (workspaceWithSubdomain) {
+  if (workspaceWithSlug) {
     return c.json(
       {
-        error: 'This subdomain is already in use',
+        error: 'This slug is already in use',
       },
       409,
     );
@@ -40,10 +40,7 @@ export async function createWorkspace(c: Context) {
   }
 
   try {
-    const [createdWorkspace] = await db
-      .insert(workspaces)
-      .values({ name, subdomain, description, ownerId })
-      .returning();
+    const [createdWorkspace] = await db.insert(workspaces).values({ name, slug, description, ownerId }).returning();
 
     return c.json(
       {
@@ -88,21 +85,19 @@ export async function getWorkspaceById(c: Context) {
   }
 }
 
-export async function getUserWorkspaces(c: Context) {
-  const userId = c.req.param('userId');
-
-  // Validate user ID
-  if (!userId) {
-    return c.json({ error: 'User ID is required' }, 400);
-  }
+export async function getWorkspaceByUser(c: Context) {
+  const userId = c.get('userId');
 
   try {
-    // Find all active workspaces owned by the user
-    const userWorkspaces = await db.query.workspaces.findMany({
+    const workspace = await db.query.workspaces.findFirst({
       where: (w, { eq, and }) => and(eq(w.ownerId, userId), eq(w.isActive, true)),
     });
 
-    return c.json({ workspaces: userWorkspaces });
+    if (!workspace) {
+      return c.json({ error: 'No active workspaces found for this user' }, 404);
+    }
+
+    return c.json({ workspace });
   } catch (error) {
     console.error('Error fetching user workspaces:', error);
     return c.json({ error: 'Failed to fetch user workspaces' }, 500);

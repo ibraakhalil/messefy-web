@@ -7,8 +7,6 @@ import { env } from '../config/env';
 export async function userRegistration(c: Context) {
   const { email, password, name } = await c.req.json();
 
-  console.log(email, password, name);
-
   if (!email || !password || !name) {
     return c.json({ error: 'Email, password and name are required' }, 400);
   }
