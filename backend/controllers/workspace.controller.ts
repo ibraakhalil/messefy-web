@@ -88,6 +88,8 @@ export async function getWorkspaceById(c: Context) {
 export async function getWorkspaceByUser(c: Context) {
   const userId = c.get('userId');
 
+  console.log(userId);
+
   try {
     const workspace = await db.query.workspaces.findFirst({
       where: (w, { eq, and }) => and(eq(w.ownerId, userId), eq(w.isActive, true)),

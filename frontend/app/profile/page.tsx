@@ -5,14 +5,19 @@ import Button from '@/components/ui/button';
 import { Plus, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getWorkspaceByUser } from '@/lib/workspace-requests';
+import ProfileHeader from '@/components/common/app-header';
 
 export default async function ProfilePage() {
   const session = await auth();
   const user = session?.user;
+  const workspace = await getWorkspaceByUser();
+  const userData = { user, workspace };
 
   return (
-    <PageWrapper className="py-8">
-      <div className="flex items-center justify-between">
+    <PageWrapper>
+      <ProfileHeader userData={userData} />
+      <div className="flex items-center justify-between py-8">
         <div className="flex items-center gap-6">
           <div className="relative">
             <Image

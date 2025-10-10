@@ -1,7 +1,6 @@
 'use client';
 
-import { Menu, Moon } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import Logo from '../common/logo';
@@ -29,14 +28,14 @@ const navItems = [
     href: '#how',
   },
   {
-    id: 'profile',
-    label: 'Profile',
-    href: '/profile',
+    id: 'about',
+    label: 'About',
+    href: '/about',
   },
   {
-    id: 'mess',
-    label: 'My Mess',
-    href: 'http://bachelor-point.localhost:3000',
+    id: 'contact',
+    label: 'Contact',
+    href: '/contact',
   },
 ];
 
@@ -44,7 +43,7 @@ function NavItem({ children }: { children: string }) {
   return (
     <span
       key={children}
-      className="group relative text-sm font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
+      className="group relative text-base font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
     >
       {children}
       <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
@@ -55,12 +54,6 @@ function NavItem({ children }: { children: string }) {
 export const Header = ({ userData }: HeaderProps) => {
   const { user } = userData;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-  };
 
   return (
     <header
@@ -70,7 +63,6 @@ export const Header = ({ userData }: HeaderProps) => {
       <div className="container flex max-w-7xl items-center justify-between px-4 py-4">
         <Logo />
 
-        {/* Desktop nav */}
         <nav className="tablet:flex hidden items-center gap-8">
           {navItems.map((item) => (
             <Link href={item.href} key={item.id}>
@@ -79,12 +71,7 @@ export const Header = ({ userData }: HeaderProps) => {
           ))}
         </nav>
 
-        {/* Enhanced Actions */}
         <div className="flex items-center gap-3">
-          <Button onClick={toggleTheme}>
-            <Moon className="h-5 w-5" />
-          </Button>
-
           {!user && (
             <Link href="/auth/signin">
               <Button>Get Started</Button>

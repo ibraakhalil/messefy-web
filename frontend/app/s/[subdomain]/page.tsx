@@ -1,5 +1,7 @@
-import AppHeader from '@/components/common/app-header';
+import ProfileHeader from '@/components/common/app-header';
 import PageWrapper from '@/components/common/page-wrapper';
+import { auth } from '@/config/auth';
+import { getWorkspaceByUser } from '@/lib/workspace-requests';
 import { cn } from '@/utils/cn';
 import {
   ArrowUpDown,
@@ -21,6 +23,11 @@ interface SubdomainPageProps {
 export default async function SubdomainPage({ params }: SubdomainPageProps) {
   const { subdomain } = await params;
   const pageTitle = `Meal Management Dashboard for ${subdomain}`;
+  const session = await auth();
+  const user = session?.user;
+  console.log(session);
+  const workspace = await getWorkspaceByUser();
+  const userData = { user, workspace };
 
   const messData = {
     statusNote: 'Please submit all remaining expenses by the 25th of this month.',
@@ -171,7 +178,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
 
   return (
     <div>
-      <AppHeader />
+      <ProfileHeader userData={userData} />
       <PageWrapper className="py-8">
         <h1 id="page-title" className="sr-only">
           {pageTitle}

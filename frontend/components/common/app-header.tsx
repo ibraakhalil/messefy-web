@@ -1,16 +1,20 @@
 'use client';
 
-import { SessionProviderProps, signIn } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import Logo from './logo';
 import UserDropdown from './user-dropdown';
+import { Session } from 'next-auth';
+import { Workspace } from '@/types/workspace';
 
 export type AppHeaderProps = {
-  session?: SessionProviderProps['session'];
-  subdomain?: string;
+  userData: {
+    user: Session['user'];
+    workspace: Workspace | undefined;
+  };
 };
 
-export default function AppHeader({ session }: AppHeaderProps) {
-  const user = session?.user;
+export default function ProfileHeader({ userData }: AppHeaderProps) {
+  const user = userData?.user;
 
   const essentials = [
     { label: 'Messes', value: '3' },
@@ -23,7 +27,6 @@ export default function AppHeader({ session }: AppHeaderProps) {
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Logo />
 
-        {/* Essentials (Owner quick stats) */}
         <div className="hidden items-center gap-4 md:flex">
           {essentials.map((item) => (
             <div key={item.label} className="flex items-center gap-2">
@@ -46,7 +49,7 @@ export default function AppHeader({ session }: AppHeaderProps) {
 
         {user && (
           <div className="flex items-center gap-2">
-            <UserDropdown userData={user} />
+            <UserDropdown userData={userData} />
           </div>
         )}
       </div>
