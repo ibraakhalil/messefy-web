@@ -1,3 +1,4 @@
+// config/auth.ts
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
@@ -18,7 +19,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         try {
           const { data } = await axios.post(`${BASE_API_URL}/auth/signin`, credentials);
-          return data?.id ? data : null;
+          return data?.token ? data : null;
         } catch (error) {
           console.log(error);
           return null;
@@ -30,13 +31,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       try {
-        if (account?.provider === 'credentials') return true;
+        if (account?.provider === 'credentials') {
+          return true;
+        }
+
         const { data } = await axios.post(`${BASE_API_URL}/auth/sync-user`, user);
-        return data.ok === true;
+
+        if (data.ok && data.token) {
+          user.token = data.token;
+          return true;
+        }
+
+        return false;
       } catch (e) {
         console.error('Sync failed', e);
         return false;
       }
+    },
+
+    async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = user.token;
+        token.id = user.id;
+        token.email = user.email;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.accessToken = token.accessToken as string;
+      session.user.id = token.id as string;
+      return session;
     },
   },
 

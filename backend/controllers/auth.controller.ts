@@ -1,6 +1,8 @@
 import type { Context } from 'hono';
 import { db } from '../db';
 import { users } from '../db/schemas';
+import { sign } from 'hono/jwt';
+import { env } from '../config/env';
 
 export async function userRegistration(c: Context) {
   const { email, password, name } = await c.req.json();
@@ -53,44 +55,40 @@ export async function loginWithCredentials(c: Context) {
     where: (u, { eq }) => eq(u.email, email),
   });
 
-  if (!user) {
+  if (!user || user.password !== password) {
     return c.json({ error: 'Invalid email or password' }, 401);
   }
 
-  const isPasswordValid = user.password === password;
-
-  if (!isPasswordValid) {
-    return c.json({ error: 'Invalid email or password' }, 401);
-  }
+  const userData = { id: user.id, email: user.email, name: user.name, image: user.image };
+  const token = await sign({ id: user.id, email: user.email }, env.JWT_SECRET!);
 
   return c.json({
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    image: user.image,
+    ...userData,
     emailVerified: user.emailVerified,
+    token,
   });
 }
 
 export async function userSync(c: Context) {
-  const { email, name, image, emailVerified } = await c.req.json();
+  try {
+    const body = await c.req.json();
 
-  console.log('Syncing user:', { email, name, image, emailVerified });
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...body,
+        emailVerified: body.emailVerified ? new Date(body.emailVerified) : null,
+      })
+      .onConflictDoUpdate({
+        target: users.email,
+        set: { name: body.name, image: body.image, updatedAt: new Date() },
+      })
+      .returning();
 
-  const existing = await db.query.users.findFirst({
-    where: (u, { eq }) => eq(u.email, email),
-  });
+    const token = await sign({ id: user?.id, email: user?.email }, process.env.JWT_SECRET!);
 
-  if (existing) {
-    return c.json({ ok: true, existed: true });
+    return c.json({ ok: true, token, user });
+  } catch (error) {
+    return c.json({ ok: false, error: 'Failed to sync user' }, 500);
   }
-
-  await db.insert(users).values({
-    email,
-    name,
-    image,
-    emailVerified: emailVerified ? new Date(emailVerified) : null,
-  });
-
-  return c.json({ ok: true, existed: false });
 }

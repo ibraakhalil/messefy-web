@@ -7,6 +7,7 @@ import FormInput from '../ui/form-input';
 import { Info, Plus, X, Mail, Check } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import api from '@/utils/axios';
 
 // Define the schema for the consolidated form
 const onboardingSchema = z.object({
@@ -87,7 +88,7 @@ const OnboardingWizard = () => {
       subdomain: data.name.toLowerCase().replace(/\s+/g, '-'),
     };
 
-    axios
+    api
       .post(`${process.env.NEXT_PUBLIC_API_URL}/workspaces/create`, messData)
       .then((response) => {
         toast.success('Workspace created successfully');

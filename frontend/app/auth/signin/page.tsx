@@ -34,10 +34,11 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true);
-    setError(null);
-
     try {
+      setIsLoading(true);
+      setError(null);
+
+      // Use NextAuth for authentication
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
