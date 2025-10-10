@@ -104,6 +104,7 @@ const OnboardingWizard = () => {
         }
       })
       .catch((error) => {
+        toast.error(error.response?.data?.error || 'Failed to create workspace');
         console.error('Error creating workspace:', error);
       });
   };

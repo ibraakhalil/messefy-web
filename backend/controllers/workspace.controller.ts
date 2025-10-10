@@ -7,34 +7,59 @@ export async function createWorkspace(c: Context) {
   const ownerId = c.get('ownerId');
 
   if (!name || !subdomain || !ownerId) {
-    return c.json({ error: 'Name, subdomain and ownerId are required' }, 400);
+    return c.json(
+      {
+        error: 'Missing required fields: name, subdomain, and owner ID must be provided',
+      },
+      400,
+    );
   }
 
-  const existingWorkspace = await db.query.workspaces.findFirst({
+  const workspaceWithSubdomain = await db.query.workspaces.findFirst({
     where: (w, { eq }) => eq(w.subdomain, subdomain),
   });
+  if (workspaceWithSubdomain) {
+    return c.json(
+      {
+        error: 'This subdomain is already in use',
+      },
+      409,
+    );
+  }
 
-  if (existingWorkspace) {
-    return c.json({ error: 'Subdomain already taken' }, 409);
+  const activeOwnerWorkspace = await db.query.workspaces.findFirst({
+    where: (w, { eq, and }) => and(eq(w.ownerId, ownerId), eq(w.isActive, true)),
+  });
+  if (activeOwnerWorkspace) {
+    return c.json(
+      {
+        error: 'You already own an active workspace',
+      },
+      409,
+    );
   }
 
   try {
-    const [newWorkspace] = await db.insert(workspaces).values({ name, subdomain, description, ownerId }).returning();
-
-    if (!newWorkspace) {
-      return c.json({ error: 'Failed to create workspace' }, 500);
-    }
+    const [createdWorkspace] = await db
+      .insert(workspaces)
+      .values({ name, subdomain, description, ownerId })
+      .returning();
 
     return c.json(
       {
         message: 'Workspace created successfully',
-        workspace: newWorkspace,
+        workspace: createdWorkspace,
       },
       201,
     );
   } catch (error) {
     console.error('Error creating workspace:', error);
-    return c.json({ error: 'Failed to create workspace' }, 500);
+    return c.json(
+      {
+        error: 'Unable to create workspace. Please try again later',
+      },
+      500,
+    );
   }
 }
 
