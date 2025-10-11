@@ -7,6 +7,7 @@
 - **Key Functions**:
   - User signup/signin.
   - Create or join workspaces.
+  - One user can join/create just one workspace at a time.
   - Monthly meal and expense accounting.
   - Track daily meals, deposits, shared costs.
   - Auto-calculate per-member balances.
@@ -27,12 +28,13 @@
 - Framework: **Next.js (App Router)**
 - Server-Side Rendering (SSR) for dashboards.
 - Client mutations for edits/updates.
+- Auth: **Auth.js** (Google, Email/password)
+- Session management: **JWT** (HTTP-only cookies).
 
 ### 3.2 Backend
 - Runtime: **Bun**
 - Framework: **Hono (REST API)**
 - ORM: **Drizzle**
-- Auth: **Auth.js** (Google, Facebook, Email/password)
 
 ### 3.3 Database
 - **Postgres**
@@ -41,7 +43,7 @@
 
 ## 4. Multi-Tenancy
 - **Workspace (`messId`)** = tenant boundary.
-- All records are scoped by `messId`.
+- All records are scoped by `messId or mess unique slug`.
 - **Access Control** = `messId + role`.
 - **Period** defines a monthly accounting scope (status = open/closed).
 - Closed periods cannot be edited (except reopen by owner).

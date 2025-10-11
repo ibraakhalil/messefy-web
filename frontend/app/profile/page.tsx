@@ -1,12 +1,10 @@
 import { auth } from '@/config/auth';
 import PageWrapper from '@/components/common/page-wrapper';
 import { ProfileContents } from '@/components/profile/profile-contents';
-import Button from '@/components/ui/button';
-import { Plus, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 import { getWorkspaceByUser } from '@/lib/workspace-requests';
 import ProfileHeader from '@/components/common/app-header';
-import { Links } from '@/components/links';
+import JoinOrCreateMess from '@/components/profile/join-create-mess';
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -33,22 +31,9 @@ export default async function ProfilePage() {
             <p className="text-gray-600">{user?.email}</p>
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <Links.CreateMess>
-            <Button variant="secondary" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Mess
-            </Button>
-          </Links.CreateMess>
-          <span> Or</span>
-          <Button className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4" />
-            Join Mess
-          </Button>
-        </div>
+        <JoinOrCreateMess workspace={workspace} />
       </div>
-      <ProfileContents />
+      <ProfileContents userData={userData} />
     </PageWrapper>
   );
 }

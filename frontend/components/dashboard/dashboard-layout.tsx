@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { cn } from '@/utils/cn'
+import { cn } from '@/utils/cn';
 import {
   BellIcon,
   Calendar,
@@ -13,22 +13,21 @@ import {
   PieChart,
   PlusCircle,
   Settings,
-  Trash2,
   Users,
   Wallet,
-} from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { ComponentType, ReactNode, SVGProps, useState } from 'react'
+} from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { ComponentType, ReactNode, SVGProps, useState } from 'react';
+import { Links } from '../links';
 
 interface DashboardLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 interface NavItemProps {
-  children: ReactNode
-  icon: ComponentType<SVGProps<SVGSVGElement>>
-  isActive?: boolean
+  children: ReactNode;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  isActive?: boolean;
 }
 
 function NavItem({ children, icon: Icon, isActive = false }: NavItemProps) {
@@ -42,16 +41,16 @@ function NavItem({ children, icon: Icon, isActive = false }: NavItemProps) {
       <Icon className="size-5" />
       {children}
     </div>
-  )
+  );
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const path = usePathname()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const path = usePathname();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -61,12 +60,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         {/* Logo */}
         <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4 dark:border-gray-700">
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Links.Mess className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
               <PieChart className="h-5 w-5" />
             </div>
             <span className="text-lg font-semibold text-gray-900 dark:text-white">MessMate</span>
-          </Link>
+          </Links.Mess>
           <button
             onClick={toggleSidebar}
             className="tablet:hidden rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
@@ -77,63 +76,63 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Navigation */}
         <nav className="flex-1 space-y-1 px-2 py-4">
-          <Link href="/dashboard">
+          <Links.Dashboard>
             <NavItem icon={Home} isActive={path === '/dashboard'}>
               Dashboard
             </NavItem>
-          </Link>
-          <Link href="/dashboard/data-entry">
+          </Links.Dashboard>
+
+          <Links.DataEntry>
             <NavItem icon={PlusCircle} isActive={path.includes('/data-entry')}>
               Data Entry
             </NavItem>
-          </Link>
-          <Link href="/dashboard/current-month">
+          </Links.DataEntry>
+
+          <Links.CurrentMonth>
             <NavItem icon={Calendar} isActive={path.includes('/current-month')}>
               Current Month
             </NavItem>
-          </Link>
-          <Link href="/dashboard/member-balances">
+          </Links.CurrentMonth>
+
+          <Links.MemberBalances>
             <NavItem icon={Wallet} isActive={path.includes('/member-balances')}>
               Member Balances
             </NavItem>
-          </Link>
-          <Link href="/dashboard/members">
+          </Links.MemberBalances>
+
+          <Links.Members>
             <NavItem icon={Users} isActive={path.includes('/members')}>
               All Members
             </NavItem>
-          </Link>
+          </Links.Members>
 
-          {/* Management Dropdown */}
           <div className="space-y-1">
             <div className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
               <MoreHorizontal className="size-5" />
               <span>Management</span>
               <ChevronDown className="ml-auto size-4" />
             </div>
+
             <div className="ml-8 space-y-1">
-              <Link href="/dashboard/periods">
+              <Links.Periods>
                 <NavItem icon={CalendarDays} isActive={path.includes('/periods')}>
                   Period Management
                 </NavItem>
-              </Link>
-              <Link href="/dashboard/history">
+              </Links.Periods>
+
+              <Links.History>
                 <NavItem icon={Calendar} isActive={path.includes('/history')}>
                   All Months
                 </NavItem>
-              </Link>
-              <Link href="/dashboard/delete-mess">
-                <NavItem icon={Trash2} isActive={path.includes('/delete-mess')}>
-                  Delete Mess
-                </NavItem>
-              </Link>
+              </Links.History>
             </div>
           </div>
 
-          <Link href="/dashboard/settings">
+          <Links.Settings>
             <NavItem icon={Settings} isActive={path.includes('/settings')}>
               Settings
             </NavItem>
-          </Link>
+          </Links.Settings>
         </nav>
 
         {/* User section */}
@@ -178,5 +177,5 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
-  )
+  );
 }

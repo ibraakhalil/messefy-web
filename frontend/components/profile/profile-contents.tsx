@@ -1,14 +1,16 @@
-'use client'
+'use client';
 
-import MessSection from '@/components/profile/mess-section'
-import NotificationsSection from '@/components/profile/notifications-section'
-import OverviewSection from '@/components/profile/overview-section'
-import ProfileSection from '@/components/profile/profile-section'
-import SecuritySection from '@/components/profile/security-section'
-import { cn } from '@/utils/cn'
-import { ChefHat } from 'lucide-react'
-import { useState } from 'react'
-import { FiActivity, FiBell, FiShield, FiUser } from 'react-icons/fi'
+import MessSection from '@/components/profile/mess-section';
+import NotificationsSection from '@/components/profile/notifications-section';
+import OverviewSection from '@/components/profile/overview-section';
+import ProfileSection from '@/components/profile/profile-section';
+import SecuritySection from '@/components/profile/security-section';
+import { Workspace } from '@/types/workspace';
+import { cn } from '@/utils/cn';
+import { ChefHat } from 'lucide-react';
+import { User } from 'next-auth';
+import { useState } from 'react';
+import { FiActivity, FiBell, FiShield, FiUser } from 'react-icons/fi';
 
 const tabs = [
   {
@@ -41,15 +43,20 @@ const tabs = [
     icon: FiShield,
     description: 'Password and account security',
   },
-]
+];
 
-export function ProfileContents() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [isLoading] = useState(false)
+interface UserData {
+  user: User | undefined;
+  workspace: Workspace | undefined;
+}
+
+export function ProfileContents({ userData }: { userData: UserData }) {
+  const { workspace } = userData;
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isLoading] = useState(false);
 
   return (
     <div>
-      {' '}
       <nav className="border-border-color mt-6 mb-8 flex overflow-x-auto border-t bg-emerald-50">
         {tabs.map((tab) => (
           <button
@@ -60,6 +67,9 @@ export function ProfileContents() {
               {
                 'border-emerald-500 text-emerald-600': activeTab === tab.id,
               },
+              {
+                hidden: tab.id === 'mess' && !workspace,
+              },
             )}
           >
             <div className="flex items-center gap-3.5">
@@ -69,14 +79,13 @@ export function ProfileContents() {
           </button>
         ))}
       </nav>
-      {/* Content Sections */}
       <div className="space-y-12">
         {activeTab === 'overview' && <OverviewSection onNavigate={setActiveTab} />}
         {activeTab === 'profile' && <ProfileSection isLoading={isLoading} />}
-        {activeTab === 'mess' && <MessSection isLoading={isLoading} />}
+        {activeTab === 'mess' && workspace && <MessSection isLoading={isLoading} />}
         {activeTab === 'notifications' && <NotificationsSection isLoading={isLoading} />}
         {activeTab === 'security' && <SecuritySection isLoading={isLoading} />}
       </div>
     </div>
-  )
+  );
 }

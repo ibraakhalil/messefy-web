@@ -1,29 +1,17 @@
 import ProfileHeader from '@/components/common/app-header';
 import PageWrapper from '@/components/common/page-wrapper';
+import { Links } from '@/components/links';
+import Button from '@/components/ui/button';
 import { auth } from '@/config/auth';
 import { getWorkspaceByUser } from '@/lib/workspace-requests';
 import { cn } from '@/utils/cn';
-import {
-  ArrowUpDown,
-  Calendar,
-  Clock,
-  Globe,
-  Receipt,
-  Sparkles,
-  TrendingUp,
-  Users,
-  Utensils,
-  Wallet,
-} from 'lucide-react';
+import { Calendar, Clock, Receipt, TrendingUp, Users, Utensils, Wallet } from 'lucide-react';
 
 export default async function MessPage() {
   const session = await auth();
   const user = session?.user;
   const workspace = await getWorkspaceByUser();
   const userData = { user, workspace };
-
-  console.log('userID:', user.id);
-  console.log('ownerID:', workspace?.ownerId);
 
   const messData = {
     statusNote: 'Please submit all remaining expenses by the 25th of this month.',
@@ -179,12 +167,12 @@ export default async function MessPage() {
       <header className="my-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="tablet:flex-row tablet:items-center tablet:justify-between tablet:space-y-0 flex flex-col space-y-4">
           <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-              <Sparkles className="h-6 w-6" />
+            <div className="flex size-14 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-2xl text-white">
+              {workspace?.name?.charAt(0)}
             </div>
-            <div>
+            <div className="space-y-1">
               <div className="flex items-center space-x-3">
-                <h1 className="text-2xl text-gray-900">{messData.name} Mess</h1>
+                <h1 className="text-2xl font-medium text-gray-900">{messData.name}</h1>
                 <span
                   className={cn(
                     'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
@@ -195,34 +183,18 @@ export default async function MessPage() {
                 </span>
               </div>
               <p className="text-sm text-gray-500">
-                <span className="inline-flex items-center">
-                  <Calendar className="mr-1 h-4 w-4" />
+                <span className="inline-flex items-center gap-2">
+                  <Calendar className="size-4" />
                   Period: {messData.currentPeriod}
-                </span>
-                <span className="mx-2">•</span>
-                <span className="inline-flex items-center">
-                  <Globe className="mr-1 h-4 w-4" />
-                  {messData.currency} / {messData.timezone}
                 </span>
               </p>
             </div>
           </div>
 
           {workspace?.ownerId === user.id && (
-            <div className="flex flex-col items-end space-y-2">
-              <div className="flex items-center space-x-2">
-                <button className="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
-                  <ArrowUpDown className="mr-1 h-4 w-4" />
-                  Switch Period
-                </button>
-              </div>
-              <p className="text-xs text-gray-500">
-                <Clock className="mr-1 inline-block h-3 w-3" />
-                {messData.isOpen
-                  ? `Last updated: ${new Date(messData.lastUpdated).toLocaleString()}`
-                  : `Snapshot as of: ${new Date(messData.lastUpdated).toLocaleString()}`}
-              </p>
-            </div>
+            <Links.Dashboard>
+              <Button>Dashboard</Button>
+            </Links.Dashboard>
           )}
         </div>
       </header>
