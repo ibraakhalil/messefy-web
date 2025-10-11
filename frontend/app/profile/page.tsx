@@ -4,9 +4,9 @@ import { ProfileContents } from '@/components/profile/profile-contents';
 import Button from '@/components/ui/button';
 import { Plus, UserPlus } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { getWorkspaceByUser } from '@/lib/workspace-requests';
 import ProfileHeader from '@/components/common/app-header';
+import { Links } from '@/components/links';
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -35,12 +35,12 @@ export default async function ProfilePage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link href="/onboarding">
+          <Links.CreateMess>
             <Button variant="secondary" className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               Create Mess
             </Button>
-          </Link>
+          </Links.CreateMess>
           <span> Or</span>
           <Button className="flex items-center gap-2">
             <UserPlus className="h-4 w-4" />

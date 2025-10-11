@@ -18,6 +18,7 @@ export async function createWorkspace(c: Context) {
   const workspaceWithSlug = await db.query.workspaces.findFirst({
     where: (w, { eq }) => eq(w.slug, slug),
   });
+
   if (workspaceWithSlug) {
     return c.json(
       {
@@ -30,6 +31,7 @@ export async function createWorkspace(c: Context) {
   const activeOwnerWorkspace = await db.query.workspaces.findFirst({
     where: (w, { eq, and }) => and(eq(w.ownerId, ownerId), eq(w.isActive, true)),
   });
+
   if (activeOwnerWorkspace) {
     return c.json(
       {

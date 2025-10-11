@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 // Login form schema
 export const loginSchema = z.object({
@@ -11,7 +11,7 @@ export const loginSchema = z.object({
     .min(1, { message: 'Password is required' })
     .min(8, { message: 'Password must be at least 8 characters' }),
   rememberMe: z.boolean().optional(),
-})
+});
 
 // Signup form schema
 export const signupSchema = z
@@ -39,8 +39,7 @@ export const signupSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
-  })
+  });
 
-// Types
-export type LoginFormValues = z.infer<typeof loginSchema>
-export type SignupFormValues = z.infer<typeof signupSchema>
+export type LoginFormValues = z.infer<typeof loginSchema>;
+export type SignupFormValues = z.infer<typeof signupSchema>;

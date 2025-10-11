@@ -1,4 +1,3 @@
-// lib/api.ts
 import axios from 'axios';
 import { env } from '@/config/env';
 import { getSession } from 'next-auth/react';
@@ -9,6 +8,7 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+//Server & Client Aware Axios Interceptors
 api.interceptors.request.use(
   async (config) => {
     const session = typeof window === 'undefined' ? await auth() : await getSession();

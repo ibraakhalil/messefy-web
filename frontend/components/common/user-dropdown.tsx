@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { Workspace } from '@/types/workspace';
-import { env } from '@/config/env';
 
 interface UserDropdownProps {
   userData: {
@@ -46,7 +45,6 @@ export default function UserDropdown({ userData }: UserDropdownProps) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content className="w-64" align="end">
-          {/* User Info Section */}
           <div className="mb-2 flex items-center gap-3 rounded-lg bg-gray-50 p-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-sm ring-2 ring-white">
               {user?.image ? (
@@ -78,15 +76,23 @@ export default function UserDropdown({ userData }: UserDropdownProps) {
           </Link>
 
           <Link
-            href={`http://${workspace?.slug}.${env.NEXT_PUBLIC_ROOT_DOMAIN}`}
+            href="/mess"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
           >
             <Settings className="size-4 text-gray-500" />
             <span className="font-medium">My Mess</span>
           </Link>
 
-          <div className="my-2 h-px bg-gray-200" />
-          {/* Sign Out Button */}
+          {workspace && (
+            <Link
+              href={`/mess/dashboard`}
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            >
+              <Settings className="size-4 text-gray-500" />
+              <span className="font-medium">Dashboard</span>
+            </Link>
+          )}
+
           <button
             onClick={() => signOut()}
             className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"

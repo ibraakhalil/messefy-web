@@ -16,11 +16,14 @@ import {
   Wallet,
 } from 'lucide-react';
 
-export default async function SubdomainPage() {
+export default async function MessPage() {
   const session = await auth();
   const user = session?.user;
   const workspace = await getWorkspaceByUser();
   const userData = { user, workspace };
+
+  console.log('userID:', user.id);
+  console.log('ownerID:', workspace?.ownerId);
 
   const messData = {
     statusNote: 'Please submit all remaining expenses by the 25th of this month.',
@@ -170,45 +173,42 @@ export default async function SubdomainPage() {
   };
 
   return (
-    <div>
+    <PageWrapper>
       <ProfileHeader userData={userData} />
-      <PageWrapper className="py-8">
-        <h1 id="page-title" className="sr-only">
-          {messData.name} Mess
-        </h1>
 
-        <header className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="tablet:flex-row tablet:items-center tablet:justify-between tablet:space-y-0 flex flex-col space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <div>
-                <div className="flex items-center space-x-3">
-                  <h1 className="text-2xl text-gray-900">{messData.name} Mess</h1>
-                  <span
-                    className={cn(
-                      'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                      messData.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800',
-                    )}
-                  >
-                    {messData.isOpen ? 'Open' : 'Closed'}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500">
-                  <span className="inline-flex items-center">
-                    <Calendar className="mr-1 h-4 w-4" />
-                    Period: {messData.currentPeriod}
-                  </span>
-                  <span className="mx-2">•</span>
-                  <span className="inline-flex items-center">
-                    <Globe className="mr-1 h-4 w-4" />
-                    {messData.currency} / {messData.timezone}
-                  </span>
-                </p>
-              </div>
+      <header className="my-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="tablet:flex-row tablet:items-center tablet:justify-between tablet:space-y-0 flex flex-col space-y-4">
+          <div className="flex items-center space-x-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+              <Sparkles className="h-6 w-6" />
             </div>
+            <div>
+              <div className="flex items-center space-x-3">
+                <h1 className="text-2xl text-gray-900">{messData.name} Mess</h1>
+                <span
+                  className={cn(
+                    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+                    messData.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800',
+                  )}
+                >
+                  {messData.isOpen ? 'Open' : 'Closed'}
+                </span>
+              </div>
+              <p className="text-sm text-gray-500">
+                <span className="inline-flex items-center">
+                  <Calendar className="mr-1 h-4 w-4" />
+                  Period: {messData.currentPeriod}
+                </span>
+                <span className="mx-2">•</span>
+                <span className="inline-flex items-center">
+                  <Globe className="mr-1 h-4 w-4" />
+                  {messData.currency} / {messData.timezone}
+                </span>
+              </p>
+            </div>
+          </div>
 
+          {workspace?.ownerId === user.id && (
             <div className="flex flex-col items-end space-y-2">
               <div className="flex items-center space-x-2">
                 <button className="inline-flex items-center rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
@@ -223,248 +223,248 @@ export default async function SubdomainPage() {
                   : `Snapshot as of: ${new Date(messData.lastUpdated).toLocaleString()}`}
               </p>
             </div>
-          </div>
-        </header>
+          )}
+        </div>
+      </header>
 
-        <section className="tablet:grid-cols-2 laptop:grid-cols-3 desktop:grid-cols-6 mb-8 grid grid-cols-1 gap-4">
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-500">Meal Rate</h3>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
-                <Calendar className="h-4 w-4" />
-              </span>
+      <section className="tablet:grid-cols-2 laptop:grid-cols-3 desktop:grid-cols-6 mb-8 grid grid-cols-1 gap-4">
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-500">Meal Rate</h3>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+              <Calendar className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="flex items-baseline">
+            <span className="text-2xl font-bold text-gray-900">
+              ${messData.mealRate.toFixed(2)}
+            </span>
+            <span className="ml-1 text-sm text-gray-500">/ meal</span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-500">Total Meals</h3>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+              <Utensils className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="flex items-baseline">
+            <span className="text-2xl font-bold text-gray-900">{messData.totalMeals.total}</span>
+            <span className="ml-2 text-xs text-gray-500">
+              B: {messData.totalMeals.breakfast} | L: {messData.totalMeals.lunch} | D:{' '}
+              {messData.totalMeals.dinner} | G: {messData.totalMeals.guest}
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-500">Total Expenses</h3>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 text-red-600">
+              <Receipt className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="flex items-baseline">
+            <span className="text-2xl font-bold text-gray-900">
+              ${messData.totalExpenses.toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-500">Total Deposits</h3>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+              <Wallet className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="flex items-baseline">
+            <span className="text-2xl font-bold text-gray-900">
+              ${messData.totalDeposits.toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-500">Net Position</h3>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-600">
+              <TrendingUp className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="flex items-baseline">
+            <span
+              className={cn(
+                'text-2xl font-bold',
+                messData.netPosition >= 0 ? 'text-green-600' : 'text-red-600',
+              )}
+            >
+              ${messData.netPosition.toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-medium text-gray-500">Active Members</h3>
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+              <Users className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="flex items-baseline">
+            <span className="text-2xl font-bold text-gray-900">{messData.activeMembers}</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="laptop:grid-cols-2 desktop:grid-cols-3 mb-8 grid grid-cols-1 gap-6">
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Meals Overview</h2>
+
+          <div className="mb-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Breakfasts</span>
+              <span className="font-medium text-gray-900">{messData.totalMeals.breakfast}</span>
             </div>
-            <div className="flex items-baseline">
-              <span className="text-2xl font-bold text-gray-900">
-                ${messData.mealRate.toFixed(2)}
-              </span>
-              <span className="ml-1 text-sm text-gray-500">/ meal</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Lunches</span>
+              <span className="font-medium text-gray-900">{messData.totalMeals.lunch}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Dinners</span>
+              <span className="font-medium text-gray-900">{messData.totalMeals.dinner}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Guest Meals</span>
+              <span className="font-medium text-gray-900">{messData.totalMeals.guest}</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-500">Total Meals</h3>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
-                <Utensils className="h-4 w-4" />
+          <div className="mt-5 space-y-2 border-t border-gray-200 pt-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Average meals/day</span>
+              <span className="font-medium text-gray-900">
+                {messData.mealsOverview.averageMealsPerDay}
               </span>
             </div>
-            <div className="flex items-baseline">
-              <span className="text-2xl font-bold text-gray-900">{messData.totalMeals.total}</span>
-              <span className="ml-2 text-xs text-gray-500">
-                B: {messData.totalMeals.breakfast} | L: {messData.totalMeals.lunch} | D:{' '}
-                {messData.totalMeals.dinner} | G: {messData.totalMeals.guest}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Coverage</span>
+              <span className="font-medium text-gray-900">
+                {messData.mealsOverview.daysWithEntries}/{messData.mealsOverview.totalDays} days
               </span>
             </div>
           </div>
+        </section>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-500">Total Expenses</h3>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 text-red-600">
-                <Receipt className="h-4 w-4" />
-              </span>
-            </div>
-            <div className="flex items-baseline">
-              <span className="text-2xl font-bold text-gray-900">
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Expenses Overview</h2>
+
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Total Bazar Amount</span>
+              <span className="font-medium text-gray-900">
                 ${messData.totalExpenses.toFixed(2)}
               </span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-500">Total Deposits</h3>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-                <Wallet className="h-4 w-4" />
-              </span>
+          <div className="mt-5 space-y-4 border-t border-gray-200 pt-4">
+            <h3 className="text-sm font-medium text-gray-700">Last 5 Expenses</h3>
+            <div className="space-y-3">
+              {messData.expenses.map((expense, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div>
+                    <span className="block text-xs text-gray-500">{expense.date}</span>
+                    <span className="text-sm text-gray-700">{expense.note}</span>
+                  </div>
+                  <span className="font-medium text-gray-900">${expense.amount.toFixed(2)}</span>
+                </div>
+              ))}
             </div>
-            <div className="flex items-baseline">
-              <span className="text-2xl font-bold text-gray-900">
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Deposits Overview</h2>
+
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Total Deposits Amount</span>
+              <span className="font-medium text-gray-900">
                 ${messData.totalDeposits.toFixed(2)}
               </span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-500">Net Position</h3>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-600">
-                <TrendingUp className="h-4 w-4" />
-              </span>
-            </div>
-            <div className="flex items-baseline">
-              <span
-                className={cn(
-                  'text-2xl font-bold',
-                  messData.netPosition >= 0 ? 'text-green-600' : 'text-red-600',
-                )}
-              >
-                ${messData.netPosition.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-500">Active Members</h3>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
-                <Users className="h-4 w-4" />
-              </span>
-            </div>
-            <div className="flex items-baseline">
-              <span className="text-2xl font-bold text-gray-900">{messData.activeMembers}</span>
-            </div>
-          </div>
-        </section>
-
-        <div className="laptop:grid-cols-2 desktop:grid-cols-3 mb-8 grid grid-cols-1 gap-6">
-          <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Meals Overview</h2>
-
-            <div className="mb-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Breakfasts</span>
-                <span className="font-medium text-gray-900">{messData.totalMeals.breakfast}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Lunches</span>
-                <span className="font-medium text-gray-900">{messData.totalMeals.lunch}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Dinners</span>
-                <span className="font-medium text-gray-900">{messData.totalMeals.dinner}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Guest Meals</span>
-                <span className="font-medium text-gray-900">{messData.totalMeals.guest}</span>
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-2 border-t border-gray-200 pt-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Average meals/day</span>
-                <span className="font-medium text-gray-900">
-                  {messData.mealsOverview.averageMealsPerDay}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Coverage</span>
-                <span className="font-medium text-gray-900">
-                  {messData.mealsOverview.daysWithEntries}/{messData.mealsOverview.totalDays} days
-                </span>
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Expenses Overview</h2>
-
-            <div className="mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Total Bazar Amount</span>
-                <span className="font-medium text-gray-900">
-                  ${messData.totalExpenses.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-4 border-t border-gray-200 pt-4">
-              <h3 className="text-sm font-medium text-gray-700">Last 5 Expenses</h3>
-              <div className="space-y-3">
-                {messData.expenses.map((expense, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div>
-                      <span className="block text-xs text-gray-500">{expense.date}</span>
-                      <span className="text-sm text-gray-700">{expense.note}</span>
-                    </div>
-                    <span className="font-medium text-gray-900">${expense.amount.toFixed(2)}</span>
+          <div className="mt-5 space-y-4 border-t border-gray-200 pt-4">
+            <h3 className="text-sm font-medium text-gray-700">Last 5 Deposits</h3>
+            <div className="space-y-3">
+              {messData.deposits.map((deposit, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div>
+                    <span className="block text-sm text-gray-700">{deposit.member}</span>
+                    <span className="text-xs text-gray-500">{deposit.date}</span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Deposits Overview</h2>
-
-            <div className="mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Total Deposits Amount</span>
-                <span className="font-medium text-gray-900">
-                  ${messData.totalDeposits.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-5 space-y-4 border-t border-gray-200 pt-4">
-              <h3 className="text-sm font-medium text-gray-700">Last 5 Deposits</h3>
-              <div className="space-y-3">
-                {messData.deposits.map((deposit, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div>
-                      <span className="block text-sm text-gray-700">{deposit.member}</span>
-                      <span className="text-xs text-gray-500">{deposit.date}</span>
-                    </div>
-                    <span className="font-medium text-gray-900">${deposit.amount.toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <section className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Activity Snapshot</h2>
-
-          <div className="space-y-4">
-            {messData.recentActivity.map((activity, index) => {
-              let icon;
-              let iconColorClass;
-
-              switch (activity.type) {
-                case 'meal':
-                  icon = <Utensils className="h-4 w-4" />;
-                  iconColorClass = 'bg-emerald-100 text-emerald-600';
-                  break;
-                case 'expense':
-                  icon = <Receipt className="h-4 w-4" />;
-                  iconColorClass = 'bg-red-100 text-red-600';
-                  break;
-                case 'deposit':
-                  icon = <Wallet className="h-4 w-4" />;
-                  iconColorClass = 'bg-purple-100 text-purple-600';
-                  break;
-                default:
-                  icon = <Clock className="h-4 w-4" />;
-                  iconColorClass = 'bg-gray-100 text-gray-600';
-              }
-
-              return (
-                <div key={index} className="flex items-start space-x-3">
-                  <div
-                    className={cn(
-                      'flex h-8 w-8 items-center justify-center rounded-full',
-                      iconColorClass,
-                    )}
-                  >
-                    {icon}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-900">{activity.actor}</span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(activity.timestamp).toLocaleString()}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600">{activity.action}</p>
-                  </div>
+                  <span className="font-medium text-gray-900">${deposit.amount.toFixed(2)}</span>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </section>
-      </PageWrapper>
-    </div>
+      </div>
+
+      <section className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Activity Snapshot</h2>
+
+        <div className="space-y-4">
+          {messData.recentActivity.map((activity, index) => {
+            let icon;
+            let iconColorClass;
+
+            switch (activity.type) {
+              case 'meal':
+                icon = <Utensils className="h-4 w-4" />;
+                iconColorClass = 'bg-emerald-100 text-emerald-600';
+                break;
+              case 'expense':
+                icon = <Receipt className="h-4 w-4" />;
+                iconColorClass = 'bg-red-100 text-red-600';
+                break;
+              case 'deposit':
+                icon = <Wallet className="h-4 w-4" />;
+                iconColorClass = 'bg-purple-100 text-purple-600';
+                break;
+              default:
+                icon = <Clock className="h-4 w-4" />;
+                iconColorClass = 'bg-gray-100 text-gray-600';
+            }
+
+            return (
+              <div key={index} className="flex items-start space-x-3">
+                <div
+                  className={cn(
+                    'flex h-8 w-8 items-center justify-center rounded-full',
+                    iconColorClass,
+                  )}
+                >
+                  {icon}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-900">{activity.actor}</span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(activity.timestamp).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">{activity.action}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    </PageWrapper>
   );
 }
