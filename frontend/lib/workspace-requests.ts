@@ -1,11 +1,15 @@
-import { Workspace } from '@/types/workspace';
+import { Workspace, Member } from '@/types/workspace';
 import api from '@/utils/axios';
 
-export async function getWorkspaceByUser() {
+interface GetValidWorkspaceMemberResponse extends Member {
+  workspace: Workspace;
+}
+
+export async function getValidWorkspaceMember() {
   try {
-    const { data } = await api.get<{ workspace: Workspace }>('/workspaces/user');
-    return data.workspace;
+    const { data } = await api.get<GetValidWorkspaceMemberResponse>('/workspaces/member');
+    return data as GetValidWorkspaceMemberResponse;
   } catch (error) {
-    console.error('Error fetching workspaces by user:', error);
+    console.error('Error fetching workspace member:', error);
   }
 }

@@ -1,10 +1,10 @@
 import Logo from '@/components/common/logo';
 import OnboardingWizard from '@/components/onboarding/onboarding-wizard';
-import { getWorkspaceByUser } from '@/lib/workspace-requests';
+import { getValidWorkspaceMember } from '@/lib/workspace-requests';
 import { redirect } from 'next/navigation';
 
 export default async function MessCreatePage() {
-  const workspace = await getWorkspaceByUser();
+  const workspace = await getValidWorkspaceMember();
   if (workspace) redirect('/mess');
 
   return (

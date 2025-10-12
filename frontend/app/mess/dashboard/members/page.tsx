@@ -1,32 +1,31 @@
-'use client'
+'use client';
 
-import { useEffect, useState, useCallback } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertCircle, ChevronDown, Loader2 } from 'lucide-react'
-import { z } from 'zod'
-import { fetchMembers, addMember, updateMember, deleteMember, Member } from '@/utils/api'
-import Button from '@/components/ui/button'
-import FormInput from '@/components/ui/form-input'
-import { ResponsiveDialog } from '@/components/ui/responsive-dialog'
+import { useEffect, useState, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertCircle, ChevronDown, Loader2 } from 'lucide-react';
+import { z } from 'zod';
+import Button from '@/components/ui/button';
+import FormInput from '@/components/ui/form-input';
+import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
 
 const memberSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   role: z.enum(['Admin', 'Member', 'Viewer']),
-})
+});
 
-type MemberFormValues = z.infer<typeof memberSchema>
+type MemberFormValues = z.infer<typeof memberSchema>;
 
 export default function MembersPage() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [members, setMembers] = useState<Member[]>([])
-  const [error, setError] = useState<string | null>(null)
-  const [editingMember, setEditingMember] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [roleFilter, setRoleFilter] = useState<'All' | 'Admin' | 'Member' | 'Viewer'>('All')
-  const [showAddForm, setShowAddForm] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [editingMember, setEditingMember] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'All' | 'Admin' | 'Member' | 'Viewer'>('All');
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const {
     register,
@@ -41,103 +40,103 @@ export default function MembersPage() {
       email: '',
       role: 'Member',
     },
-  })
+  });
 
   const loadMembers = useCallback(async () => {
     try {
-      setIsLoading(true)
-      const data = await fetchMembers()
-      setMembers(data)
-      setError(null)
+      setIsLoading(true);
+      const data = await fetchMembers();
+      setMembers(data);
+      setError(null);
     } catch (err) {
-      setError('Failed to fetch members')
-      console.error(err)
+      setError('Failed to fetch members');
+      console.error(err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    loadMembers()
-  }, [loadMembers])
+    loadMembers();
+  }, [loadMembers]);
 
   const onSubmit = async (data: MemberFormValues) => {
-    setIsSubmitting(true)
-    setError(null)
+    setIsSubmitting(true);
+    setError(null);
     try {
       if (editingMember) {
-        const memberToUpdate = members.find((m) => m.id === editingMember)
+        const memberToUpdate = members.find((m) => m.id === editingMember);
         if (memberToUpdate) {
-          const updatedMember = await updateMember({ ...memberToUpdate, ...data })
+          const updatedMember = await updateMember({ ...memberToUpdate, ...data });
           setMembers((prev) =>
             prev.map((member) => (member.id === editingMember ? updatedMember : member)),
-          )
-          setEditingMember(null)
+          );
+          setEditingMember(null);
         }
       } else {
-        const newMember = await addMember(data)
-        setMembers((prev) => [...prev, newMember])
+        const newMember = await addMember(data);
+        setMembers((prev) => [...prev, newMember]);
       }
-      reset()
-      setShowAddForm(false)
+      reset();
+      setShowAddForm(false);
     } catch (err) {
-      setError(editingMember ? 'Failed to update member' : 'Failed to add member')
-      console.error(err)
+      setError(editingMember ? 'Failed to update member' : 'Failed to add member');
+      console.error(err);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleEdit = (member: Member) => {
-    setEditingMember(member.id)
-    setValue('name', member.name)
-    setValue('email', member.email)
-    setValue('role', member.role)
-    setShowAddForm(true)
-  }
+    setEditingMember(member.id);
+    setValue('name', member.name);
+    setValue('email', member.email);
+    setValue('role', member.role);
+    setShowAddForm(true);
+  };
 
   const handleDelete = async (memberId: string) => {
-    if (!confirm('Are you sure you want to delete this member?')) return
+    if (!confirm('Are you sure you want to delete this member?')) return;
 
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
     try {
-      await deleteMember(memberId)
-      setMembers((prev) => prev.filter((member) => member.id !== memberId))
+      await deleteMember(memberId);
+      setMembers((prev) => prev.filter((member) => member.id !== memberId));
     } catch (err) {
-      setError('Failed to delete member')
-      console.error(err)
+      setError('Failed to delete member');
+      console.error(err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    reset()
-    setEditingMember(null)
-    setShowAddForm(false)
-  }
+    reset();
+    setEditingMember(null);
+    setShowAddForm(false);
+  };
 
   const filteredMembers = members.filter((member) => {
     const matchesSearch =
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesRole = roleFilter === 'All' || member.role === roleFilter
-    return matchesSearch && matchesRole
-  })
+      member.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === 'All' || member.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'Admin':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
       case 'Member':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       case 'Viewer':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
     }
-  }
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -150,9 +149,9 @@ export default function MembersPage() {
           <ResponsiveDialog
             open={showAddForm}
             onOpenChange={(open) => {
-              setShowAddForm(open)
+              setShowAddForm(open);
               if (!open) {
-                handleCancel()
+                handleCancel();
               }
             }}
           >
@@ -397,5 +396,5 @@ export default function MembersPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

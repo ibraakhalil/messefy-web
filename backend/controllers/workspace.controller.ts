@@ -1,81 +1,68 @@
 import type { Context } from 'hono';
 import { db } from '../db';
-import { invitations, workspaces } from '../db/schemas';
-import { eq } from 'drizzle-orm';
+import { invitations, members, workspaces } from '../db/schemas';
+import { eq, name } from 'drizzle-orm';
 
 export async function createWorkspace(c: Context) {
   const { name, slug, description } = await c.req.json();
-  const ownerId = c.get('ownerId');
+  const userId = c.get('ownerId');
 
-  if (!name || !slug || !ownerId) {
-    return c.json(
-      {
-        error: 'Missing required fields: name, slug, and owner ID must be provided',
-      },
-      400,
-    );
+  if (!name || !slug || !userId) {
+    return c.json({ error: 'Missing required fields: name, slug, and owner ID must be provided' }, 400);
   }
 
-  const workspaceWithSlug = await db.query.workspaces.findFirst({
+  const slugExists = await db.query.workspaces.findFirst({
     where: (w, { eq }) => eq(w.slug, slug),
   });
 
-  if (workspaceWithSlug) {
-    return c.json(
-      {
-        error: 'This slug is already in use',
-      },
-      409,
-    );
+  if (slugExists) {
+    return c.json({ error: 'This slug is already in use' }, 409);
   }
 
-  const activeOwnerWorkspace = await db.query.workspaces.findFirst({
-    where: (w, { eq, and }) => and(eq(w.ownerId, ownerId), eq(w.isActive, true)),
+  const activeWorkspace = await db.query.workspaces.findFirst({
+    where: (w, { eq, and }) => and(eq(w.ownerId, userId), eq(w.isActive, true)),
   });
 
-  if (activeOwnerWorkspace) {
-    return c.json(
-      {
-        error: 'You already own an active workspace',
-      },
-      409,
-    );
+  if (activeWorkspace) {
+    return c.json({ error: 'You already own an active workspace' }, 409);
   }
 
   try {
-    const [createdWorkspace] = await db.insert(workspaces).values({ name, slug, description, ownerId }).returning();
+    const [workspace] = await db.insert(workspaces).values({ name, slug, description, ownerId: userId }).returning();
 
-    return c.json(
-      {
-        message: 'Workspace created successfully',
-        workspace: createdWorkspace,
-      },
-      201,
-    );
+    if (!workspace) {
+      return c.json({ error: 'Unable to create workspace. Please try again later' }, 500);
+    }
+
+    await db.insert(members).values({
+      workspaceId: workspace.id,
+      userId,
+      role: 'owner',
+    });
+
+    return c.json({ message: 'Workspace created successfully', workspace }, 201);
   } catch (error) {
     console.error('Error creating workspace:', error);
-    return c.json(
-      {
-        error: 'Unable to create workspace. Please try again later',
-      },
-      500,
-    );
+    return c.json({ error: 'Unable to create workspace. Please try again later' }, 500);
   }
 }
 
-export async function getWorkspaceByUser(c: Context) {
+export async function getValidWorkspaceMember(c: Context) {
   const userId = c.get('userId');
 
   try {
-    const workspace = await db.query.workspaces.findFirst({
-      where: (w, { eq, and }) => and(eq(w.ownerId, userId), eq(w.isActive, true)),
+    const member = await db.query.members.findFirst({
+      where: (w, { eq, and }) => and(eq(w.userId, userId), eq(w.isActive, true)),
+      with: {
+        workspace: true,
+      },
     });
 
-    if (!workspace) {
+    if (!member) {
       return c.json({ error: 'No active workspaces found for this user' }, 404);
     }
 
-    return c.json({ workspace });
+    return c.json(member);
   } catch (error) {
     console.error('Error fetching user workspaces:', error);
     return c.json({ error: 'Failed to fetch user workspaces' }, 500);
@@ -186,5 +173,108 @@ export async function cancelInvitationByUser(c: Context) {
   } catch (error) {
     console.error('Error cancelling invitation:', error);
     return c.json({ error: 'Failed to cancel invitation' }, 500);
+  }
+}
+
+export async function cancelInvitationByOwner(c: Context) {
+  const ownerId = c.get('ownerId');
+  const { invitationId } = c.req.param();
+
+  if (!ownerId || !invitationId) {
+    return c.json({ error: 'Owner ID and invitation ID are required' }, 400);
+  }
+
+  try {
+    const invitation = await db.query.invitations.findFirst({
+      where: (i, { eq, and }) => and(eq(i.id, invitationId)),
+    });
+
+    if (!invitation) {
+      return c.json({ error: 'Invitation not found or not authorized' }, 404);
+    }
+
+    await db.delete(invitations).where(eq(invitations.id, invitationId));
+
+    return c.json({ message: 'Invitation withdrawn successfully' }, 200);
+  } catch (error) {
+    console.error('Error withdrawing invitation:', error);
+    return c.json({ error: 'Failed to withdraw invitation' }, 500);
+  }
+}
+
+export async function getWorkspaceInvitations(c: Context) {
+  const workspaceId = c.req.param('workspaceId');
+
+  if (!workspaceId) {
+    return c.json({ error: 'Workspace ID is required' }, 400);
+  }
+
+  try {
+    const invitations = await db.query.invitations.findMany({
+      where: (i, { eq }) => eq(i.workspaceId, workspaceId),
+      with: {
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        workspace: {
+          columns: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+    if (!invitations) {
+      return c.json({ error: 'Invitation not found or not authorized' }, 404);
+    }
+
+    return c.json(invitations);
+  } catch (error) {
+    console.error('Error fetching invitations:', error);
+    return c.json({ error: 'Failed to fetch invitations' }, 500);
+  }
+}
+
+export async function acceptInvitationByOwner(c: Context) {
+  const ownerId = c.get('ownerId');
+  const { invitationId } = c.req.param();
+
+  if (!ownerId || !invitationId) {
+    return c.json({ error: 'Owner ID and invitation ID are required' }, 400);
+  }
+
+  try {
+    const invitation = await db.query.invitations.findFirst({
+      where: (i, { eq, and }) => and(eq(i.id, invitationId)),
+      with: {
+        user: {
+          columns: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!invitation) {
+      return c.json({ error: 'Invitation not found or not authorized' }, 404);
+    }
+
+    await db.insert(members).values({
+      workspaceId: invitation.workspaceId,
+      userId: invitation.userId,
+      role: 'member',
+    });
+
+    await db.delete(invitations).where(eq(invitations.id, invitationId));
+
+    return c.json({ message: 'Invitation accepted successfully' }, 200);
+  } catch (error) {
+    console.error('Error accepting invitation:', error);
+    return c.json({ error: 'Failed to accept invitation' }, 500);
   }
 }

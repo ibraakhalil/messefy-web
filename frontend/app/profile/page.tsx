@@ -2,15 +2,15 @@ import { auth } from '@/config/auth';
 import PageWrapper from '@/components/common/page-wrapper';
 import { ProfileContents } from '@/components/profile/profile-contents';
 import Image from 'next/image';
-import { getWorkspaceByUser } from '@/lib/workspace-requests';
+import { getValidWorkspaceMember } from '@/lib/workspace-requests';
 import ProfileHeader from '@/components/common/app-header';
 import JoinOrCreateMess from '@/components/profile/join-create-mess';
 
 export default async function ProfilePage() {
   const session = await auth();
   const user = session?.user;
-  const workspace = await getWorkspaceByUser();
-  const userData = { user, workspace };
+  const member = await getValidWorkspaceMember();
+  const userData = { user, workspace: member?.workspace };
 
   return (
     <PageWrapper>
@@ -31,7 +31,7 @@ export default async function ProfilePage() {
             <p className="text-gray-600">{user?.email}</p>
           </div>
         </div>
-        <JoinOrCreateMess workspace={workspace} />
+        <JoinOrCreateMess workspace={userData.workspace} />
       </div>
       <ProfileContents userData={userData} />
     </PageWrapper>

@@ -1,7 +1,7 @@
 import ProfileHeader from '@/components/common/app-header';
 import PageWrapper from '@/components/common/page-wrapper';
 import { auth } from '@/config/auth';
-import { getWorkspaceByUser } from '@/lib/workspace-requests';
+import { getValidWorkspaceMember } from '@/lib/workspace-requests';
 import { cn } from '@/utils/cn';
 import {
   ArrowUpDown,
@@ -26,7 +26,7 @@ export default async function SubdomainPage({ params }: SubdomainPageProps) {
   const session = await auth();
   const user = session?.user;
   console.log(session);
-  const workspace = await getWorkspaceByUser();
+  const workspace = await getValidWorkspaceMember();
   const userData = { user, workspace };
 
   const messData = {

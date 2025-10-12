@@ -7,13 +7,13 @@ import FAQ from '@/components/home/FAQ';
 import CTA from '@/components/home/CTA';
 import Footer from '@/components/home/Footer';
 import { auth } from '@/config/auth';
-import { getWorkspaceByUser } from '@/lib/workspace-requests';
+import { getValidWorkspaceMember } from '@/lib/workspace-requests';
 
 export default async function Home() {
   const session = await auth();
   const user = session?.user || undefined;
-  const workspace = session?.accessToken ? await getWorkspaceByUser() : undefined;
-  const userData = { user, workspace };
+  const member = session?.accessToken ? await getValidWorkspaceMember() : undefined;
+  const userData = { user, workspace: member?.workspace };
 
   return (
     <main>

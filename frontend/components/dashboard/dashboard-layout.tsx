@@ -81,6 +81,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               Dashboard
             </NavItem>
           </Links.Dashboard>
+          <Links.Invitations>
+            <NavItem icon={Home} isActive={path === '/dashboard'}>
+              Invitations
+            </NavItem>
+          </Links.Invitations>
 
           <Links.DataEntry>
             <NavItem icon={PlusCircle} isActive={path.includes('/data-entry')}>

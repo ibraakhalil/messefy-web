@@ -1,10 +1,15 @@
 import DashboardLayout from '@/components/dashboard/dashboard-layout';
-import { getWorkspaceByUser } from '@/lib/workspace-requests';
+import { getValidWorkspaceMember } from '@/lib/workspace-requests';
+import { WorkspaceProvider } from '@/providers/workspace-provider';
 import { redirect } from 'next/navigation';
 
 export default async function layout({ children }: { children: React.ReactNode }) {
-  const workspace = await getWorkspaceByUser();
-  if (!workspace) redirect('/profile');
+  const member = await getValidWorkspaceMember();
+  if (!member) redirect('/profile');
 
-  return <DashboardLayout> {children} </DashboardLayout>;
+  return (
+    <WorkspaceProvider workspace={member.workspace}>
+      <DashboardLayout> {children} </DashboardLayout>
+    </WorkspaceProvider>
+  );
 }

@@ -11,6 +11,7 @@ import {
   MessLink,
   MessCreate,
   MessDashboard,
+  InvitationsLink,
 } from './mess.links';
 
 export const Links = {
@@ -25,6 +26,7 @@ export const Links = {
   Mess: MessLink,
   CreateMess: MessCreate,
   Dashboard: MessDashboard,
+  Invitations: InvitationsLink,
   DataEntry: DataEntryLink,
   CurrentMonth: CurrentMonthLink,
   MemberBalances: MemberBalancesLink,

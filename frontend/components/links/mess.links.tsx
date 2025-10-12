@@ -36,6 +36,14 @@ export function DataEntryLink({ children, ...props }: LinkProps) {
   );
 }
 
+export function InvitationsLink({ children, ...props }: LinkProps) {
+  return (
+    <Link href="/mess/dashboard/invitations" {...props}>
+      {children}
+    </Link>
+  );
+}
+
 export function CurrentMonthLink({ children, ...props }: LinkProps) {
   return (
     <Link href="/mess/dashboard/current-month" {...props}>

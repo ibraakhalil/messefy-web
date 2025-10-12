@@ -3,7 +3,7 @@ import PageWrapper from '@/components/common/page-wrapper';
 import { Links } from '@/components/links';
 import Button from '@/components/ui/button';
 import { auth } from '@/config/auth';
-import { getWorkspaceByUser } from '@/lib/workspace-requests';
+import { getValidWorkspaceMember } from '@/lib/workspace-requests';
 import { cn } from '@/utils/cn';
 import { Calendar, Clock, Receipt, TrendingUp, Users, Utensils, Wallet } from 'lucide-react';
 import { redirect } from 'next/navigation';
@@ -11,13 +11,13 @@ import { redirect } from 'next/navigation';
 export default async function MessPage() {
   const session = await auth();
   const user = session?.user;
-  const workspace = await getWorkspaceByUser();
-  const userData = { user, workspace };
-  if (!workspace) redirect('/profile');
+  const member = await getValidWorkspaceMember();
+  const userData = { user, workspace: member?.workspace };
+  if (!userData.workspace) redirect('/profile');
 
   const messData = {
     statusNote: 'Please submit all remaining expenses by the 25th of this month.',
-    name: workspace?.name || 'Mess',
+    name: userData.workspace?.name || 'Mess',
     isOpen: true,
     currentPeriod: 'October 2023',
     currency: 'USD',
@@ -170,30 +170,34 @@ export default async function MessPage() {
         <div className="tablet:flex-row tablet:items-center tablet:justify-between tablet:space-y-0 flex flex-col space-y-4">
           <div className="flex items-center space-x-4">
             <div className="flex size-14 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-2xl text-white">
-              {workspace?.name?.charAt(0)}
+              {userData.workspace?.name?.charAt(0)}
             </div>
             <div className="space-y-1">
               <div className="flex items-center space-x-3">
-                <h1 className="text-2xl font-medium text-gray-900">{messData.name}</h1>
+                <h1 className="text-2xl font-medium text-gray-900">
+                  {userData.workspace?.name || 'Mess'}
+                </h1>
                 <span
                   className={cn(
                     'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                    messData.isOpen ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800',
+                    userData.workspace?.isActive
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800',
                   )}
                 >
-                  {messData.isOpen ? 'Open' : 'Closed'}
+                  {userData.workspace?.isActive ? 'Open' : 'Closed'}
                 </span>
               </div>
               <p className="text-sm text-gray-500">
                 <span className="inline-flex items-center gap-2">
                   <Calendar className="size-4" />
-                  Period: {messData.currentPeriod}
+                  Period: 'October 2023'
                 </span>
               </p>
             </div>
           </div>
 
-          {workspace?.ownerId === user.id && (
+          {userData.workspace?.ownerId === userData.user?.id && (
             <Links.Dashboard>
               <Button>Dashboard</Button>
             </Links.Dashboard>

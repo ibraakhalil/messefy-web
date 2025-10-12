@@ -11,7 +11,6 @@ export const members = pgTable('members', {
     .references(() => workspaces.id)
     .notNull(),
   userId: uuid('user_id').references(() => users.id),
-  name: varchar('name', { length: 255 }).notNull(),
   role: varchar('role', { length: 20 }).notNull(), // 'owner', 'manager', 'member'
   isOffline: boolean('is_offline').default(false).notNull(),
   isActive: boolean('is_active').default(true).notNull(),
