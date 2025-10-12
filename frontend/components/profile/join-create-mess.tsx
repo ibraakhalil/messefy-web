@@ -19,52 +19,42 @@ interface Invitation {
   workspaceId: string;
   workspaceName: string;
   status: string;
-  message?: string;
 }
 
 export default function JoinOrCreateMess({ workspace }: JoinOrCreateMessProps) {
   const queryClient = useQueryClient();
 
-  // Fetch invitation - auto loading, error, refetch
   const { data: invitation, isLoading } = useQuery({
     queryKey: ['invitation'],
     queryFn: async () => {
-      const response = await api.get<Invitation>('/workspaces/invitation');
-      return response.data;
+      const { data } = await api.get<Invitation>('/workspaces/invitation');
+      return data;
     },
-    enabled: !workspace, // শুধু workspace না থাকলে fetch করবে
-    retry: false, // 404 error এ retry করবে না
+    enabled: !workspace,
+    retry: false,
   });
 
-  // Cancel invitation mutation
-  const cancelMutation = useMutation({
-    mutationFn: (invitationId: string) => api.delete(`/workspaces/invitation/${invitationId}`),
+  const { mutate: cancelInvitation, isPending } = useMutation({
+    mutationFn: (id: string) => api.delete(`/workspaces/invitation/${id}`),
     onSuccess: () => {
       toast.success('Invitation cancelled');
-      queryClient.invalidateQueries({ queryKey: ['invitation'] }); // Auto refetch
+      queryClient.invalidateQueries({ queryKey: ['invitation'] });
     },
-    onError: () => {
-      toast.error('Failed to cancel invitation');
-    },
+    onError: () => toast.error('Failed to cancel invitation'),
   });
 
-  // If workspace exists
   if (workspace) {
     return (
       <Links.Mess>
-        <Button variant="secondary" className="flex items-center gap-2">
-          <div className="text-gray-600">{workspace.name}</div>
-        </Button>
+        <Button variant="secondary">{workspace.name}</Button>
       </Links.Mess>
     );
   }
 
-  // Loading skeleton
   if (isLoading) {
     return <div className="h-10 w-48 animate-pulse rounded-md bg-gray-200" />;
   }
 
-  // If invitation pending
   if (invitation) {
     return (
       <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2">
@@ -73,17 +63,13 @@ export default function JoinOrCreateMess({ workspace }: JoinOrCreateMessProps) {
           <p className="text-sm font-medium text-amber-900">Waiting for approval</p>
           <p className="text-xs text-amber-700">{invitation.workspaceName}</p>
         </div>
-        <Button
-          onClick={() => cancelMutation.mutate(invitation.id)}
-          disabled={cancelMutation.isPending}
-        >
+        <Button onClick={() => cancelInvitation(invitation.id)} disabled={isPending}>
           <X className="size-4" />
         </Button>
       </div>
     );
   }
 
-  // Default: Create or Join
   return (
     <div className="flex items-center gap-3">
       <Links.CreateMess>

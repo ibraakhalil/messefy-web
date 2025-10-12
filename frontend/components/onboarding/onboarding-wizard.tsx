@@ -10,7 +10,6 @@ import { Info, Plus, X, Mail, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '@/utils/axios';
 import { useRouter } from 'next/navigation';
-import { env } from '@/config/env';
 
 const onboardingSchema = z.object({
   name: z.string().min(1, 'Mess name is required'),
@@ -93,17 +92,9 @@ const OnboardingWizard = () => {
 
     api
       .post('/workspaces/create', messData)
-      .then((response) => {
+      .then(() => {
         toast.success('Workspace created successfully');
-
-        const slug = response.data.workspace.slug;
-        const rootDomain = env.NEXT_PUBLIC_ROOT_DOMAIN;
-
-        if (rootDomain.includes('localhost')) {
-          router.push(`http://${slug}.${rootDomain}`);
-        } else {
-          router.push(`https://${slug}.${rootDomain}`);
-        }
+        router.push('/mess');
       })
       .catch((error) => {
         toast.error(error.response?.data?.error || 'Failed to create workspace');

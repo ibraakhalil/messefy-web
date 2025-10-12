@@ -114,6 +114,14 @@ export async function setInvitationsByUser(c: Context) {
   }
 
   try {
+    const invitation = await db.query.invitations.findFirst({
+      where: (i, { eq, and }) => and(eq(i.workspaceId, workspaceId), eq(i.userId, userId)),
+    });
+
+    if (invitation) {
+      return c.json({ error: 'Invitation already sent' }, 409);
+    }
+
     const workspace = await db.query.workspaces.findFirst({
       where: (w, { eq, and }) => and(eq(w.id, workspaceId), eq(w.isActive, true)),
     });

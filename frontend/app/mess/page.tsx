@@ -6,12 +6,14 @@ import { auth } from '@/config/auth';
 import { getWorkspaceByUser } from '@/lib/workspace-requests';
 import { cn } from '@/utils/cn';
 import { Calendar, Clock, Receipt, TrendingUp, Users, Utensils, Wallet } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
 export default async function MessPage() {
   const session = await auth();
   const user = session?.user;
   const workspace = await getWorkspaceByUser();
   const userData = { user, workspace };
+  if (!workspace) redirect('/profile');
 
   const messData = {
     statusNote: 'Please submit all remaining expenses by the 25th of this month.',
