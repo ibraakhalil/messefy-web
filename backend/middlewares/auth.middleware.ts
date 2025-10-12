@@ -19,7 +19,7 @@ export const ownerCheck = async (c: Context, next: Next) => {
   await next();
 };
 
-export const userValidation = async (c: Context, next: Next) => {
+export const userAuthValidation = async (c: Context, next: Next) => {
   const authHeader = c.req.header('Authorization');
 
   if (!authHeader?.startsWith('Bearer ')) {

@@ -29,6 +29,13 @@
       "when": 1760118530403,
       "tag": "0003_puzzling_sprite",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1760202291975,
+      "tag": "0004_lean_marten_broadcloak",
+      "breakpoints": true
     }
   ]
 }
