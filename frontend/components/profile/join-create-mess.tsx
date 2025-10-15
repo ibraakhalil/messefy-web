@@ -27,7 +27,7 @@ export default function JoinOrCreateMess({ workspace }: JoinOrCreateMessProps) {
   const { data: invitation, isLoading } = useQuery({
     queryKey: ['invitation'],
     queryFn: async () => {
-      const { data } = await api.get<Invitation>('/workspaces/invitation');
+      const { data } = await api.get<Invitation>('/invitation');
       return data;
     },
     enabled: !workspace,
@@ -35,7 +35,7 @@ export default function JoinOrCreateMess({ workspace }: JoinOrCreateMessProps) {
   });
 
   const { mutate: cancelInvitation, isPending } = useMutation({
-    mutationFn: (id: string) => api.delete(`/workspaces/invitation/${id}`),
+    mutationFn: (id: string) => api.delete(`/invitation/${id}`),
     onSuccess: () => {
       toast.success('Invitation cancelled');
       queryClient.invalidateQueries({ queryKey: ['invitation'] });

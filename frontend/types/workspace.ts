@@ -9,7 +9,13 @@ export interface Workspace {
   updatedAt: string;
 }
 
-export interface Member {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface Member extends User {
   id: string;
   userId: string;
   workspaceId: string;
@@ -18,4 +24,5 @@ export interface Member {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  user: User;
 }

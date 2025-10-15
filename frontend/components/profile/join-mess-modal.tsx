@@ -43,8 +43,7 @@ export default function JoinMessModal() {
   });
 
   const joinMutation = useMutation({
-    mutationFn: (data: { workspaceId: string; message?: string }) =>
-      api.post('/workspaces/invitation', data),
+    mutationFn: (data: { workspaceId: string; message?: string }) => api.post('/invitation', data),
     onSuccess: () => {
       toast.success('Join request sent!');
       queryClient.invalidateQueries({ queryKey: ['invitation'] });

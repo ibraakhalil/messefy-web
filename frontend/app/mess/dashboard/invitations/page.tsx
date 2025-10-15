@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/utils/axios';
+import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Button from '@/components/ui/button';
+import { TickIcon } from '@/components/svg/invitation-icons';
 import { Mail, X, RefreshCw, AlertCircle } from 'lucide-react';
 import { useWorkspace } from '@/providers/workspace-provider';
-import { TickIcon } from '@/components/svg/invitation-icons';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Invitation {
   id: string;
@@ -53,7 +53,9 @@ export default function InvitationsPage() {
 
   const withdrawMutation = useMutation({
     mutationFn: async (invitationId: string) => {
-      const { data } = await api.delete(`/workspaces/invitations/${invitationId}/cancel`);
+      const { data } = await api.delete(
+        `/workspaces/${workspace?.id}/invitations/${invitationId}/cancel`,
+      );
       return data;
     },
     onSuccess: () => {
@@ -65,10 +67,11 @@ export default function InvitationsPage() {
     },
   });
 
-  // Accept invitation mutation
   const acceptMutation = useMutation({
     mutationFn: async (invitationId: string) => {
-      const { data } = await api.post(`/workspaces/invitations/${invitationId}/accept`);
+      const { data } = await api.post(
+        `/workspaces/${workspace?.id}/invitations/${invitationId}/accept`,
+      );
       return data;
     },
     onSuccess: () => {
@@ -137,8 +140,8 @@ export default function InvitationsPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sent Invitations</h1>
-          <p className="mt-1 text-sm text-gray-600">{invitations.length} total</p>
+          <h1 className="text-primary-fg text-2xl font-bold">Sent Invitations</h1>
+          <p className="text-subtitle-color mt-1 text-sm">{invitations.length} invitations sent</p>
         </div>
         <Button
           onClick={handleRefresh}

@@ -5,9 +5,9 @@ import { eq, name } from 'drizzle-orm';
 
 export async function createWorkspace(c: Context) {
   const { name, slug, description } = await c.req.json();
-  const userId = c.get('ownerId');
+  const ownerId = c.get('ownerId');
 
-  if (!name || !slug || !userId) {
+  if (!name || !slug || !ownerId) {
     return c.json({ error: 'Missing required fields: name, slug, and owner ID must be provided' }, 400);
   }
 
@@ -20,7 +20,7 @@ export async function createWorkspace(c: Context) {
   }
 
   const activeWorkspace = await db.query.workspaces.findFirst({
-    where: (w, { eq, and }) => and(eq(w.ownerId, userId), eq(w.isActive, true)),
+    where: (w, { eq, and }) => and(eq(w.ownerId, ownerId), eq(w.isActive, true)),
   });
 
   if (activeWorkspace) {
@@ -28,7 +28,7 @@ export async function createWorkspace(c: Context) {
   }
 
   try {
-    const [workspace] = await db.insert(workspaces).values({ name, slug, description, ownerId: userId }).returning();
+    const [workspace] = await db.insert(workspaces).values({ name, slug, description, ownerId: ownerId }).returning();
 
     if (!workspace) {
       return c.json({ error: 'Unable to create workspace. Please try again later' }, 500);
@@ -36,7 +36,7 @@ export async function createWorkspace(c: Context) {
 
     await db.insert(members).values({
       workspaceId: workspace.id,
-      userId,
+      userId: ownerId,
       role: 'owner',
     });
 
@@ -66,6 +66,28 @@ export async function getValidWorkspaceMember(c: Context) {
   } catch (error) {
     console.error('Error fetching user workspaces:', error);
     return c.json({ error: 'Failed to fetch user workspaces' }, 500);
+  }
+}
+
+export async function getWorkspaceMembers(c: Context) {
+  const workspaceId = c.req.param('workspaceId');
+
+  try {
+    const members = await db.query.members.findMany({
+      where: (m, { eq, and }) => and(eq(m.workspaceId, workspaceId), eq(m.isActive, true)),
+      with: {
+        user: true,
+      },
+    });
+
+    if (!members) {
+      return c.json({ error: 'No members found for this workspace' }, 404);
+    }
+
+    return c.json(members);
+  } catch (error) {
+    console.error('Error fetching workspace members:', error);
+    return c.json({ error: 'Failed to fetch workspace members' }, 500);
   }
 }
 
