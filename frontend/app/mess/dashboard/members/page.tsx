@@ -6,6 +6,9 @@ import api from '@/utils/axios';
 import { useWorkspace } from '@/providers/workspace-provider';
 import { Member } from '@/types/workspace';
 import FormInput from '@/components/ui/form-input';
+import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
+import AddMemberForm from '@/components/dashboard/add-member-from';
+import Button from '@/components/ui/button';
 
 export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,6 +19,7 @@ export default function MembersPage() {
     data: members = [],
     isLoading,
     error,
+    refetch,
   } = useQuery<Member[]>({
     queryKey: ['members', workspace?.id],
     queryFn: async () => {
@@ -51,9 +55,14 @@ export default function MembersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Members</h1>
-        <span className="text-sm text-gray-500 dark:text-gray-400">
-          {filteredMembers.length} of {members.length} members
-        </span>
+        <ResponsiveDialog>
+          <ResponsiveDialog.Trigger>
+            <Button>Add Member</Button>
+          </ResponsiveDialog.Trigger>
+          <ResponsiveDialog.Content>
+            <AddMemberForm onSuccess={() => refetch()} />
+          </ResponsiveDialog.Content>
+        </ResponsiveDialog>
       </div>
 
       {/* Search and Filter */}

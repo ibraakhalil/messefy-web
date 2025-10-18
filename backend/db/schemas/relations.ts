@@ -25,3 +25,10 @@ export const membersRelations = relations(members, ({ one }) => ({
     references: [workspaces.id],
   }),
 }));
+
+export const userRelations = relations(users, ({ one }) => ({
+  member: one(members, {
+    fields: [users.id],
+    references: [members.userId],
+  }),
+}));
