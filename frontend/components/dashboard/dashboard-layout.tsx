@@ -5,12 +5,11 @@ import {
   BellIcon,
   Calendar,
   CalendarDays,
-  ChevronDown,
-  Home,
+  LayoutGrid,
   Menu,
-  MoreHorizontal,
   PieChart,
   PlusCircle,
+  Send,
   Settings,
   Users,
   Wallet,
@@ -77,12 +76,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Navigation */}
         <nav className="flex-1 space-y-1 px-2 py-4">
           <Links.Dashboard>
-            <NavItem icon={Home} isActive={path === '/dashboard'}>
+            <NavItem icon={LayoutGrid} isActive={path === '/dashboard'}>
               Dashboard
             </NavItem>
           </Links.Dashboard>
           <Links.Invitations>
-            <NavItem icon={Home} isActive={path === '/dashboard'}>
+            <NavItem icon={Send} isActive={path === '/dashboard'}>
               Invitations
             </NavItem>
           </Links.Invitations>
@@ -111,27 +110,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </NavItem>
           </Links.Members>
 
-          <div className="space-y-1">
-            <div className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-              <MoreHorizontal className="size-5" />
-              <span>Management</span>
-              <ChevronDown className="ml-auto size-4" />
-            </div>
+          <Links.Periods>
+            <NavItem icon={CalendarDays} isActive={path.includes('/periods')}>
+              Period Management
+            </NavItem>
+          </Links.Periods>
 
-            <div className="ml-8 space-y-1">
-              <Links.Periods>
-                <NavItem icon={CalendarDays} isActive={path.includes('/periods')}>
-                  Period Management
-                </NavItem>
-              </Links.Periods>
-
-              <Links.History>
-                <NavItem icon={Calendar} isActive={path.includes('/history')}>
-                  All Months
-                </NavItem>
-              </Links.History>
-            </div>
-          </div>
+          <Links.History>
+            <NavItem icon={Calendar} isActive={path.includes('/history')}>
+              All Months
+            </NavItem>
+          </Links.History>
 
           <Links.Settings>
             <NavItem icon={Settings} isActive={path.includes('/settings')}>
