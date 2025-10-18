@@ -2,19 +2,13 @@ import Image from 'next/image';
 import { DropdownMenu } from '../ui/drop-down';
 import { ChevronDown, Settings, LogOut, UserIcon } from 'lucide-react';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
-import { Session } from 'next-auth';
-import { Workspace } from '@/types/workspace';
+import { signOut, useSession } from 'next-auth/react';
+import { useWorkspace } from '@/providers/workspace-provider';
 
-interface UserDropdownProps {
-  userData: {
-    user: Session['user'];
-    workspace: Workspace | undefined;
-  };
-}
-
-export default function UserDropdown({ userData }: UserDropdownProps) {
-  const { user, workspace } = userData;
+export default function UserDropdown() {
+  const session = useSession();
+  const { workspace } = useWorkspace();
+  const user = session.data?.user;
 
   return (
     <div className="flex items-center gap-2">

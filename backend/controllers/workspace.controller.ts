@@ -55,6 +55,14 @@ export async function getValidWorkspaceMember(c: Context) {
       where: (w, { eq, and }) => and(eq(w.userId, userId), eq(w.isActive, true)),
       with: {
         workspace: true,
+        user: {
+          columns: {
+            id: true,
+            email: true,
+            name: true,
+            image: true,
+          },
+        },
       },
     });
 

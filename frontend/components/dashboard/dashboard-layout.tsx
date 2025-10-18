@@ -7,7 +7,6 @@ import {
   CalendarDays,
   ChevronDown,
   Home,
-  LogOut,
   Menu,
   MoreHorizontal,
   PieChart,
@@ -19,6 +18,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { ComponentType, ReactNode, SVGProps, useState } from 'react';
 import { Links } from '../links';
+import UserDropdown from '../common/user-dropdown';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -139,25 +139,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </NavItem>
           </Links.Settings>
         </nav>
-
-        {/* User section */}
-        <div className="border-t border-gray-200 p-4 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-                <span className="text-sm font-medium">JD</span>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">John Doe</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Manager</p>
-              </div>
-            </div>
-          </div>
-          <button className="mt-4 flex w-full items-center justify-center rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign out
-          </button>
-        </div>
       </aside>
 
       {/* Main content */}
@@ -175,6 +156,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <span className="sr-only">Notifications</span>
               <BellIcon />
             </button>
+            <UserDropdown />
           </div>
         </header>
 

@@ -49,7 +49,7 @@ export default function ProfileHeader({ userData }: AppHeaderProps) {
 
         {user && (
           <div className="flex items-center gap-2">
-            <UserDropdown userData={userData} />
+            <UserDropdown />
           </div>
         )}
       </div>

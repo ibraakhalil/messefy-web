@@ -3,6 +3,12 @@ import api from '@/utils/axios';
 
 interface GetValidWorkspaceMemberResponse extends Member {
   workspace: Workspace;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    image: string;
+  };
 }
 
 export async function getValidWorkspaceMember() {
