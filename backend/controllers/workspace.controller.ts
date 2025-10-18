@@ -5,9 +5,9 @@ import { eq, name } from 'drizzle-orm';
 
 export async function createWorkspace(c: Context) {
   const { name, slug, description } = await c.req.json();
-  const ownerId = c.get('ownerId');
+  const userId = c.get('userId');
 
-  if (!name || !slug || !ownerId) {
+  if (!name || !slug || !userId) {
     return c.json({ error: 'Missing required fields: name, slug, and owner ID must be provided' }, 400);
   }
 
@@ -20,7 +20,7 @@ export async function createWorkspace(c: Context) {
   }
 
   const activeWorkspace = await db.query.workspaces.findFirst({
-    where: (w, { eq, and }) => and(eq(w.ownerId, ownerId), eq(w.isActive, true)),
+    where: (w, { eq, and }) => and(eq(w.ownerId, userId), eq(w.isActive, true)),
   });
 
   if (activeWorkspace) {
@@ -28,7 +28,7 @@ export async function createWorkspace(c: Context) {
   }
 
   try {
-    const [workspace] = await db.insert(workspaces).values({ name, slug, description, ownerId: ownerId }).returning();
+    const [workspace] = await db.insert(workspaces).values({ name, slug, description, ownerId: userId }).returning();
 
     if (!workspace) {
       return c.json({ error: 'Unable to create workspace. Please try again later' }, 500);
@@ -36,7 +36,7 @@ export async function createWorkspace(c: Context) {
 
     await db.insert(members).values({
       workspaceId: workspace.id,
-      userId: ownerId,
+      userId: userId,
       role: 'owner',
     });
 

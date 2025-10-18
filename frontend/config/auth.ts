@@ -1,4 +1,3 @@
-// config/auth.ts
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
@@ -39,6 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (data.ok && data.token) {
           user.token = data.token;
+          user.id = data.user.id;
           return true;
         }
 

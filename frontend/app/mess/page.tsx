@@ -1,4 +1,4 @@
-import ProfileHeader from '@/components/common/app-header';
+import ProfileHeader from '@/components/common/profile-header';
 import PageWrapper from '@/components/common/page-wrapper';
 import { Links } from '@/components/links';
 import Button from '@/components/ui/button';

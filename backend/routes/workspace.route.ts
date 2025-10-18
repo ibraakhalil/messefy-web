@@ -13,7 +13,7 @@ import { ownerCheck, userAuthValidation } from '../middlewares/auth.middleware';
 export const workspaceRoute = new Hono();
 
 workspaceRoute.get('/member', userAuthValidation, getValidWorkspaceMember);
-workspaceRoute.post('/create', ownerCheck, createWorkspace);
+workspaceRoute.post('/create', userAuthValidation, createWorkspace);
 workspaceRoute.get('/:workspaceId/members', ownerCheck, getWorkspaceMembers);
 
 workspaceRoute.get('/:workspaceId/invitations', ownerCheck, getWorkspaceInvitations);

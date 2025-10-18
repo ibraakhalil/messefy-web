@@ -3,7 +3,7 @@ import PageWrapper from '@/components/common/page-wrapper';
 import { ProfileContents } from '@/components/profile/profile-contents';
 import Image from 'next/image';
 import { getValidWorkspaceMember } from '@/lib/workspace-requests';
-import ProfileHeader from '@/components/common/app-header';
+import ProfileHeader from '@/components/common/profile-header';
 import JoinOrCreateMess from '@/components/profile/join-create-mess';
 
 export default async function ProfilePage() {

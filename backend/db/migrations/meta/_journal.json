@@ -43,6 +43,13 @@
       "when": 1760293199888,
       "tag": "0005_spotty_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760810266978,
+      "tag": "0006_panoramic_eternals",
+      "breakpoints": true
     }
   ]
 }

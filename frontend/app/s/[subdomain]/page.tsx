@@ -1,4 +1,4 @@
-import ProfileHeader from '@/components/common/app-header';
+import ProfileHeader from '@/components/common/profile-header';
 import PageWrapper from '@/components/common/page-wrapper';
 import { auth } from '@/config/auth';
 import { getValidWorkspaceMember } from '@/lib/workspace-requests';
