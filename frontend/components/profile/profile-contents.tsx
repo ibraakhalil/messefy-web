@@ -82,7 +82,7 @@ export function ProfileContents({ userData }: { userData: UserData }) {
       <div className="space-y-12">
         {activeTab === 'overview' && <OverviewSection onNavigate={setActiveTab} />}
         {activeTab === 'profile' && <ProfileSection isLoading={isLoading} />}
-        {activeTab === 'mess' && workspace && <MessSection isLoading={isLoading} />}
+        {activeTab === 'mess' && workspace && <MessSection />}
         {activeTab === 'notifications' && <NotificationsSection isLoading={isLoading} />}
         {activeTab === 'security' && <SecuritySection isLoading={isLoading} />}
       </div>

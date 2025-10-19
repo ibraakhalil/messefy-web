@@ -3,11 +3,11 @@ import { DropdownMenu } from '../ui/drop-down';
 import { ChevronDown, Settings, LogOut, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
-import { useWorkspace } from '@/providers/workspace-provider';
+import { useWorkspaceMember } from '@/providers/workspace-provider';
 
 export default function UserDropdown() {
   const session = useSession();
-  const { workspace } = useWorkspace();
+  const { member } = useWorkspaceMember();
   const user = session.data?.user;
 
   return (
@@ -69,7 +69,7 @@ export default function UserDropdown() {
             <span className="font-medium">Profile & Settings</span>
           </Link>
 
-          {workspace && (
+          {member && (
             <Link
               href="/mess"
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
@@ -79,7 +79,7 @@ export default function UserDropdown() {
             </Link>
           )}
 
-          {workspace?.ownerId === user?.id && (
+          {member?.workspace.ownerId === user?.id && (
             <Link
               href={`/mess/dashboard`}
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"

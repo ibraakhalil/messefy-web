@@ -1,5 +1,6 @@
 'use client';
 
+import { WorkspaceMember } from '@/lib/workspace-requests';
 import React, { createContext, useContext, ReactNode } from 'react';
 
 export interface Workspace {
@@ -8,26 +9,28 @@ export interface Workspace {
   ownerId: string;
 }
 
-interface WorkspaceContextType {
-  workspace: Workspace | null;
+interface WorkspaceMemberContextType {
+  member: WorkspaceMember | null;
 }
 
-const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
+const WorkspaceMemberContext = createContext<WorkspaceMemberContextType | undefined>(undefined);
 
-export function WorkspaceProvider({
+export function WorkspaceMemberProvider({
   children,
-  workspace,
+  member,
 }: {
   children: ReactNode;
-  workspace: Workspace | null;
+  member: WorkspaceMember | null;
 }) {
-  return <WorkspaceContext.Provider value={{ workspace }}>{children}</WorkspaceContext.Provider>;
+  return (
+    <WorkspaceMemberContext.Provider value={{ member }}>{children}</WorkspaceMemberContext.Provider>
+  );
 }
 
-export const useWorkspace = (): WorkspaceContextType => {
-  const context = useContext(WorkspaceContext);
+export const useWorkspaceMember = (): WorkspaceMemberContextType => {
+  const context = useContext(WorkspaceMemberContext);
   if (!context) {
-    throw new Error('useWorkspace must be used within a WorkspaceProvider');
+    throw new Error('useWorkspaceMember must be used within a WorkspaceMemberProvider');
   }
   return context;
 };

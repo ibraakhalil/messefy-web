@@ -1,7 +1,7 @@
 import { Workspace, Member } from '@/types/workspace';
 import api from '@/utils/axios';
 
-interface GetValidWorkspaceMemberResponse extends Member {
+export interface WorkspaceMember extends Member {
   workspace: Workspace;
   user: {
     id: string;
@@ -13,9 +13,19 @@ interface GetValidWorkspaceMemberResponse extends Member {
 
 export async function getValidWorkspaceMember() {
   try {
-    const { data } = await api.get<GetValidWorkspaceMemberResponse>('/workspaces/member');
-    return data as GetValidWorkspaceMemberResponse;
+    const { data } = await api.get<WorkspaceMember>('/workspaces/member');
+    return data as WorkspaceMember | null;
   } catch (error) {
     console.error('Error fetching workspace member:', error);
+  }
+}
+
+export async function leaveWorkspace(workspaceId: string) {
+  try {
+    const { data } = await api.delete(`/members/${workspaceId}/leave`);
+    return data;
+  } catch (error) {
+    console.error('Error leaving workspace:', error);
+    throw error;
   }
 }

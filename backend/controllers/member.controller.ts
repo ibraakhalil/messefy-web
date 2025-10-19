@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import { db } from '../db';
 import { members } from '../db/schemas';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 export async function addUserInWorkspace(c: Context) {
   const email = c.req.param('email');
@@ -44,5 +44,29 @@ export async function addUserInWorkspace(c: Context) {
   } catch (error) {
     console.error('Error checking member workspace:', error);
     return c.json({ error: 'Failed to check member workspace' }, 500);
+  }
+}
+
+export async function leaveWorkspace(c: Context) {
+  const workspaceId = c.req.param('workspaceId');
+  const userId = c.get('userId');
+
+  try {
+    // Find the member record
+    const member = await db.query.members.findFirst({
+      where: and(eq(members.userId, userId), eq(members.workspaceId, workspaceId)),
+    });
+
+    if (!member || member.role === 'owner') {
+      return c.json({ error: 'Something went wrong' }, 404);
+    }
+
+    // Soft delete by setting isActive to false
+    await db.update(members).set({ isActive: false }).where(eq(members.id, member.id));
+
+    return c.json({ message: 'Successfully left workspace' }, 200);
+  } catch (error) {
+    console.error('Error leaving workspace:', error);
+    return c.json({ error: 'Failed to leave workspace' }, 500);
   }
 }

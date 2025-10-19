@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/utils/axios';
-import { useWorkspace } from '@/providers/workspace-provider';
+import { useWorkspaceMember } from '@/providers/workspace-provider';
 import { Member } from '@/types/workspace';
 import FormInput from '@/components/ui/form-input';
 import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
@@ -13,7 +13,8 @@ import Button from '@/components/ui/button';
 export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'All' | 'Admin' | 'Member' | 'Viewer'>('All');
-  const { workspace } = useWorkspace();
+  const { member } = useWorkspaceMember();
+  const workspace = member?.workspace;
 
   const {
     data: members = [],

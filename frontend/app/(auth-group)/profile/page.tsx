@@ -31,7 +31,7 @@ export default async function ProfilePage() {
             <p className="text-gray-600">{user?.email}</p>
           </div>
         </div>
-        <JoinOrCreateMess workspace={userData.workspace} />
+        <JoinOrCreateMess workspace={member?.workspace} />
       </div>
       <ProfileContents userData={userData} />
     </PageWrapper>

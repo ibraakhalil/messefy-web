@@ -3,8 +3,6 @@ import '../styles/globals.css';
 
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { WorkspaceProvider } from '@/providers/workspace-provider';
-import { getValidWorkspaceMember } from '@/lib/workspace-requests';
 
 const inter = localFont({
   src: '../public/fonts/inter.ttf',
@@ -17,14 +15,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const member = await getValidWorkspaceMember();
-
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className="bg-primary-bg text-pure-color font-sans">
-        <WorkspaceProvider workspace={member?.workspace || null}>
-          <Providers>{children}</Providers>
-        </WorkspaceProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
