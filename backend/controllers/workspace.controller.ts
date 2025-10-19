@@ -294,11 +294,19 @@ export async function acceptInvitationByOwner(c: Context) {
       return c.json({ error: 'Invitation not found or not authorized' }, 404);
     }
 
-    await db.insert(members).values({
-      workspaceId: invitation.workspaceId,
-      userId: invitation.userId,
-      role: 'member',
+    const existingMember = await db.query.members.findFirst({
+      where: (m, { eq, and }) => and(eq(m.workspaceId, invitation.workspaceId), eq(m.userId, invitation.userId)),
     });
+
+    if (existingMember) {
+      await db.update(members).set({ isActive: true }).where(eq(members.id, existingMember.id));
+    } else {
+      await db.insert(members).values({
+        workspaceId: invitation.workspaceId,
+        userId: invitation.userId,
+        role: 'member',
+      });
+    }
 
     await db.delete(invitations).where(eq(invitations.id, invitationId));
 

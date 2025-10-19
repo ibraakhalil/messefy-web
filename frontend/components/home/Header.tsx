@@ -77,7 +77,7 @@ export const Header = ({ userData }: HeaderProps) => {
               <Button>Get Started</Button>
             </Link>
           )}
-          {user && <UserDropdown userData={userData} />}
+          {user && <UserDropdown />}
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}

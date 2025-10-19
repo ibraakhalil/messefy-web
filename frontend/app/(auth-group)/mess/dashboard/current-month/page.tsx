@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
-import Button from '@/components/ui/button'
+import Button from '@/components/ui/button';
+import FormInput from '@/components/ui/form-input';
+import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
 import {
-  AlertCircle,
   Calendar,
   DollarSign,
   Download,
@@ -13,12 +14,65 @@ import {
   TrendingUp,
   Users,
   Utensils,
-} from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
+} from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
+
+// Form schema for new month
+const newMonthSchema = z.object({
+  monthName: z.string().min(1, 'Month name is required'),
+  startDate: z.string().min(1, 'Start date is required'),
+  endDate: z.string().min(1, 'End date is required'),
+  initialBudget: z.number().min(0, 'Initial budget must be non-negative').optional(),
+});
+
+type NewMonthFormValues = z.infer<typeof newMonthSchema>;
 
 export default function CurrentMonthPage() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
+  const [month, setMonth] = useState(false); // Changed to false to show the "Start new month" state
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<NewMonthFormValues>({
+    resolver: zodResolver(newMonthSchema),
+    defaultValues: {
+      monthName: '',
+      startDate: '',
+      endDate: '',
+      initialBudget: 0,
+    },
+  });
+
+  const handleStartNewMonth = async (data: NewMonthFormValues) => {
+    try {
+      // Mock API call - replace with actual API integration
+      console.log('Starting new month:', data);
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Close dialog and reset form
+      setIsDialogOpen(false);
+      reset();
+      
+      // Set month to true to show the dashboard
+      setMonth(true);
+      
+      // Show success message (you can integrate toast notification here)
+      alert('New month started successfully!');
+    } catch (error) {
+      console.error('Error starting new month:', error);
+      alert('Failed to start new month. Please try again.');
+    }
+  };
 
   // Mock data
   const monthData = {
@@ -33,7 +87,7 @@ export default function CurrentMonthPage() {
     balance: 1250,
     mealRate: 26.21,
     status: 'active',
-  }
+  };
 
   const memberSummary = [
     { name: 'John Doe', meals: 18, deposit: 600, balance: 128.22, status: 'positive' },
@@ -44,7 +98,7 @@ export default function CurrentMonthPage() {
     { name: 'Diana Prince', meals: 22, deposit: 650, balance: 73.38, status: 'positive' },
     { name: 'Eva Martinez', meals: 11, deposit: 400, balance: -88.31, status: 'negative' },
     { name: 'Frank Davis', meals: 10, deposit: 800, balance: 537.94, status: 'positive' },
-  ]
+  ];
 
   const recentTransactions = [
     {
@@ -92,16 +146,100 @@ export default function CurrentMonthPage() {
       category: 'Deposit',
       member: 'Jane Smith',
     },
-  ]
+  ];
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Eye },
     { id: 'members', label: 'Member Summary', icon: Users },
     { id: 'transactions', label: 'Recent Activity', icon: Receipt },
-  ]
+  ];
 
-  const negativeBalanceMembers = memberSummary.filter((m) => m.status === 'negative')
+  // Render "Start new month" view if no month is active
+  if (!month) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center p-6">
+        <div className="w-full max-w-md text-center">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
+            <Calendar className="h-10 w-10" />
+          </div>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
+            No Active Month
+          </h1>
+          <p className="mb-8 text-gray-600 dark:text-gray-400">
+            Start a new month to begin tracking meals, expenses, and member balances.
+          </p>
+          
+          <ResponsiveDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <ResponsiveDialog.Trigger>
+              <Button className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Start New Month
+              </Button>
+            </ResponsiveDialog.Trigger>
+            
+            <ResponsiveDialog.Content>
+              <form onSubmit={handleSubmit(handleStartNewMonth)}>
+                <ResponsiveDialog.Header>
+                  <ResponsiveDialog.Title>Start New Month</ResponsiveDialog.Title>
+                  <ResponsiveDialog.Description>
+                    Set up a new month for tracking meals and expenses.
+                  </ResponsiveDialog.Description>
+                </ResponsiveDialog.Header>
+                
+                <div className="space-y-4 py-4">
+                  <FormInput
+                    label="Month Name"
+                    placeholder="e.g., January 2025"
+                    {...register('monthName')}
+                    error={errors.monthName?.message}
+                  />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormInput
+                      label="Start Date"
+                      type="date"
+                      {...register('startDate')}
+                      error={errors.startDate?.message}
+                    />
+                    
+                    <FormInput
+                      label="End Date"
+                      type="date"
+                      {...register('endDate')}
+                      error={errors.endDate?.message}
+                    />
+                  </div>
+                  
+                  <FormInput
+                    label="Initial Budget (Optional)"
+                    type="number"
+                    placeholder="0"
+                    {...register('initialBudget', { valueAsNumber: true })}
+                    error={errors.initialBudget?.message}
+                  />
+                </div>
+                
+                <ResponsiveDialog.Footer>
+                  <div className="flex gap-2">
+                    <ResponsiveDialog.Close>
+                      <Button type="button" variant="secondary">
+                        Cancel
+                      </Button>
+                    </ResponsiveDialog.Close>
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? 'Starting...' : 'Start Month'}
+                    </Button>
+                  </div>
+                </ResponsiveDialog.Footer>
+              </form>
+            </ResponsiveDialog.Content>
+          </ResponsiveDialog>
+        </div>
+      </div>
+    );
+  }
 
+  // Render full dashboard when month is active
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -129,36 +267,6 @@ export default function CurrentMonthPage() {
           </Button>
         </div>
       </div>
-
-      {/* Alert for negative balances */}
-      {negativeBalanceMembers.length > 0 && (
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="mt-0.5 h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-            <div>
-              <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                Outstanding Balances
-              </h3>
-              <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
-                {negativeBalanceMembers.length} members have negative balances totaling $
-                {Math.abs(negativeBalanceMembers.reduce((sum, m) => sum + m.balance, 0)).toFixed(2)}
-              </p>
-              <div className="mt-2 flex gap-2">
-                <Link href="/dashboard/member-balances">
-                  <Button variant="secondary" className="text-xs">
-                    View Balances
-                  </Button>
-                </Link>
-                <Link href="/dashboard/reports">
-                  <Button variant="secondary" className="text-xs">
-                    Generate Statements
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Quick Stats */}
       <div className="tablet:grid-cols-2 laptop:grid-cols-4 grid grid-cols-1 gap-4">
@@ -223,7 +331,7 @@ export default function CurrentMonthPage() {
       <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="-mb-px flex space-x-8">
           {tabs.map((tab) => {
-            const Icon = tab.icon
+            const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
@@ -237,7 +345,7 @@ export default function CurrentMonthPage() {
                 <Icon className="h-4 w-4" />
                 {tab.label}
               </button>
-            )
+            );
           })}
         </nav>
       </div>
@@ -462,5 +570,5 @@ export default function CurrentMonthPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
