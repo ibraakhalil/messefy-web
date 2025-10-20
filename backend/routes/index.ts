@@ -5,6 +5,7 @@ import { authRoute } from './auth.route';
 import { workspaceRoute } from './workspace.route';
 import { invitationRoute } from './invitation.route';
 import { memberRoute } from './member.route';
+import { periodRoute } from './period.route';
 
 const router = new Hono();
 
@@ -13,6 +14,7 @@ router.route('/auth', authRoute);
 router.route('/workspaces', workspaceRoute);
 router.route('/invitation', invitationRoute);
 router.route('/members', memberRoute);
+router.route('/periods', periodRoute);
 
 router.notFound((c) => c.json({ message: 'Abracadabra! The page you are looking for does not exist.' }, 404));
 

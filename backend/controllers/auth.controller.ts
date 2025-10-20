@@ -71,6 +71,8 @@ export async function userSync(c: Context) {
   try {
     const body = await c.req.json();
 
+    console.log({ body });
+
     const [user] = await db
       .insert(users)
       .values({

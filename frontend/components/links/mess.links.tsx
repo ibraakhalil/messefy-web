@@ -68,17 +68,9 @@ export function MembersLink({ children, ...props }: LinkProps) {
   );
 }
 
-export function PeriodsLink({ children, ...props }: LinkProps) {
+export function AllMonthsLink({ children, ...props }: LinkProps) {
   return (
-    <Link href="/mess/dashboard/periods" {...props}>
-      {children}
-    </Link>
-  );
-}
-
-export function HistoryLink({ children, ...props }: LinkProps) {
-  return (
-    <Link href="/mess/dashboard/history" {...props}>
+    <Link href="/mess/dashboard/all-months" {...props}>
       {children}
     </Link>
   );

@@ -29,12 +29,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   callbacks: {
     async signIn({ user, account }) {
+      console.log({ user });
       try {
         if (account?.provider === 'credentials') {
           return true;
         }
 
         const { data } = await axios.post(`${BASE_API_URL}/auth/sync-user`, user);
+
+        console.log({ data });
 
         if (data.ok && data.token) {
           user.token = data.token;

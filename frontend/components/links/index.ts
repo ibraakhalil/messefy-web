@@ -5,13 +5,12 @@ import {
   CurrentMonthLink,
   MemberBalancesLink,
   MembersLink,
-  PeriodsLink,
-  HistoryLink,
   SettingsLink,
   MessLink,
   MessCreate,
   MessDashboard,
   InvitationsLink,
+  AllMonthsLink,
 } from './mess.links';
 
 export const Links = {
@@ -29,9 +28,8 @@ export const Links = {
   Invitations: InvitationsLink,
   DataEntry: DataEntryLink,
   CurrentMonth: CurrentMonthLink,
+  AllMonths: AllMonthsLink,
   MemberBalances: MemberBalancesLink,
   Members: MembersLink,
-  Periods: PeriodsLink,
-  History: HistoryLink,
   Settings: SettingsLink,
 };

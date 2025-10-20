@@ -4,7 +4,6 @@ import { cn } from '@/utils/cn';
 import {
   BellIcon,
   Calendar,
-  CalendarDays,
   LayoutGrid,
   Menu,
   PieChart,
@@ -98,6 +97,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </NavItem>
           </Links.CurrentMonth>
 
+          <Links.AllMonths>
+            <NavItem icon={Calendar} isActive={path.includes('/history')}>
+              All Months
+            </NavItem>
+          </Links.AllMonths>
+
           <Links.MemberBalances>
             <NavItem icon={Wallet} isActive={path.includes('/member-balances')}>
               Member Balances
@@ -109,18 +114,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               All Members
             </NavItem>
           </Links.Members>
-
-          <Links.Periods>
-            <NavItem icon={CalendarDays} isActive={path.includes('/periods')}>
-              Period Management
-            </NavItem>
-          </Links.Periods>
-
-          <Links.History>
-            <NavItem icon={Calendar} isActive={path.includes('/history')}>
-              All Months
-            </NavItem>
-          </Links.History>
 
           <Links.Settings>
             <NavItem icon={Settings} isActive={path.includes('/settings')}>
