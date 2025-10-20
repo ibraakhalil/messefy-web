@@ -322,7 +322,7 @@ export default function CurrentMonthPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center tablet:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             {periodData.currentPeriod}
@@ -426,7 +426,7 @@ export default function CurrentMonthPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2 laptop:grid-cols-4">
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
@@ -528,7 +528,7 @@ export default function CurrentMonthPage() {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 laptop:grid-cols-2">
             {/* Quick Actions */}
             <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
@@ -575,140 +575,170 @@ export default function CurrentMonthPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Created:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Start Date:</span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    {format(new Date(currentPeriod.createdAt), 'MMM dd, yyyy')}
+                    {periodData.startDate}
                   </span>
                 </div>
-                {currentPeriod.closedAt && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Closed:</span>
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {format(new Date(currentPeriod.closedAt), 'MMM dd, yyyy')}
-                    </span>
-                  </div>
-                )}
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">End Date:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {periodData.endDate}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Days Remaining:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {periodData.daysRemaining}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {activeTab === 'members' && (
-          <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                      Member
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                      Meals
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                      Deposit
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                      Balance
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                      Status
-                    </th>
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Member
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Meals
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Deposit
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Balance
+                  </th>
+                  <th scope="col" className="relative px-6 py-3">
+                    <span className="sr-only">Edit</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+                {memberSummary.map((member, index) => (
+                  <tr key={index}>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                            {member.name}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {member.meals}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      ${member.deposit}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm">
+                      <span
+                        className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                          member.balance >= 0
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        ${member.balance.toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                      <a href="#" className="text-purple-600 hover:text-purple-900">
+                        Edit
+                      </a>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-900">
-                  {memberSummary.map((member) => (
-                    <tr key={member.name}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {member.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-white">{member.meals}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-white">
-                          ${member.deposit}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div
-                          className={`text-sm font-medium ${
-                            member.status === 'positive'
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-red-600 dark:text-red-400'
-                          }`}
-                        >
-                          ${Math.abs(member.balance).toFixed(2)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex rounded-full px-2 text-xs leading-5 font-semibold ${
-                            member.status === 'positive'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                          }`}
-                        >
-                          {member.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 
         {activeTab === 'transactions' && (
-          <div className="space-y-4">
-            {recentTransactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`rounded-full p-2 ${
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Description
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Amount
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Date
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Category
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                  >
+                    Type
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+                {recentTransactions.map((transaction) => (
+                  <tr key={transaction.id}>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                      {transaction.description}
+                    </td>
+                    <td
+                      className={`whitespace-nowrap px-6 py-4 text-sm ${
                         transaction.type === 'expense'
-                          ? 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                          ? 'text-red-600'
                           : transaction.type === 'deposit'
-                            ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-                            : 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                            ? 'text-green-600'
+                            : 'text-gray-900 dark:text-white'
                       }`}
                     >
-                      {transaction.type === 'expense' && <Receipt className="h-4 w-4" />}
-                      {transaction.type === 'deposit' && <DollarSign className="h-4 w-4" />}
-                      {transaction.type === 'meal' && <Utensils className="h-4 w-4" />}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {transaction.description}
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {transaction.date} • {transaction.category}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    {transaction.amount && (
-                      <p
-                        className={`font-medium ${
-                          transaction.type === 'expense'
-                            ? 'text-red-600 dark:text-red-400'
-                            : 'text-green-600 dark:text-green-400'
-                        }`}
-                      >
-                        {transaction.type === 'expense' ? '-' : '+'}${transaction.amount}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+                      {transaction.type === 'expense' ? '-' : '+'}${transaction.amount.toFixed(2)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {transaction.date}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {transaction.category}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      {transaction.type}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

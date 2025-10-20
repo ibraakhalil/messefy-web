@@ -310,7 +310,7 @@ export default function AllMonthsPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center tablet:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Period Management</h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -388,7 +388,7 @@ export default function AllMonthsPage() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2 laptop:grid-cols-4">
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
@@ -447,7 +447,7 @@ export default function AllMonthsPage() {
       </div>
 
       {/* Filters and Tabs */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center tablet:justify-between">
         {/* Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex space-x-8">
@@ -533,7 +533,7 @@ export default function AllMonthsPage() {
       </div>
 
       {/* Periods List */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2 laptop:grid-cols-3">
         {sortedPeriods.map((period: any) => (
           <div
             key={period.id}
