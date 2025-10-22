@@ -1,8 +1,6 @@
 'use client';
 
 import Button from '@/components/ui/button';
-import FormInput from '@/components/ui/form-input';
-import FormSelect from '@/components/ui/form-select';
 import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
 import {
   Calendar,
@@ -17,37 +15,18 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  RefreshCw,
   Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import z from 'zod';
-import {
-  useCurrentPeriod,
-  useCreatePeriod,
-  useCloseCurrentAndCreateNext,
-  useUpdatePeriod,
-  useDeletePeriod,
-} from '@/hooks/use-periods';
+import { useState } from 'react';
+import { useCurrentPeriod, useUpdatePeriod, useDeletePeriod } from '@/hooks/use-periods';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
-import toast from 'react-hot-toast';
 import { useWorkspaceMember } from '@/providers/workspace-provider';
-
-// Form schema for new period
-const newPeriodSchema = z.object({
-  year: z.number().min(2020).max(2100),
-  month: z.number().min(1).max(12),
-});
-
-type NewPeriodFormValues = z.infer<typeof newPeriodSchema>;
+import NewMonthForm from '@/components/dashboard/new-month-form';
 
 export default function CurrentMonthPage() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const { member } = useWorkspaceMember();
   const workspaceId = member?.workspaceId;
 
@@ -56,69 +35,8 @@ export default function CurrentMonthPage() {
   );
 
   // Mutations
-  const createPeriodMutation = useCreatePeriod();
-  const closeAndCreateNextMutation = useCloseCurrentAndCreateNext();
   const updatePeriodMutation = useUpdatePeriod();
   const deletePeriodMutation = useDeletePeriod();
-
-  // Form setup
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    setValue,
-  } = useForm<NewPeriodFormValues>({
-    resolver: zodResolver(newPeriodSchema),
-    defaultValues: {
-      year: new Date().getFullYear(),
-      month: new Date().getMonth() + 1,
-    },
-  });
-
-  // Set current date as default when dialog opens
-  useEffect(() => {
-    if (isCreateDialogOpen) {
-      setValue('year', new Date().getFullYear());
-      setValue('month', new Date().getMonth() + 1);
-    }
-  }, [isCreateDialogOpen, setValue]);
-
-  const handleCreatePeriod = async (data: NewPeriodFormValues) => {
-    if (!workspaceId) {
-      toast.error('No workspace selected');
-      return;
-    }
-
-    try {
-      await createPeriodMutation.mutateAsync({
-        workspaceId,
-        year: data.year,
-        month: data.month,
-      });
-
-      setIsCreateDialogOpen(false);
-      reset();
-      refetchCurrentPeriod();
-    } catch {
-      // Error is handled by the mutation
-    }
-  };
-
-  const handleCloseAndCreateNext = async () => {
-    if (!workspaceId) {
-      toast.error('No workspace selected');
-      return;
-    }
-
-    try {
-      await closeAndCreateNextMutation.mutateAsync({ workspaceId });
-      setIsCloseDialogOpen(false);
-      refetchCurrentPeriod();
-    } catch {
-      // Error is handled by the mutation
-    }
-  };
 
   const handleClosePeriod = async () => {
     if (!currentPeriod) return;
@@ -155,7 +73,7 @@ export default function CurrentMonthPage() {
       <div className="flex min-h-[80vh] items-center justify-center p-6">
         <div className="w-full max-w-md text-center">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400">
-            <AlertCircle className="h-10 w-10" />
+            <AlertCircle className="size-10" />
           </div>
           <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
             No Workspace Access
@@ -189,64 +107,15 @@ export default function CurrentMonthPage() {
             Start a new period to begin tracking meals, expenses, and member balances.
           </p>
 
-          <ResponsiveDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <ResponsiveDialog.Trigger>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
+          <ResponsiveDialog open={open} onOpenChange={setOpen}>
+            <ResponsiveDialog.Trigger asChild>
+              <Button className="mx-auto flex items-center gap-2">
+                <Plus className="size-4" />
                 Start New Period
               </Button>
             </ResponsiveDialog.Trigger>
-
             <ResponsiveDialog.Content>
-              <form onSubmit={handleSubmit(handleCreatePeriod)}>
-                <ResponsiveDialog.Header>
-                  <ResponsiveDialog.Title>Start New Period</ResponsiveDialog.Title>
-                  <ResponsiveDialog.Description>
-                    Set up a new period for tracking meals and expenses.
-                  </ResponsiveDialog.Description>
-                </ResponsiveDialog.Header>
-
-                <div className="space-y-4 py-4">
-                  <FormSelect
-                    options={Array.from({ length: 12 }, (_, i) => ({
-                      value: (i + 1).toString(),
-                      label: new Date(2000, i, 1).toLocaleString('default', { month: 'long' }),
-                    }))}
-                    label="Month"
-                    {...register('month', { valueAsNumber: true })}
-                    error={errors.month?.message}
-                  />
-
-                  <FormInput
-                    label="Year"
-                    type="number"
-                    min="2020"
-                    max="2100"
-                    {...register('year', { valueAsNumber: true })}
-                    error={errors.year?.message}
-                  />
-                </div>
-
-                <ResponsiveDialog.Footer>
-                  <Button
-                    type="button"
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    disabled={createPeriodMutation.isPending}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={createPeriodMutation.isPending || isSubmitting}
-                    className="flex items-center gap-2"
-                  >
-                    {createPeriodMutation.isPending && (
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    )}
-                    Start Period
-                  </Button>
-                </ResponsiveDialog.Footer>
-              </form>
+              <NewMonthForm />
             </ResponsiveDialog.Content>
           </ResponsiveDialog>
         </div>
@@ -322,7 +191,7 @@ export default function CurrentMonthPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center tablet:justify-between">
+      <div className="tablet:flex-row tablet:items-center tablet:justify-between flex flex-col gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             {periodData.currentPeriod}
@@ -336,45 +205,6 @@ export default function CurrentMonthPage() {
         <div className="flex flex-wrap gap-2">
           {currentPeriod.status === 'open' && (
             <>
-              <ResponsiveDialog open={isCloseDialogOpen} onOpenChange={setIsCloseDialogOpen}>
-                <ResponsiveDialog.Trigger>
-                  <Button className="flex items-center gap-2">
-                    <RefreshCw className="h-4 w-4" />
-                    Close & Create Next
-                  </Button>
-                </ResponsiveDialog.Trigger>
-
-                <ResponsiveDialog.Content>
-                  <ResponsiveDialog.Header>
-                    <ResponsiveDialog.Title>Close Current Period</ResponsiveDialog.Title>
-                    <ResponsiveDialog.Description>
-                      This will close the current period and automatically create the next month's
-                      period. This action cannot be undone.
-                    </ResponsiveDialog.Description>
-                  </ResponsiveDialog.Header>
-
-                  <ResponsiveDialog.Footer>
-                    <Button
-                      type="button"
-                      onClick={() => setIsCloseDialogOpen(false)}
-                      disabled={closeAndCreateNextMutation.isPending}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleCloseAndCreateNext}
-                      disabled={closeAndCreateNextMutation.isPending}
-                      className="flex items-center gap-2"
-                    >
-                      {closeAndCreateNextMutation.isPending && (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                      )}
-                      Close & Create Next
-                    </Button>
-                  </ResponsiveDialog.Footer>
-                </ResponsiveDialog.Content>
-              </ResponsiveDialog>
-
               <Button
                 onClick={handleClosePeriod}
                 disabled={updatePeriodMutation.isPending}
@@ -426,7 +256,7 @@ export default function CurrentMonthPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2 laptop:grid-cols-4">
+      <div className="tablet:grid-cols-2 laptop:grid-cols-4 grid grid-cols-1 gap-4">
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
@@ -528,13 +358,13 @@ export default function CurrentMonthPage() {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 gap-6 laptop:grid-cols-2">
+          <div className="laptop:grid-cols-2 grid grid-cols-1 gap-6">
             {/* Quick Actions */}
             <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 Quick Actions
               </h3>
-              <div className="space-y-3">
+              <div className="flex flex-col gap-4">
                 <Link href="/dashboard/meals">
                   <Button className="w-full justify-start">
                     <Utensils className="mr-2 h-4 w-4" />
@@ -604,25 +434,25 @@ export default function CurrentMonthPage() {
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Member
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Meals
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Deposit
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Balance
                   </th>
@@ -634,7 +464,7 @@ export default function CurrentMonthPage() {
               <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
                 {memberSummary.map((member, index) => (
                   <tr key={index}>
-                    <td className="whitespace-nowrap px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -643,15 +473,15 @@ export default function CurrentMonthPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {member.meals}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       ${member.deposit}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap">
                       <span
-                        className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                        className={`inline-flex rounded-full px-2 text-xs leading-5 font-semibold ${
                           member.balance >= 0
                             ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-800'
@@ -660,7 +490,7 @@ export default function CurrentMonthPage() {
                         ${member.balance.toFixed(2)}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                    <td className="px-6 py-4 text-right text-sm font-medium whitespace-nowrap">
                       <a href="#" className="text-purple-600 hover:text-purple-900">
                         Edit
                       </a>
@@ -679,31 +509,31 @@ export default function CurrentMonthPage() {
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Description
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Amount
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Date
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Category
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
                   >
                     Type
                   </th>
@@ -712,11 +542,11 @@ export default function CurrentMonthPage() {
               <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
                 {recentTransactions.map((transaction) => (
                   <tr key={transaction.id}>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                    <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900 dark:text-white">
                       {transaction.description}
                     </td>
                     <td
-                      className={`whitespace-nowrap px-6 py-4 text-sm ${
+                      className={`px-6 py-4 text-sm whitespace-nowrap ${
                         transaction.type === 'expense'
                           ? 'text-red-600'
                           : transaction.type === 'deposit'
@@ -726,13 +556,13 @@ export default function CurrentMonthPage() {
                     >
                       {transaction.type === 'expense' ? '-' : '+'}${transaction.amount.toFixed(2)}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {transaction.date}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {transaction.category}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {transaction.type}
                     </td>
                   </tr>

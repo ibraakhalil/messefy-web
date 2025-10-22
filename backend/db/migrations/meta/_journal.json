@@ -50,6 +50,13 @@
       "when": 1760810266978,
       "tag": "0006_panoramic_eternals",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1761070319931,
+      "tag": "0007_glorious_dreadnoughts",
+      "breakpoints": true
     }
   ]
 }

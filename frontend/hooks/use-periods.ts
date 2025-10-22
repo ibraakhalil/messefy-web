@@ -7,7 +7,6 @@ import {
   getCurrentPeriod,
   updatePeriod,
   deletePeriod,
-  closeCurrentAndCreateNext,
 } from '@/lib/period-requests';
 import { UpdatePeriodRequest } from '@/types/period';
 import toast from 'react-hot-toast';
@@ -118,28 +117,6 @@ export function useDeletePeriod() {
     },
     onError: (error: any) => {
       const message = error.response?.data?.error || 'Failed to delete period';
-      toast.error(message);
-    },
-  });
-}
-
-/**
- * Hook to close current period and create next period
- */
-export function useCloseCurrentAndCreateNext() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ workspaceId }: { workspaceId: string }) =>
-      closeCurrentAndCreateNext(workspaceId),
-    onSuccess: (data, { workspaceId }) => {
-      queryClient.invalidateQueries({ queryKey: periodKeys.list(workspaceId) });
-      queryClient.invalidateQueries({ queryKey: periodKeys.current(workspaceId) });
-      toast.success('Period closed and new period created successfully');
-    },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.error || 'Failed to close current and create next period';
       toast.error(message);
     },
   });

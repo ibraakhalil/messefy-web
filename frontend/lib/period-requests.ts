@@ -81,19 +81,3 @@ export async function deletePeriod(periodId: string): Promise<void> {
     throw error;
   }
 }
-
-/**
- * Close current period and create next period
- */
-export async function closeCurrentAndCreateNext(workspaceId: string): Promise<{
-  closedPeriod: Period;
-  newPeriod: Period;
-}> {
-  try {
-    const response = await api.post(`/periods/workspace/${workspaceId}/close-and-create-next`);
-    return response.data;
-  } catch (error) {
-    console.error('Error closing current and creating next period:', error);
-    throw error;
-  }
-}

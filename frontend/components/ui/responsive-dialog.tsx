@@ -65,13 +65,18 @@ const ResponsiveDialog = ({ children, open, onOpenChange }: ResponsiveDialogProp
 };
 
 // Trigger Component
-const ResponsiveDialogTrigger = ({ children }: { children: React.ReactNode }) => {
+const ResponsiveDialogTrigger = ({
+  children,
+  asChild = false,
+}: {
+  children: React.ReactNode;
+  asChild?: boolean;
+}) => {
   const { isDesktop } = useResponsiveDialog();
   const Component = isDesktop ? DialogTrigger : DrawerTrigger;
-  return <Component>{children}</Component>;
+  return <Component asChild={asChild}>{children}</Component>;
 };
 
-// Content Component
 const ResponsiveDialogContent = ({
   children,
   className,
