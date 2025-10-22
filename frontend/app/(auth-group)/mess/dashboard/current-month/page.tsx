@@ -12,17 +12,17 @@ import {
   TrendingUp,
   Users,
   Utensils,
-  AlertCircle,
   CheckCircle,
   Clock,
   Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useCurrentPeriod, useUpdatePeriod, useDeletePeriod } from '@/hooks/use-periods';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { useWorkspaceMember } from '@/providers/workspace-provider';
-import NewMonthForm from '@/components/dashboard/new-month-form';
+import { CreateMonthForm } from '@/components/dashboard/new-month-form';
+import { DeleteModal } from '@/components/modals/delete-modal';
 
 export default function CurrentMonthPage() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -67,31 +67,6 @@ export default function CurrentMonthPage() {
     }
   };
 
-  // No workspace state
-  if (!workspaceId) {
-    return (
-      <div className="flex min-h-[80vh] items-center justify-center p-6">
-        <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400">
-            <AlertCircle className="size-10" />
-          </div>
-          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-            No Workspace Access
-          </h1>
-          <p className="mb-8 text-gray-600 dark:text-gray-400">
-            You need to be a member of a workspace to access period management.
-          </p>
-          <Link
-            href="/dashboard"
-            className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
-          >
-            Back to Dashboard
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   // No current period state
   if (!currentPeriod) {
     return (
@@ -115,7 +90,7 @@ export default function CurrentMonthPage() {
               </Button>
             </ResponsiveDialog.Trigger>
             <ResponsiveDialog.Content>
-              <NewMonthForm />
+              <CreateMonthForm />
             </ResponsiveDialog.Content>
           </ResponsiveDialog>
         </div>
@@ -204,16 +179,24 @@ export default function CurrentMonthPage() {
 
         <div className="flex flex-wrap gap-2">
           {currentPeriod.status === 'open' && (
-            <>
-              <Button
-                onClick={handleClosePeriod}
-                disabled={updatePeriodMutation.isPending}
-                className="flex items-center gap-2"
-              >
-                <CheckCircle className="h-4 w-4" />
-                Close Period
-              </Button>
-
+            <Fragment>
+              <ResponsiveDialog>
+                <ResponsiveDialog.Trigger asChild>
+                  <Button
+                    disabled={updatePeriodMutation.isPending}
+                    className="flex items-center gap-2"
+                  >
+                    <CheckCircle className="size-4" />
+                    Close Period
+                  </Button>
+                </ResponsiveDialog.Trigger>
+                <ResponsiveDialog.Content>
+                  <DeleteModal
+                    subtitle="Are you sure you want to close the current period?"
+                    onDelete={handleClosePeriod}
+                  />
+                </ResponsiveDialog.Content>
+              </ResponsiveDialog>
               <Button
                 onClick={handleDeletePeriod}
                 disabled={deletePeriodMutation.isPending}
@@ -222,7 +205,7 @@ export default function CurrentMonthPage() {
                 <Trash2 className="h-4 w-4" />
                 Delete
               </Button>
-            </>
+            </Fragment>
           )}
 
           <Button className="flex items-center gap-2">

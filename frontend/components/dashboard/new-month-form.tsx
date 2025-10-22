@@ -24,7 +24,7 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => ({
   label: new Date(2000, i).toLocaleString('default', { month: 'long' }),
 }));
 
-export default function NewMonthForm() {
+export function CreateMonthForm() {
   const { mutateAsync, isPending } = useCreatePeriod();
   const { member } = useWorkspaceMember();
 

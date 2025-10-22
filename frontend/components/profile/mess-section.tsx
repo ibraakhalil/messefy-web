@@ -1,12 +1,25 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import LeaveWorkspaceButton from './leave-workspace-button';
 import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { ResponsiveDialog } from '../ui/responsive-dialog';
+import Button from '../ui/button';
+import { LogOut } from 'lucide-react';
+import { DeleteModal } from '../modals/delete-modal';
+import { leaveWorkspace } from '@/lib/workspace-requests';
+import toast from 'react-hot-toast';
 
 export default function MessSection() {
   const { member } = useWorkspaceMember();
-  const router = useRouter();
+
+  const handleLeaveWorkspace = async () => {
+    try {
+      await leaveWorkspace(member?.workspaceId || '');
+      toast.success('Successfully left the workspace');
+    } catch (error) {
+      toast.error('Failed to leave workspace');
+      console.error('Error leaving workspace:', error);
+    }
+  };
 
   if (!member?.workspace) {
     return (
@@ -30,11 +43,24 @@ export default function MessSection() {
           </div>
 
           {member.role !== 'owner' && (
-            <LeaveWorkspaceButton
-              workspaceId={member?.workspace.id}
-              workspaceName={member?.workspace.name}
-              onSuccess={() => router.refresh()}
-            />
+            <ResponsiveDialog>
+              <ResponsiveDialog.Trigger>
+                <Button
+                  variant="secondary"
+                  className="border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50"
+                  leftIcon={LogOut}
+                >
+                  Leave Workspace
+                </Button>
+              </ResponsiveDialog.Trigger>
+              <ResponsiveDialog.Content>
+                <DeleteModal
+                  title="Leave Workspace"
+                  subtitle="Are you sure you want to leave this workspace? All your data will be preserved but you won't have access anymore."
+                  onDelete={handleLeaveWorkspace}
+                />
+              </ResponsiveDialog.Content>
+            </ResponsiveDialog>
           )}
         </div>
       </div>

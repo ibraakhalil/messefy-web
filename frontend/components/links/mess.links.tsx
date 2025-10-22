@@ -11,6 +11,7 @@ export function MessLink({ children, ...props }: LinkProps) {
     </Link>
   );
 }
+
 export function MessCreate({ children, ...props }: LinkProps) {
   return (
     <Link href="/mess/create" {...props}>
