@@ -201,11 +201,11 @@ export async function updatePeriod(c: Context) {
       return c.json({ error: 'Unable to update period. Please try again later' }, 500);
     }
 
-    const member2 = await db.query.members.findFirst({
+    const manager = await db.query.members.findFirst({
       where: (m, { eq }) => eq(m.id, period.managerId),
     });
 
-    if (member2 && member2.role !== 'owner') {
+    if (manager && manager.role !== 'owner') {
       await db.update(members).set({ role: 'member' }).where(eq(members.id, period.managerId));
     }
 
@@ -257,6 +257,15 @@ export async function deletePeriod(c: Context) {
 
     if (!deletedPeriod) {
       return c.json({ error: 'Unable to delete period. Please try again later' }, 500);
+    }
+
+    // When a period is deleted, change the manager's role back to member if they're not an owner
+    const manager = await db.query.members.findFirst({
+      where: (m, { eq }) => eq(m.id, period.managerId),
+    });
+
+    if (manager && manager.role !== 'owner') {
+      await db.update(members).set({ role: 'member' }).where(eq(members.id, period.managerId));
     }
 
     return c.json({ message: 'Period deleted successfully', period: deletedPeriod });

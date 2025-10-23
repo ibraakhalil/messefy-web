@@ -29,7 +29,6 @@ export default function CurrentMonthPage() {
   const [open, setOpen] = useState(false);
   const { member } = useWorkspaceMember();
   const workspaceId = member?.workspaceId;
-
   const { data: currentPeriod, refetch: refetchCurrentPeriod } = useCurrentPeriod(
     workspaceId || '',
   );
@@ -54,10 +53,6 @@ export default function CurrentMonthPage() {
 
   const handleDeletePeriod = async () => {
     if (!currentPeriod) return;
-
-    if (!confirm('Are you sure you want to delete this period? This action cannot be undone.')) {
-      return;
-    }
 
     try {
       await deletePeriodMutation.mutateAsync(currentPeriod.id);
@@ -197,14 +192,23 @@ export default function CurrentMonthPage() {
                   />
                 </ResponsiveDialog.Content>
               </ResponsiveDialog>
-              <Button
-                onClick={handleDeletePeriod}
-                disabled={deletePeriodMutation.isPending}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete
-              </Button>
+              <ResponsiveDialog>
+                <ResponsiveDialog.Trigger asChild>
+                  <Button
+                    disabled={deletePeriodMutation.isPending}
+                    className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </Button>
+                </ResponsiveDialog.Trigger>
+                <ResponsiveDialog.Content>
+                  <DeleteModal
+                    subtitle="Are you sure you want to close the current period?"
+                    onDelete={handleDeletePeriod}
+                  />
+                </ResponsiveDialog.Content>
+              </ResponsiveDialog>
             </Fragment>
           )}
 
