@@ -1,0 +1,1 @@
+ALTER TABLE "meal_entries" DROP COLUMN "guest_meals";

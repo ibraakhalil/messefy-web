@@ -57,6 +57,13 @@
       "when": 1761070319931,
       "tag": "0007_glorious_dreadnoughts",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1761246036252,
+      "tag": "0008_silent_sabretooth",
+      "breakpoints": true
     }
   ]
 }

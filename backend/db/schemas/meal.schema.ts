@@ -22,7 +22,6 @@ export const mealEntries = pgTable('meal_entries', {
   breakfast: integer('breakfast').default(0).notNull(),
   lunch: integer('lunch').default(0).notNull(),
   dinner: integer('dinner').default(0).notNull(),
-  guestMeals: integer('guest_meals').default(0).notNull(),
 
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' })
