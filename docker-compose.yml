@@ -37,6 +37,7 @@ services:
     networks:
       - app-net
 
+
   frontend:
     build:
       context: ./frontend
