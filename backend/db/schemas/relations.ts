@@ -4,6 +4,7 @@ import { workspaces } from './workspace.schema';
 import { invitations } from './invitation.schema';
 import { members } from './member.schema';
 import { periods } from './period.schema';
+import { mealEntries } from './meal.schema';
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
   user: one(users, {
@@ -29,12 +30,29 @@ export const membersRelations = relations(members, ({ one }) => ({
 
 export const workspaceRelations = relations(workspaces, ({ many }) => ({
   periods: many(periods),
+  mealEntries: many(mealEntries),
 }));
 
-export const periodsRelations = relations(periods, ({ one }) => ({
+export const periodsRelations = relations(periods, ({ one, many }) => ({
   workspace: one(workspaces, {
     fields: [periods.workspaceId],
     references: [workspaces.id],
+  }),
+  mealEntries: many(mealEntries),
+}));
+
+export const mealEntriesRelations = relations(mealEntries, ({ one }) => ({
+  workspace: one(workspaces, {
+    fields: [mealEntries.workspaceId],
+    references: [workspaces.id],
+  }),
+  period: one(periods, {
+    fields: [mealEntries.periodId],
+    references: [periods.id],
+  }),
+  member: one(members, {
+    fields: [mealEntries.memberId],
+    references: [members.id],
   }),
 }));
 
