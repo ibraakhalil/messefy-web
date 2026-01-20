@@ -5,20 +5,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import Button from '@/components/ui/button';
-import { Loader2, Minus, Plus, Save } from 'lucide-react';
+import { Loader2, Minus, Plus, Save, Trash2 } from 'lucide-react';
 import { useMembers } from '@/hooks/use-members';
 import { useBatchCreateMeals } from '@/hooks/use-meals';
-import { useParams } from 'next/navigation';
 import { useCurrentPeriod } from '@/hooks/use-periods';
 import { toast } from 'react-hot-toast';
 import { useWorkspace } from '@/providers/workspace-provider';
+import { cn } from '@/utils/cn';
 
 const mealEntrySchema = z.object({
-  mealType: z.enum(['breakfast', 'lunch', 'dinner']),
   meals: z.array(
     z.object({
       memberId: z.string(),
-      count: z.number().min(0),
+      breakfast: z.number().min(0),
+      lunch: z.number().min(0),
+      dinner: z.number().min(0),
     }),
   ),
 });
@@ -37,7 +38,6 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
   const { mutate: saveMeals, isPending: isSaving } = useBatchCreateMeals();
 
   const {
-    register,
     handleSubmit,
     setValue,
     watch,
@@ -46,7 +46,6 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
   } = useForm<MealEntryFormValues>({
     resolver: zodResolver(mealEntrySchema),
     defaultValues: {
-      mealType: 'lunch',
       meals: [],
     },
   });
@@ -56,10 +55,10 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
     if (members) {
       const initialMeals = members.map((member) => ({
         memberId: member.id,
-        count: 0,
+        breakfast: 0,
+        lunch: 0,
+        dinner: 0,
       }));
-      // Only set if we haven't modified the form yet
-      // Or if form is clean (initial load)
       if (!isDirty) {
         setValue('meals', initialMeals);
       }
@@ -67,17 +66,27 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
   }, [members, setValue, isDirty]);
 
   const watchedMeals = watch('meals');
-  const totalMeals = watchedMeals?.reduce((sum, meal) => sum + (meal?.count || 0), 0) || 0;
+  const totalMeals =
+    watchedMeals?.reduce(
+      (sum, meal) => sum + (meal?.breakfast || 0) + (meal?.lunch || 0) + (meal?.dinner || 0),
+      0,
+    ) || 0;
 
-  const updateMemberCount = (index: number, change: number) => {
-    const currentCount = watchedMeals?.[index]?.count || 0;
+  const updateMemberCount = (
+    index: number,
+    type: 'breakfast' | 'lunch' | 'dinner',
+    change: number,
+  ) => {
+    const currentCount = watchedMeals?.[index]?.[type] || 0;
     const newCount = Math.max(0, currentCount + change);
-    setValue(`meals.${index}.count`, newCount);
+    setValue(`meals.${index}.${type}`, newCount);
   };
 
-  const setAllMeals = (count: number) => {
+  const clearAll = () => {
     watchedMeals.forEach((_, index) => {
-      setValue(`meals.${index}.count`, count);
+      setValue(`meals.${index}.breakfast`, 0);
+      setValue(`meals.${index}.lunch`, 0);
+      setValue(`meals.${index}.dinner`, 0);
     });
   };
 
@@ -87,21 +96,19 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
       return;
     }
 
-    const formattedMeals = data.meals.map((meal) => {
-      const entry: any = { memberId: meal.memberId };
-      // We only set the count for the selected meal type
-      // The backend will treat undefined fields as "do not update" if exists, or 0 if new
-      // For batch entry, we should probably be explicit.
-      // Actually, the backend `createBatchMealEntries` updates/merges.
-      // So we need to construct payload correctly.
-      // Wait, the UI only allows editing ONE meal type at a time for all members.
-      // So we are submitting a batch where:
-      // member A: { [mealType]: count }
-      // member B: { [mealType]: count }
+    const formattedMeals = data.meals
+      .filter((meal) => meal.breakfast > 0 || meal.lunch > 0 || meal.dinner > 0)
+      .map((meal) => ({
+        memberId: meal.memberId,
+        breakfast: meal.breakfast,
+        lunch: meal.lunch,
+        dinner: meal.dinner,
+      }));
 
-      entry[data.mealType] = meal.count;
-      return entry;
-    });
+    if (formattedMeals.length === 0) {
+      toast.error('Please add at least one meal');
+      return;
+    }
 
     saveMeals(
       {
@@ -112,12 +119,10 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
       },
       {
         onSuccess: () => {
-          // Optional: reset counts to 0 or keep them? Usually keep them for next day?
-          // User prob wants them reset or kept. Let's reset for now as per previous logic
           if (members) {
             setValue(
               'meals',
-              members.map((m) => ({ memberId: m.id, count: 0 })),
+              members.map((m) => ({ memberId: m.id, breakfast: 0, lunch: 0, dinner: 0 })),
             );
           }
         },
@@ -135,94 +140,114 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Meal Type *
-        </label>
-        <select
-          {...register('mealType')}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-        >
-          <option value="breakfast">Breakfast</option>
-          <option value="lunch">Lunch</option>
-          <option value="dinner">Dinner</option>
-        </select>
-      </div>
-
-      <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Member Meal Count</h3>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Total: {totalMeals} meals
-            </span>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setAllMeals(1)}
-                className="px-3 py-1 text-xs"
-              >
-                Set All to 1
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setAllMeals(0)}
-                className="px-3 py-1 text-xs"
-              >
-                Clear All
-              </Button>
-            </div>
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-800/50">
+          <div>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">Meal Sheet</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Total Count:{' '}
+              <span className="font-medium text-orange-600 dark:text-orange-400">{totalMeals}</span>
+            </p>
           </div>
+          {totalMeals > 0 && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={clearAll}
+              className="h-8 text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+            >
+              <Trash2 className="mr-2 h-3 w-3" />
+              Clear All
+            </Button>
+          )}
         </div>
 
-        <div className="tablet:grid-cols-2 laptop:grid-cols-3 grid grid-cols-1 gap-4">
-          {members?.map((member, index) => (
-            <div
-              key={member.id}
-              className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-600 dark:bg-gray-800"
-            >
-              <div>
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {member.user?.name || 'Unknown'}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {watchedMeals?.[index]?.count || 0} meal(s)
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => updateMemberCount(index, -1)}
-                  className="h-8 w-8 p-0"
-                  disabled={watchedMeals?.[index]?.count === 0}
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="min-w-[2rem] text-center font-medium">
-                  {watchedMeals?.[index]?.count || 0}
-                </span>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => updateMemberCount(index, 1)}
-                  className="h-8 w-8 p-0"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-gray-50 text-xs text-gray-500 uppercase dark:bg-gray-700/50 dark:text-gray-400">
+              <tr>
+                <th className="px-6 py-3 font-medium">Member</th>
+                <th className="px-6 py-3 text-center font-medium">Breakfast</th>
+                <th className="px-6 py-3 text-center font-medium">Lunch</th>
+                <th className="px-6 py-3 text-center font-medium">Dinner</th>
+                <th className="px-6 py-3 text-right font-medium">Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {members?.map((member, index) => {
+                const memberTotal =
+                  (watchedMeals?.[index]?.breakfast || 0) +
+                  (watchedMeals?.[index]?.lunch || 0) +
+                  (watchedMeals?.[index]?.dinner || 0);
+
+                return (
+                  <tr key={member.id} className="group hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                      {member.user?.name || 'Unknown'}
+                    </td>
+                    {(['breakfast', 'lunch', 'dinner'] as const).map((type) => (
+                      <td key={type} className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => updateMemberCount(index, type, -1)}
+                            disabled={watchedMeals?.[index]?.[type] === 0}
+                            className={cn(
+                              'flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-400 transition-colors hover:border-gray-300 hover:text-gray-600 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:text-gray-300',
+                              watchedMeals?.[index]?.[type] === 0 &&
+                                'cursor-not-allowed opacity-50 hover:border-gray-200',
+                            )}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span
+                            className={cn(
+                              'w-6 text-center font-medium',
+                              watchedMeals?.[index]?.[type] > 0
+                                ? 'text-gray-900 dark:text-white'
+                                : 'text-gray-400 dark:text-gray-500',
+                            )}
+                          >
+                            {watchedMeals?.[index]?.[type] || 0}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateMemberCount(index, type, 1)}
+                            className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-gray-50 text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:text-white"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </td>
+                    ))}
+                    <td className="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
+                      <span
+                        className={cn(
+                          'inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-full px-2 text-xs',
+                          memberTotal > 0
+                            ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                            : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500',
+                        )}
+                      >
+                        {memberTotal}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div className="flex gap-4 pt-4">
+      <div className="flex justify-end gap-4">
+        <Button type="button" variant="secondary" onClick={() => reset()}>
+          Reset
+        </Button>
         <Button
           type="submit"
           disabled={isSaving || totalMeals === 0}
-          className="min-w-[120px] bg-orange-600 hover:bg-orange-700"
+          className="min-w-[140px] bg-orange-600 hover:bg-orange-700"
         >
           {isSaving ? (
             <span className="flex items-center gap-2">
@@ -232,12 +257,9 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
           ) : (
             <span className="flex items-center gap-2">
               <Save className="h-4 w-4" />
-              Save Meals
+              Save Entries
             </span>
           )}
-        </Button>
-        <Button type="button" variant="secondary" onClick={() => reset()}>
-          Reset Form
         </Button>
       </div>
     </form>
