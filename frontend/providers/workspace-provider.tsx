@@ -9,28 +9,26 @@ export interface Workspace {
   ownerId: string;
 }
 
-interface WorkspaceMemberContextType {
+interface WorkspaceContextType {
   member: WorkspaceMember | null;
 }
 
-const WorkspaceMemberContext = createContext<WorkspaceMemberContextType | undefined>(undefined);
+const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
-export function WorkspaceMemberProvider({
+export function WorkspaceProvider({
   children,
   member,
 }: {
   children: ReactNode;
   member: WorkspaceMember | null;
 }) {
-  return (
-    <WorkspaceMemberContext.Provider value={{ member }}>{children}</WorkspaceMemberContext.Provider>
-  );
+  return <WorkspaceContext.Provider value={{ member }}>{children}</WorkspaceContext.Provider>;
 }
 
-export const useWorkspaceMember = (): WorkspaceMemberContextType => {
-  const context = useContext(WorkspaceMemberContext);
+export const useWorkspace = (): WorkspaceContextType => {
+  const context = useContext(WorkspaceContext);
   if (!context) {
-    throw new Error('useWorkspaceMember must be used within a WorkspaceMemberProvider');
+    throw new Error('useWorkspace must be used within a WorkspaceProvider');
   }
   return context;
 };

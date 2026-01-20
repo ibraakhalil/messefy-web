@@ -5,7 +5,7 @@ import FormInput from '../ui/form-input';
 import Button from '../ui/button';
 import z from 'zod';
 import { useCreatePeriod } from '@/hooks/use-periods';
-import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { useWorkspace } from '@/providers/workspace-provider';
 import toast from 'react-hot-toast';
 import { ResponsiveDialog } from '../ui/responsive-dialog';
 import { useQuery } from '@tanstack/react-query';
@@ -26,7 +26,7 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => ({
 
 export function CreateMonthForm() {
   const { mutateAsync, isPending } = useCreatePeriod();
-  const { member } = useWorkspaceMember();
+  const { member } = useWorkspace();
 
   const { data: members } = useQuery({
     queryKey: ['workspace-members'],

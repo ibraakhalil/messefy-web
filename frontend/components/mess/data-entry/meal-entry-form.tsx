@@ -11,6 +11,7 @@ import { useBatchCreateMeals } from '@/hooks/use-meals';
 import { useParams } from 'next/navigation';
 import { useCurrentPeriod } from '@/hooks/use-periods';
 import { toast } from 'react-hot-toast';
+import { useWorkspace } from '@/providers/workspace-provider';
 
 const mealEntrySchema = z.object({
   mealType: z.enum(['breakfast', 'lunch', 'dinner']),
@@ -29,8 +30,7 @@ interface MealEntryFormProps {
 }
 
 export default function MealEntryForm({ date }: MealEntryFormProps) {
-  const params = useParams();
-  const workspaceId = params.id as string;
+  const workspaceId = useWorkspace().member?.workspaceId || '';
 
   const { data: members, isLoading: isLoadingMembers } = useMembers(workspaceId);
   const { data: currentPeriod } = useCurrentPeriod(workspaceId);

@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import Button from '@/components/ui/button';
 import { TickIcon } from '@/components/svg/invitation-icons';
 import { Mail, X, RefreshCw, AlertCircle } from 'lucide-react';
-import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { useWorkspace } from '@/providers/workspace-provider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Invitation {
@@ -33,7 +33,7 @@ interface InvitationWithUser extends Invitation {
 export default function InvitationsPage() {
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { member } = useWorkspaceMember();
+  const { member } = useWorkspace();
   const workspace = member?.workspace;
 
   const {

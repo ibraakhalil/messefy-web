@@ -20,14 +20,14 @@ import Link from 'next/link';
 import { Fragment, useState } from 'react';
 import { useCurrentPeriod, useUpdatePeriod, useDeletePeriod } from '@/hooks/use-periods';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
-import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { useWorkspace } from '@/providers/workspace-provider';
 import { CreateMonthForm } from '@/components/dashboard/new-month-form';
 import { DeleteModal } from '@/components/modals/delete-modal';
 
 export default function CurrentMonthPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [open, setOpen] = useState(false);
-  const { member } = useWorkspaceMember();
+  const { member } = useWorkspace();
   const workspaceId = member?.workspaceId;
   const { data: currentPeriod, refetch: refetchCurrentPeriod } = useCurrentPeriod(
     workspaceId || '',

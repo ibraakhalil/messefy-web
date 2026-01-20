@@ -20,14 +20,14 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { usePeriodsByWorkspace, useUpdatePeriod, useDeletePeriod } from '@/hooks/use-periods';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
-import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { useWorkspace } from '@/providers/workspace-provider';
 import { CreateMonthForm } from '@/components/dashboard/new-month-form';
 
 export default function AllMonthsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<any>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
-  const { member } = useWorkspaceMember();
+  const { member } = useWorkspace();
   const workspaceId = member?.workspaceId;
 
   // Period queries

@@ -1,6 +1,6 @@
 'use client';
 
-import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { useWorkspace } from '@/providers/workspace-provider';
 import { ResponsiveDialog } from '../ui/responsive-dialog';
 import Button from '../ui/button';
 import { LogOut } from 'lucide-react';
@@ -9,7 +9,7 @@ import { leaveWorkspace } from '@/lib/workspace-requests';
 import toast from 'react-hot-toast';
 
 export default function MessSection() {
-  const { member } = useWorkspaceMember();
+  const { member } = useWorkspace();
 
   const handleLeaveWorkspace = async () => {
     try {

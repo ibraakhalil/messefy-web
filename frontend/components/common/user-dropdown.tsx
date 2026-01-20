@@ -3,11 +3,11 @@ import { DropdownMenu } from '../ui/drop-down';
 import { ChevronDown, Settings, LogOut, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
-import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { useWorkspace } from '@/providers/workspace-provider';
 
 export default function UserDropdown() {
   const session = useSession();
-  const { member } = useWorkspaceMember();
+  const { member } = useWorkspace();
   const user = session.data?.user;
 
   return (

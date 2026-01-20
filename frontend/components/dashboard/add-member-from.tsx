@@ -1,4 +1,4 @@
-import { useWorkspaceMember } from '@/providers/workspace-provider';
+import { useWorkspace } from '@/providers/workspace-provider';
 import api from '@/utils/axios';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -7,7 +7,7 @@ import { useResponsiveDialog } from '../ui/responsive-dialog';
 
 export default function AddMemberForm({ onSuccess }: { onSuccess: (email: string) => void }) {
   const [email, setEmail] = useState('');
-  const { member } = useWorkspaceMember();
+  const { member } = useWorkspace();
   const workspace = member?.workspace;
   const { close } = useResponsiveDialog();
 
