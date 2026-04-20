@@ -2,11 +2,16 @@
 
 import Button from '@/components/ui/button';
 import FormInput from '@/components/ui/form-input';
+import { useMembers } from '@/hooks/use-members';
+import { deleteWorkspace } from '@/lib/workspace-requests';
+import { useWorkspace } from '@/providers/workspace-provider';
 import { formatCurrency } from '@/utils/format-currency';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, AlertTriangle, Database, Loader2, Shield, Trash2, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { z } from 'zod';
 
 const deleteMessSchema = z.object({
@@ -23,15 +28,19 @@ type DeleteMessFormValues = z.infer<typeof deleteMessSchema>;
 
 export default function DeleteMessPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { member } = useWorkspace();
+  const workspace = member?.workspace;
+  const workspaceId = workspace?.id || '';
+  const { data: members = [] } = useMembers(workspaceId);
 
-  // Mock mess data
   const messData = {
-    name: 'Sunrise Mess',
-    createdDate: '2023-06-15',
-    totalMembers: 8,
-    totalMonths: 6,
-    currentBalance: 1250.75,
-    totalTransactions: 124,
+    name: workspace?.name || '',
+    createdDate: workspace?.createdAt || '',
+    totalMembers: members.length,
+    totalMonths: 0,
+    currentBalance: 0,
+    totalTransactions: 0,
   };
 
   const {
@@ -56,16 +65,19 @@ export default function DeleteMessPage() {
   const isFormValid = watchedMessName === messData.name && watchedConfirmation === 'DELETE';
 
   const onSubmit = async (data: DeleteMessFormValues) => {
-    if (!isFormValid) return;
+    if (!isFormValid || !workspaceId) return;
 
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      console.log('Delete mess data:', data);
-      // Redirect to home or show success message
-      alert('Mess deleted successfully. You will be redirected to the home page.');
+      await deleteWorkspace(workspaceId, data.password);
+      toast.success('Mess deleted successfully');
+      router.push('/profile');
     } catch (error) {
       console.error('Error deleting mess:', error);
+      const message =
+        (error as { response?: { data?: { error?: string } } }).response?.data?.error ||
+        'Failed to delete mess';
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -80,7 +92,7 @@ export default function DeleteMessPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Delete Mess</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Permanently delete this mess and all associated data
+            Permanently delete this mess and all associated data, including offline-only members
           </p>
         </div>
       </div>
@@ -97,7 +109,7 @@ export default function DeleteMessPage() {
               Deleting your mess will permanently remove all data including:
             </p>
             <ul className="space-y-1 text-sm text-red-700 dark:text-red-300">
-              <li>• All member accounts and information</li>
+              <li>• All offline member accounts created for this mess</li>
               <li>• Complete transaction history and records</li>
               <li>• Monthly reports and analytics</li>
               <li>• Meal logs and expense tracking</li>
@@ -120,7 +132,7 @@ export default function DeleteMessPage() {
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Mess Name</p>
-              <p className="font-semibold text-gray-900 dark:text-white">{messData.name}</p>
+              <p className="font-semibold text-gray-900 dark:text-white">{messData.name || 'Loading...'}</p>
             </div>
           </div>
 
@@ -141,7 +153,7 @@ export default function DeleteMessPage() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Records</p>
               <p className="font-semibold text-gray-900 dark:text-white">
-                {messData.totalTransactions}
+                {messData.totalTransactions || 'Pending'}
               </p>
             </div>
           </div>
@@ -298,8 +310,8 @@ export default function DeleteMessPage() {
             <p className="text-sm text-yellow-700 dark:text-yellow-300">
               This action will immediately and permanently delete your mess. All{' '}
               {messData.totalMembers} members will lose access, and {messData.totalTransactions}{' '}
-              records will be permanently lost. Make sure you have exported any data you need to
-              keep.
+              records will be permanently lost. Offline members created only for this mess will be
+              removed as well.
             </p>
           </div>
 

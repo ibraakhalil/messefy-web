@@ -1,7 +1,8 @@
 import type { Context } from 'hono';
 import { db } from '../db';
-import { invitations, members, workspaces } from '../db/schemas';
-import { eq, name } from 'drizzle-orm';
+import { adjustments, deposits, expenses, invitations, mealEntries, members, periods, users, workspaces } from '../db/schemas';
+import { and, eq } from 'drizzle-orm';
+import { deleteDetachedOfflineUsers, getOfflineUserIdsByWorkspace } from '../utils/offline-user';
 
 export async function createWorkspace(c: Context) {
   const { name, slug, description } = await c.req.json();
@@ -44,6 +45,66 @@ export async function createWorkspace(c: Context) {
   } catch (error) {
     console.error('Error creating workspace:', error);
     return c.json({ error: 'Unable to create workspace. Please try again later' }, 500);
+  }
+}
+
+export async function deleteWorkspace(c: Context) {
+  const workspaceId = c.req.param('workspaceId');
+  const ownerId = c.get('ownerId');
+  const { password } = await c.req.json().catch(() => ({}));
+
+  if (!workspaceId || !ownerId) {
+    return c.json({ error: 'Workspace ID and owner ID are required' }, 400);
+  }
+
+  if (!password || typeof password !== 'string') {
+    return c.json({ error: 'Password is required' }, 400);
+  }
+
+  try {
+    const [workspace, owner, offlineUserIds] = await Promise.all([
+      db.query.workspaces.findFirst({
+        where: (workspace, { and, eq }) =>
+          and(eq(workspace.id, workspaceId), eq(workspace.ownerId, ownerId), eq(workspace.isActive, true)),
+        columns: {
+          id: true,
+        },
+      }),
+      db.query.users.findFirst({
+        where: (user, { and, eq }) => and(eq(user.id, ownerId), eq(user.isActive, true)),
+        columns: {
+          id: true,
+          password: true,
+        },
+      }),
+      getOfflineUserIdsByWorkspace(workspaceId),
+    ]);
+
+    if (!workspace) {
+      return c.json({ error: 'Workspace not found' }, 404);
+    }
+
+    if (!owner?.password || owner.password !== password) {
+      return c.json({ error: 'Invalid password' }, 403);
+    }
+
+    await db.transaction(async (tx) => {
+      await tx.delete(invitations).where(eq(invitations.workspaceId, workspaceId));
+      await tx.delete(adjustments).where(eq(adjustments.workspaceId, workspaceId));
+      await tx.delete(deposits).where(eq(deposits.workspaceId, workspaceId));
+      await tx.delete(expenses).where(eq(expenses.workspaceId, workspaceId));
+      await tx.delete(mealEntries).where(eq(mealEntries.workspaceId, workspaceId));
+      await tx.delete(periods).where(eq(periods.workspaceId, workspaceId));
+      await tx.delete(members).where(eq(members.workspaceId, workspaceId));
+      await tx.delete(workspaces).where(eq(workspaces.id, workspaceId));
+    });
+
+    await deleteDetachedOfflineUsers(offlineUserIds);
+
+    return c.json({ message: 'Workspace deleted successfully' }, 200);
+  } catch (error) {
+    console.error('Error deleting workspace:', error);
+    return c.json({ error: 'Failed to delete workspace' }, 500);
   }
 }
 

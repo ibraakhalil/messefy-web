@@ -3,6 +3,7 @@ import {
   acceptInvitationByOwner,
   cancelInvitationByOwner,
   createWorkspace,
+  deleteWorkspace,
   getWorkspaceById,
   getWorkspaceInvitations,
   getValidWorkspaceMember,
@@ -19,5 +20,6 @@ workspaceRoute.get('/:workspaceId/members', ownerCheck, getWorkspaceMembers);
 workspaceRoute.get('/:workspaceId/invitations', ownerCheck, getWorkspaceInvitations);
 workspaceRoute.post('/:workspaceId/invitations/:invitationId/accept', ownerCheck, acceptInvitationByOwner);
 workspaceRoute.delete('/:workspaceId/invitations/:invitationId/cancel', ownerCheck, cancelInvitationByOwner);
+workspaceRoute.delete('/:workspaceId', ownerCheck, deleteWorkspace);
 
 workspaceRoute.get('/:workspaceId', userAuthValidation, getWorkspaceById);

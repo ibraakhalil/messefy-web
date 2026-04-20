@@ -50,7 +50,7 @@ export async function loginWithCredentials(c: Context) {
   }
 
   const user = await db.query.users.findFirst({
-    where: (u, { eq }) => eq(u.email, email),
+    where: (u, { eq, and }) => and(eq(u.email, email), eq(u.isActive, true)),
   });
 
   if (!user || user.password !== password) {

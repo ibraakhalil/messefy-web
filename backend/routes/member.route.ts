@@ -4,5 +4,5 @@ import { addUserInWorkspace, leaveWorkspace } from '../controllers/member.contro
 
 export const memberRoute = new Hono();
 
-memberRoute.get('/:workspaceId/:email', ownerCheck, addUserInWorkspace);
+memberRoute.post('/:workspaceId', ownerCheck, addUserInWorkspace);
 memberRoute.delete('/:workspaceId/leave', userAuthValidation, leaveWorkspace);

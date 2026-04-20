@@ -11,18 +11,19 @@ export interface Workspace {
 
 interface User {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
 }
 
-export interface Member extends User {
+export interface Member {
   id: string;
-  userId: string;
+  userId: string | null;
   workspaceId: string;
-  name: string;
+  name: string | null;
   role: string;
+  isOffline: boolean;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  user: User;
+  user: User | null;
 }

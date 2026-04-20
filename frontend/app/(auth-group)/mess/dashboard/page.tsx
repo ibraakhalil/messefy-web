@@ -11,6 +11,7 @@ import { endOfMonth, formatDistanceToNow } from 'date-fns';
 import {
   AlertCircle,
   Calendar,
+  Copy,
   DollarSign,
   FileText,
   Plus,
@@ -21,6 +22,7 @@ import {
   Utensils,
 } from 'lucide-react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 function getPeriodName(year: number, month: number) {
   return new Date(year, month - 1).toLocaleString('default', {
@@ -83,6 +85,18 @@ export default function DashboardPage() {
     error,
     refetch,
   } = useCurrentWorkspaceSummary(workspaceId, !!currentPeriod);
+
+  const handleCopyMessId = async () => {
+    if (!workspaceId) return;
+
+    try {
+      await navigator.clipboard.writeText(workspaceId);
+      toast.success('Mess ID copied');
+    } catch (error) {
+      console.error('Failed to copy mess ID:', error);
+      toast.error('Failed to copy mess ID');
+    }
+  };
 
   if (!workspaceId) {
     return (
@@ -257,6 +271,10 @@ export default function DashboardPage() {
               Manage Period
             </Button>
           </Link>
+          <Button variant="secondary" className="flex items-center gap-2" onClick={handleCopyMessId}>
+            <Copy className="h-4 w-4" />
+            Copy Mess ID
+          </Button>
           <Link href="/mess/dashboard/settings">
             <Button variant="secondary" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />

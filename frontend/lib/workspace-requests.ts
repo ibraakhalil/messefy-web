@@ -29,3 +29,15 @@ export async function leaveWorkspace(workspaceId: string) {
     throw error;
   }
 }
+
+export async function deleteWorkspace(workspaceId: string, password: string) {
+  try {
+    const { data } = await api.delete(`/workspaces/${workspaceId}`, {
+      data: { password },
+    });
+    return data;
+  } catch (error) {
+    console.error('Error deleting workspace:', error);
+    throw error;
+  }
+}
