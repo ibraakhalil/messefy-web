@@ -1,11 +1,15 @@
-// routes/user.ts
 import { Hono } from 'hono';
 import { db } from '../db';
 import { eq } from 'drizzle-orm';
 import { isValidUUID } from '../utils/validators';
 import { users } from '../db/schemas';
+import { userAuthValidation } from '../middlewares/auth.middleware';
+import { getCurrentUser, updateCurrentUser } from '../controllers/user.controller';
 
 export const userRoute = new Hono();
+
+userRoute.get('/users/me', userAuthValidation, getCurrentUser);
+userRoute.patch('/users/me', userAuthValidation, updateCurrentUser);
 
 userRoute.get('/users', async (c) => {
   try {

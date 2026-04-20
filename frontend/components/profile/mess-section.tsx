@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 
 export default function MessSection() {
   const { member } = useWorkspace();
+  const canLeaveWorkspace = Boolean(member && member.role !== 'owner' && !member.isOffline);
 
   const handleLeaveWorkspace = async () => {
     try {
@@ -42,7 +43,7 @@ export default function MessSection() {
             </p>
           </div>
 
-          {member.role !== 'owner' && (
+          {canLeaveWorkspace && (
             <ResponsiveDialog>
               <ResponsiveDialog.Trigger>
                 <Button
@@ -68,7 +69,11 @@ export default function MessSection() {
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
         <h4 className="mb-2 text-sm font-medium text-blue-900">Workspace Information</h4>
         <ul className="space-y-1 text-sm text-blue-800">
-          <li>• You can leave this workspace at any time</li>
+          {member.isOffline ? (
+            <li>• Offline members can only be removed by the mess owner</li>
+          ) : (
+            <li>• You can leave this workspace at any time</li>
+          )}
           <li>• Your data will be preserved but you won't have access</li>
           <li>• You can be re-invited by an admin later</li>
         </ul>
