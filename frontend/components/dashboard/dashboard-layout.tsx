@@ -75,12 +75,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Navigation */}
         <nav className="flex-1 space-y-1 px-2 py-4">
           <Links.Dashboard>
-            <NavItem icon={LayoutGrid} isActive={path === '/dashboard'}>
+            <NavItem icon={LayoutGrid} isActive={path === '/mess/dashboard'}>
               Dashboard
             </NavItem>
           </Links.Dashboard>
           <Links.Invitations>
-            <NavItem icon={Send} isActive={path === '/dashboard'}>
+            <NavItem icon={Send} isActive={path.includes('/invitations')}>
               Invitations
             </NavItem>
           </Links.Invitations>
@@ -98,7 +98,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </Links.CurrentMonth>
 
           <Links.AllMonths>
-            <NavItem icon={Calendar} isActive={path.includes('/history')}>
+            <NavItem icon={Calendar} isActive={path.includes('/all-months')}>
               All Months
             </NavItem>
           </Links.AllMonths>

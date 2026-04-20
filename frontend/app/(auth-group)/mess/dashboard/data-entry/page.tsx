@@ -1,14 +1,76 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DollarSign, Receipt, Utensils } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import MealEntryForm from '@/components/mess/data-entry/meal-entry-form';
 import DepositEntryForm from '@/components/mess/data-entry/deposit-entry-form';
 import ExpenseEntryForm from '@/components/mess/data-entry/expense-entry-form';
+import { useWorkspace } from '@/providers/workspace-provider';
+import { useCurrentPeriod } from '@/hooks/use-periods';
+import NoActivePeriodState from '@/components/dashboard/no-active-period-state';
+
+type EntryType = 'meal' | 'deposit' | 'expense';
+
+const ENTRY_STYLES: Record<
+  EntryType,
+  { headerIcon: string; selectedCard: string; selectedCardIcon: string }
+> = {
+  meal: {
+    headerIcon: 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400',
+    selectedCard: 'border-orange-500 bg-orange-50 dark:bg-orange-900/20',
+    selectedCardIcon:
+      'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400',
+  },
+  deposit: {
+    headerIcon: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400',
+    selectedCard: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20',
+    selectedCardIcon:
+      'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400',
+  },
+  expense: {
+    headerIcon: 'bg-rose-100 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400',
+    selectedCard: 'border-rose-500 bg-rose-50 dark:bg-rose-900/20',
+    selectedCardIcon: 'bg-rose-100 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400',
+  },
+};
 
 export default function DataEntryPage() {
-  const [entryType, setEntryType] = useState<'meal' | 'deposit' | 'expense'>('meal');
+  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const { data: currentPeriod, isLoading } = useCurrentPeriod(workspaceId);
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type');
+  const selectedMemberId = searchParams.get('member') || undefined;
+  const initialType: EntryType =
+    typeParam === 'meal' || typeParam === 'deposit' || typeParam === 'expense'
+      ? typeParam
+      : 'meal';
+
+  const [entryType, setEntryType] = useState<EntryType>(initialType);
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
+
+  useEffect(() => {
+    if (typeParam === 'meal' || typeParam === 'deposit' || typeParam === 'expense') {
+      setEntryType(typeParam);
+    }
+  }, [typeParam]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center p-6">
+        <div className="text-gray-500">Checking active period...</div>
+      </div>
+    );
+  }
+
+  if (!currentPeriod) {
+    return (
+      <NoActivePeriodState
+        title="Data Entry Needs An Active Meal Month"
+        description="Meal, deposit, and expense entry are only available when a meal month is active."
+      />
+    );
+  }
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -23,24 +85,11 @@ export default function DataEntryPage() {
     }
   };
 
-  const getColor = (type: string) => {
-    switch (type) {
-      case 'meal':
-        return 'orange';
-      case 'deposit':
-        return 'emerald';
-      case 'expense':
-        return 'red';
-      default:
-        return 'blue';
-    }
-  };
-
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
       <div className="flex items-center gap-3">
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-lg bg-${getColor(entryType)}-100 text-${getColor(entryType)}-600 dark:bg-${getColor(entryType)}-900/20 dark:text-${getColor(entryType)}-400`}
+          className={`flex h-10 w-10 items-center justify-center rounded-lg ${ENTRY_STYLES[entryType].headerIcon}`}
         >
           {(() => {
             const Icon = getIcon(entryType);
@@ -81,10 +130,10 @@ export default function DataEntryPage() {
                 <button
                   key={type}
                   type="button"
-                  onClick={() => setEntryType(type as 'meal')}
+                  onClick={() => setEntryType(type as EntryType)}
                   className={`rounded-lg border p-4 text-left transition-all ${
                     entryType === type
-                      ? `border-${getColor(type)}-500 bg-${getColor(type)}-50 dark:bg-${getColor(type)}-900/20`
+                      ? ENTRY_STYLES[type as EntryType].selectedCard
                       : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600'
                   }`}
                 >
@@ -92,7 +141,7 @@ export default function DataEntryPage() {
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-lg ${
                         entryType === type
-                          ? `bg-${getColor(type)}-100 text-${getColor(type)}-600 dark:bg-${getColor(type)}-900/20 dark:text-${getColor(type)}-400`
+                          ? ENTRY_STYLES[type as EntryType].selectedCardIcon
                           : 'bg-gray-100 text-gray-600 dark:bg-gray-600 dark:text-gray-300'
                       }`}
                     >
@@ -127,7 +176,7 @@ export default function DataEntryPage() {
 
           {/* Form Components */}
           {entryType === 'meal' && <MealEntryForm date={date} />}
-          {entryType === 'deposit' && <DepositEntryForm />}
+          {entryType === 'deposit' && <DepositEntryForm selectedMemberId={selectedMemberId} />}
           {entryType === 'expense' && <ExpenseEntryForm />}
         </div>
       </div>

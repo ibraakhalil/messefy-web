@@ -72,13 +72,16 @@
 ### 5.5 MealEntry
 - Unique by `(memberId, date)`.
 - Tracks counts: breakfast, lunch, dinner, guests.
+- must have a active meal month or can't entry any meal
 
 ### 5.6 Deposit
 - Member deposits/payments into pool.
+- must have a active meal month or can't deposit any money
 
 ### 5.7 Expense
 - Shared costs (bazar, rent, utilities).
 - Allocation types = `by_meals | by_head | custom | personal`.
+- must have a active meal month or can't expense any money
 
 ### 5.8 Adjustment
 - Manual credit/debit.

@@ -5,7 +5,7 @@ type LinkProps = Omit<ComponentProps<typeof Link>, 'href'>;
 
 export function SignUpLink({ children, ...props }: LinkProps) {
   return (
-    <Link href="/auth/sign-up" {...props}>
+    <Link href="/auth/signup" {...props}>
       {children}
     </Link>
   );
@@ -13,7 +13,7 @@ export function SignUpLink({ children, ...props }: LinkProps) {
 
 export function SignInLink({ children, ...props }: LinkProps) {
   return (
-    <Link href="/auth/sign-in" {...props}>
+    <Link href="/auth/signin" {...props}>
       {children}
     </Link>
   );

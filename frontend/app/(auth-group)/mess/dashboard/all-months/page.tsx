@@ -111,7 +111,7 @@ export default function AllMonthsPage() {
             You need to be a member of a workspace to access period management.
           </p>
           <Link
-            href="/dashboard"
+            href="/mess/dashboard"
             className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
           >
             Back to Dashboard
@@ -394,11 +394,10 @@ export default function AllMonthsPage() {
                 <Button onClick={() => setIsViewDialogOpen(false)}>Close</Button>
                 <Button
                   onClick={() => {
-                    // Navigate to detailed view
-                    window.location.href = `/dashboard/periods/${selectedPeriod.id}`;
+                    window.location.href = '/mess/dashboard/current-month';
                   }}
                 >
-                  View Details
+                  Go To Current Period
                 </Button>
               </ResponsiveDialog.Footer>
             </>

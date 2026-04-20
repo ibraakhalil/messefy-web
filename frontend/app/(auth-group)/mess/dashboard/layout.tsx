@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 export default async function layout({ children }: { children: React.ReactNode }) {
   const member = await getValidWorkspaceMember();
-  if (!member || member.role !== 'owner') redirect('/profile');
+  if (!member || !['owner', 'manager'].includes(member.role)) redirect('/profile');
 
   return <DashboardLayout> {children} </DashboardLayout>;
 }

@@ -79,7 +79,7 @@ export default function UserDropdown() {
             </Link>
           )}
 
-          {member?.workspace.ownerId === user?.id && (
+          {member && ['owner', 'manager'].includes(member.role) && (
             <Link
               href={`/mess/dashboard`}
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"

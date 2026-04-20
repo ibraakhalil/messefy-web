@@ -7,6 +7,9 @@ import { invitationRoute } from './invitation.route';
 import { memberRoute } from './member.route';
 import { periodRoute } from './period.route';
 import { mealRoute } from './meal.route';
+import { depositRoute } from './deposit.route';
+import { expenseRoute } from './expense.route';
+import { summaryRoute } from './summary.route';
 
 const router = new Hono();
 
@@ -17,6 +20,9 @@ router.route('/invitation', invitationRoute);
 router.route('/members', memberRoute);
 router.route('/periods', periodRoute);
 router.route('/meals', mealRoute);
+router.route('/deposits', depositRoute);
+router.route('/expenses', expenseRoute);
+router.route('/summary', summaryRoute);
 
 router.notFound((c) => c.json({ message: 'Abracadabra! The page you are looking for does not exist.' }, 404));
 
