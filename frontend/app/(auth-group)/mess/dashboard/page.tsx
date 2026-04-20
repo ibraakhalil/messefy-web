@@ -6,6 +6,7 @@ import { useCurrentPeriod } from '@/hooks/use-periods';
 import { useCurrentWorkspaceSummary } from '@/hooks/use-summary';
 import { useWorkspace } from '@/providers/workspace-provider';
 import type { RecentDeposit, RecentExpense, SummaryMember } from '@/types/summary';
+import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, formatDistanceToNow } from 'date-fns';
 import {
   AlertCircle,
@@ -20,10 +21,6 @@ import {
   Utensils,
 } from 'lucide-react';
 import Link from 'next/link';
-
-function formatAmount(amount: number) {
-  return `$${amount.toFixed(2)}`;
-}
 
 function getPeriodName(year: number, month: number) {
   return new Date(year, month - 1).toLocaleString('default', {
@@ -190,7 +187,7 @@ export default function DashboardPage() {
   const summaryCards = [
     {
       label: 'Net Balance',
-      value: formatAmount(currentMonth.balance),
+      value: formatCurrency(currentMonth.balance),
       icon: TrendingUp,
       wrapperClassName: 'bg-emerald-50 dark:bg-emerald-900/20',
       iconClassName: 'text-emerald-600 dark:text-emerald-400',
@@ -199,7 +196,7 @@ export default function DashboardPage() {
     },
     {
       label: 'Meal Rate',
-      value: formatAmount(currentMonth.mealRate),
+      value: formatCurrency(currentMonth.mealRate),
       icon: Utensils,
       wrapperClassName: 'bg-blue-50 dark:bg-blue-900/20',
       iconClassName: 'text-blue-600 dark:text-blue-400',
@@ -226,7 +223,7 @@ export default function DashboardPage() {
     },
     {
       label: 'Total Deposits',
-      value: formatAmount(currentMonth.totalDeposits),
+      value: formatCurrency(currentMonth.totalDeposits),
       icon: DollarSign,
       wrapperClassName: 'bg-cyan-50 dark:bg-cyan-900/20',
       iconClassName: 'text-cyan-600 dark:text-cyan-400',
@@ -235,7 +232,7 @@ export default function DashboardPage() {
     },
     {
       label: 'Total Expenses',
-      value: formatAmount(currentMonth.totalExpenses),
+      value: formatCurrency(currentMonth.totalExpenses),
       icon: Receipt,
       wrapperClassName: 'bg-rose-50 dark:bg-rose-900/20',
       iconClassName: 'text-rose-600 dark:text-rose-400',
@@ -274,7 +271,7 @@ export default function DashboardPage() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {currentMonth.name} Overview
           </h2>
-          <Link href="/mess/dashboard/current-month">
+          <Link href={`/mess/dashboard/all-months/${currentPeriod.id}`}>
             <Button variant="secondary" className="text-sm">
               View Details
             </Button>
@@ -331,7 +328,7 @@ export default function DashboardPage() {
                     Outstanding Balances
                   </h3>
                   <p className="mt-1 text-sm text-yellow-700 dark:text-yellow-300">
-                    {outstandingMembers.length} members currently owe {formatAmount(outstandingAmount)} in total.
+                    {outstandingMembers.length} members currently owe {formatCurrency(outstandingAmount)} in total.
                   </p>
                   <Link href="/mess/dashboard/member-balances">
                     <Button variant="secondary" className="mt-2 text-xs">
@@ -382,7 +379,7 @@ export default function DashboardPage() {
                         </p>
                       </div>
                       <span className={`text-sm font-semibold ${activity.amountClassName}`}>
-                        {formatAmount(activity.amount)}
+                        {formatCurrency(activity.amount)}
                       </span>
                     </div>
                   );
@@ -413,11 +410,11 @@ export default function DashboardPage() {
                         {member.name}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Due {formatAmount(member.due)} • {member.meals} meals
+                        Due {formatCurrency(member.due)} • {member.meals} meals
                       </p>
                     </div>
                     <span className="font-semibold text-red-600 dark:text-red-400">
-                      {formatAmount(Math.abs(member.balance))}
+                      {formatCurrency(Math.abs(member.balance))}
                     </span>
                   </div>
                 ))
@@ -444,19 +441,19 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between gap-4">
                 <span className="text-gray-500 dark:text-gray-400">Total Due</span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {formatAmount(currentMonth.totalDue)}
+                  {formatCurrency(currentMonth.totalDue)}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <span className="text-gray-500 dark:text-gray-400">Meal Expenses</span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {formatAmount(currentMonth.mealExpenses)}
+                  {formatCurrency(currentMonth.mealExpenses)}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <span className="text-gray-500 dark:text-gray-400">Adjustments</span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {formatAmount(currentMonth.totalAdjustments)}
+                  {formatCurrency(currentMonth.totalAdjustments)}
                 </span>
               </div>
             </div>

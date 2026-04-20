@@ -49,15 +49,31 @@ const ResponsiveDialog = ({ children, open, onOpenChange }: ResponsiveDialogProp
   const isDesktop = useMedia('(min-width: 768px)');
   const Component = isDesktop ? Dialog : Drawer;
   const [isOpen, setIsOpen] = React.useState(open ?? false);
+  const isControlled = open !== undefined;
+
+  React.useEffect(() => {
+    if (isControlled) {
+      setIsOpen(open);
+    }
+  }, [isControlled, open]);
+
+  const handleOpenChange = React.useCallback(
+    (nextOpen: boolean) => {
+      if (!isControlled) {
+        setIsOpen(nextOpen);
+      }
+      onOpenChange?.(nextOpen);
+    },
+    [isControlled, onOpenChange],
+  );
 
   const close = React.useCallback(() => {
-    setIsOpen(false);
-    onOpenChange?.(false);
-  }, [onOpenChange]);
+    handleOpenChange(false);
+  }, [handleOpenChange]);
 
   return (
     <ResponsiveDialogContext.Provider value={{ isDesktop, close }}>
-      <Component open={isOpen} onOpenChange={setIsOpen}>
+      <Component open={isControlled ? open : isOpen} onOpenChange={handleOpenChange}>
         {children}
       </Component>
     </ResponsiveDialogContext.Provider>

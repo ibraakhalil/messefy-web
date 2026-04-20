@@ -15,10 +15,7 @@ import { useWorkspace } from '@/providers/workspace-provider';
 import { useCurrentWorkspaceSummary } from '@/hooks/use-summary';
 import { useCurrentPeriod } from '@/hooks/use-periods';
 import NoActivePeriodState from '@/components/dashboard/no-active-period-state';
-
-function formatAmount(amount: number) {
-  return `$${amount.toFixed(2)}`;
-}
+import { formatCurrency } from '@/utils/format-currency';
 
 export default function MemberBalancesPage() {
   const workspaceId = useWorkspace().member?.workspaceId || '';
@@ -134,7 +131,7 @@ export default function MemberBalancesPage() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Deposits</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatAmount(summary.totals.totalDeposits)}
+                {formatCurrency(summary.totals.totalDeposits)}
               </p>
             </div>
           </div>
@@ -148,7 +145,7 @@ export default function MemberBalancesPage() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Meal Rate</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatAmount(summary.totals.mealRate)}
+                {formatCurrency(summary.totals.mealRate)}
               </p>
             </div>
           </div>
@@ -160,18 +157,18 @@ export default function MemberBalancesPage() {
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Period Totals</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Net balance: {formatAmount(summary.totals.netBalance)}
+              Net balance: {formatCurrency(summary.totals.netBalance)}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-              Expenses: {formatAmount(summary.totals.totalExpenses)}
+              Expenses: {formatCurrency(summary.totals.totalExpenses)}
             </span>
             <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-              Due: {formatAmount(summary.totals.totalDue)}
+              Due: {formatCurrency(summary.totals.totalDue)}
             </span>
             <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-              Adjustments: {formatAmount(summary.totals.totalAdjustments)}
+              Adjustments: {formatCurrency(summary.totals.totalAdjustments)}
             </span>
           </div>
         </div>
@@ -242,13 +239,13 @@ export default function MemberBalancesPage() {
                     {member.meals}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                    {formatAmount(member.deposits)}
+                    {formatCurrency(member.deposits)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                    {formatAmount(member.adjustments)}
+                    {formatCurrency(member.adjustments)}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                    {formatAmount(member.due)}
+                    {formatCurrency(member.due)}
                   </td>
                   <td className="px-6 py-4">
                     <span
@@ -258,7 +255,7 @@ export default function MemberBalancesPage() {
                           : 'text-emerald-600 dark:text-emerald-400'
                       }`}
                     >
-                      {formatAmount(member.balance)}
+                      {formatCurrency(member.balance)}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -303,7 +300,7 @@ export default function MemberBalancesPage() {
                     </p>
                   </div>
                   <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                    {formatAmount(deposit.amount)}
+                    {formatCurrency(deposit.amount)}
                   </span>
                 </div>
               ))
@@ -332,7 +329,7 @@ export default function MemberBalancesPage() {
                     </p>
                   </div>
                   <span className="font-semibold text-rose-600 dark:text-rose-400">
-                    {formatAmount(expense.amount)}
+                    {formatCurrency(expense.amount)}
                   </span>
                 </div>
               ))

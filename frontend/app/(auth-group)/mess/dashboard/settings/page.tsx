@@ -138,10 +138,7 @@ function GeneralSettings() {
               onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
-              <option value="BDT">BDT - Bangladeshi Taka</option>
-              <option value="USD">USD - US Dollar</option>
-              <option value="EUR">EUR - Euro</option>
-              <option value="INR">INR - Indian Rupee</option>
+              <option value="BDT">BDT - Bangladeshi Taka (৳)</option>
             </select>
           </div>
         </div>

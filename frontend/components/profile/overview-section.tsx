@@ -20,14 +20,14 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
     },
     {
       label: 'Outstanding Balance',
-      value: '$125',
-      change: '-$20',
+      value: '৳125',
+      change: '-৳20',
       icon: <CreditCard className="h-5 w-5" />,
       color: 'text-orange-600',
     },
     {
       label: 'Avg. Monthly Cost',
-      value: '$280',
+      value: '৳280',
       change: '+5%',
       icon: <TrendingUp className="h-5 w-5" />,
       color: 'text-purple-600',
@@ -45,7 +45,7 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
     },
     {
       id: 2,
-      action: 'Deposited $50 to Office Mess',
+      action: 'Deposited ৳50 to Office Mess',
       time: '1 day ago',
       icon: <CreditCard className="h-4 w-4" />,
       color: 'text-blue-600',

@@ -1,16 +1,14 @@
 'use client';
 
-import NoActivePeriodState from '@/components/dashboard/no-active-period-state';
-import { DeleteModal } from '@/components/modals/delete-modal';
 import Button from '@/components/ui/button';
-import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
-import { useCurrentPeriod, useDeletePeriod, useUpdatePeriod } from '@/hooks/use-periods';
 import { usePeriodSummary } from '@/hooks/use-summary';
 import { useWorkspace } from '@/providers/workspace-provider';
 import type { RecentDeposit, RecentExpense } from '@/types/summary';
+import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, format, formatDistanceToNow, startOfMonth } from 'date-fns';
 import {
   AlertCircle,
+  ArrowLeft,
   CheckCircle,
   Clock,
   DollarSign,
@@ -20,14 +18,10 @@ import {
   TrendingUp,
   Users,
   Utensils,
-  Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Fragment, useState } from 'react';
-
-function formatAmount(amount: number) {
-  return `$${amount.toFixed(2)}`;
-}
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 
 function getDaysRemaining(year: number, month: number) {
   const now = new Date();
@@ -68,50 +62,13 @@ function mapExpenseToActivity(expense: RecentExpense): ActivityRow {
   };
 }
 
-export default function CurrentMonthPage() {
+export default function PeriodDetailsPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'transactions'>('overview');
+  const params = useParams<{ periodId: string }>();
+  const periodId = typeof params.periodId === 'string' ? params.periodId : '';
   const { member } = useWorkspace();
   const workspaceId = member?.workspaceId || '';
-  const {
-    data: currentPeriod,
-    isLoading: isLoadingPeriod,
-    refetch: refetchCurrentPeriod,
-  } = useCurrentPeriod(workspaceId);
-  const {
-    data: summary,
-    isLoading: isLoadingSummary,
-    error,
-    refetch: refetchSummary,
-  } = usePeriodSummary(currentPeriod?.id || '');
-
-  const updatePeriodMutation = useUpdatePeriod();
-  const deletePeriodMutation = useDeletePeriod();
-
-  const handleClosePeriod = async () => {
-    if (!currentPeriod) return;
-
-    try {
-      await updatePeriodMutation.mutateAsync({
-        periodId: currentPeriod.id,
-        data: { status: 'closed' },
-      });
-      refetchCurrentPeriod();
-      refetchSummary();
-    } catch {
-      // Error is handled by the mutation
-    }
-  };
-
-  const handleDeletePeriod = async () => {
-    if (!currentPeriod) return;
-
-    try {
-      await deletePeriodMutation.mutateAsync(currentPeriod.id);
-      refetchCurrentPeriod();
-    } catch {
-      // Error is handled by the mutation
-    }
-  };
+  const { data: summary, isLoading, error, refetch } = usePeriodSummary(periodId);
 
   if (!workspaceId) {
     return (
@@ -123,20 +80,11 @@ export default function CurrentMonthPage() {
     );
   }
 
-  if (isLoadingPeriod || isLoadingSummary) {
+  if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center p-6">
-        <div className="text-gray-500">Loading current period...</div>
+        <div className="text-gray-500">Loading month details...</div>
       </div>
-    );
-  }
-
-  if (!currentPeriod) {
-    return (
-      <NoActivePeriodState
-        title="Current Month View Needs An Active Period"
-        description="Open a meal month first to track current totals, expenses, deposits, and member balances."
-      />
     );
   }
 
@@ -147,10 +95,15 @@ export default function CurrentMonthPage() {
           <div className="flex items-start gap-3">
             <AlertCircle className="mt-0.5 h-5 w-5 text-red-600" />
             <div>
-              <h2 className="font-semibold text-red-900">Failed to load current month data.</h2>
-              <Button onClick={() => refetchSummary()} variant="secondary" className="mt-3">
-                Try Again
-              </Button>
+              <h2 className="font-semibold text-red-900">Failed to load month details.</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button onClick={() => refetch()} variant="secondary">
+                  Try Again
+                </Button>
+                <Link href="/mess/dashboard/all-months">
+                  <Button variant="secondary">Back to All Months</Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -203,51 +156,18 @@ export default function CurrentMonthPage() {
             {periodData.currentPeriod}
           </h1>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {periodData.startDate} to {periodData.endDate} • {periodData.daysRemaining} days
-            remaining
+            {periodData.startDate} to {periodData.endDate}
+            {periodData.status === 'open' ? ` • ${periodData.daysRemaining} days remaining` : ''}
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {currentPeriod.status === 'open' && (
-            <Fragment>
-              <ResponsiveDialog>
-                <ResponsiveDialog.Trigger asChild>
-                  <Button
-                    disabled={updatePeriodMutation.isPending}
-                    className="flex items-center gap-2"
-                  >
-                    <CheckCircle className="size-4" />
-                    Close Period
-                  </Button>
-                </ResponsiveDialog.Trigger>
-                <ResponsiveDialog.Content>
-                  <DeleteModal
-                    subtitle="Are you sure you want to close the current period?"
-                    onDelete={handleClosePeriod}
-                  />
-                </ResponsiveDialog.Content>
-              </ResponsiveDialog>
-              <ResponsiveDialog>
-                <ResponsiveDialog.Trigger asChild>
-                  <Button
-                    disabled={deletePeriodMutation.isPending}
-                    className="flex items-center gap-2 text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </Button>
-                </ResponsiveDialog.Trigger>
-                <ResponsiveDialog.Content>
-                  <DeleteModal
-                    subtitle="Are you sure you want to delete the current period?"
-                    onDelete={handleDeletePeriod}
-                  />
-                </ResponsiveDialog.Content>
-              </ResponsiveDialog>
-            </Fragment>
-          )}
-
+          <Link href="/mess/dashboard/all-months">
+            <Button variant="secondary" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+          </Link>
           <Button variant="secondary" disabled className="flex items-center gap-2">
             <Download className="h-4 w-4" />
             Export
@@ -297,7 +217,7 @@ export default function CurrentMonthPage() {
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Deposits</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatAmount(periodData.totalDeposits)}
+                {formatCurrency(periodData.totalDeposits)}
               </p>
             </div>
             <div className="rounded-full bg-green-100 p-3 dark:bg-green-900/20">
@@ -311,7 +231,7 @@ export default function CurrentMonthPage() {
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Expenses</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatAmount(periodData.totalExpenses)}
+                {formatCurrency(periodData.totalExpenses)}
               </p>
             </div>
             <div className="rounded-full bg-red-100 p-3 dark:bg-red-900/20">
@@ -327,7 +247,7 @@ export default function CurrentMonthPage() {
                 Current Balance
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatAmount(periodData.balance)}
+                {formatCurrency(periodData.balance)}
               </p>
             </div>
             <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-900/20">
@@ -343,7 +263,7 @@ export default function CurrentMonthPage() {
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Meal Rate</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {formatAmount(periodData.mealRate)}
+                {formatCurrency(periodData.mealRate)}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-500">per meal</p>
             </div>
@@ -373,19 +293,19 @@ export default function CurrentMonthPage() {
             <div className="flex items-center justify-between gap-4">
               <span className="text-sm text-gray-600 dark:text-gray-400">Total Due</span>
               <span className="font-semibold text-gray-900 dark:text-white">
-                {formatAmount(periodData.totalDue)}
+                {formatCurrency(periodData.totalDue)}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-sm text-gray-600 dark:text-gray-400">Meal Expenses</span>
               <span className="font-semibold text-gray-900 dark:text-white">
-                {formatAmount(periodData.mealExpenses)}
+                {formatCurrency(periodData.mealExpenses)}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-sm text-gray-600 dark:text-gray-400">Adjustments</span>
               <span className="font-semibold text-gray-900 dark:text-white">
-                {formatAmount(periodData.totalAdjustments)}
+                {formatCurrency(periodData.totalAdjustments)}
               </span>
             </div>
           </div>
@@ -416,33 +336,7 @@ export default function CurrentMonthPage() {
 
       <div className="mt-6">
         {activeTab === 'overview' && (
-          <div className="laptop:grid-cols-2 grid grid-cols-1 gap-6">
-            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                Quick Actions
-              </h3>
-              <div className="flex flex-col gap-4">
-                <Link href="/mess/dashboard/data-entry?type=meal">
-                  <Button className="w-full justify-start">
-                    <Utensils className="mr-2 h-4 w-4" />
-                    Record Meals
-                  </Button>
-                </Link>
-                <Link href="/mess/dashboard/data-entry?type=expense">
-                  <Button className="w-full justify-start">
-                    <Receipt className="mr-2 h-4 w-4" />
-                    Add Expense
-                  </Button>
-                </Link>
-                <Link href="/mess/dashboard/data-entry?type=deposit">
-                  <Button className="w-full justify-start">
-                    <DollarSign className="mr-2 h-4 w-4" />
-                    Record Deposit
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 gap-6">
             <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 Period Information
@@ -473,9 +367,15 @@ export default function CurrentMonthPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Days Remaining:</span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {periodData.status === 'open' ? 'Days Remaining:' : 'Closed On:'}
+                  </span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    {periodData.daysRemaining}
+                    {periodData.status === 'open'
+                      ? periodData.daysRemaining
+                      : summary.period.closedAt
+                        ? format(new Date(summary.period.closedAt), 'yyyy-MM-dd')
+                        : 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -530,12 +430,6 @@ export default function CurrentMonthPage() {
                   >
                     Balance
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                  >
-                    Action
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
@@ -556,13 +450,13 @@ export default function CurrentMonthPage() {
                       {memberItem.meals}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                      {formatAmount(memberItem.deposits)}
+                      {formatCurrency(memberItem.deposits)}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                      {formatAmount(memberItem.adjustments)}
+                      {formatCurrency(memberItem.adjustments)}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                      {formatAmount(memberItem.due)}
+                      {formatCurrency(memberItem.due)}
                     </td>
                     <td className="px-6 py-4 text-sm whitespace-nowrap">
                       <span
@@ -572,19 +466,8 @@ export default function CurrentMonthPage() {
                             : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                         }`}
                       >
-                        {formatAmount(memberItem.balance)}
+                        {formatCurrency(memberItem.balance)}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-sm whitespace-nowrap">
-                      {memberItem.balance < 0 ? (
-                        <Link
-                          href={`/mess/dashboard/data-entry?type=deposit&member=${memberItem.memberId}`}
-                        >
-                          <Button className="text-xs">Add Deposit</Button>
-                        </Link>
-                      ) : (
-                        <span className="text-gray-400 dark:text-gray-500">Balanced</span>
-                      )}
                     </td>
                   </tr>
                 ))}
@@ -660,7 +543,7 @@ export default function CurrentMonthPage() {
                           }`}
                         >
                           {transaction.type === 'expense' ? '-' : '+'}
-                          {formatAmount(transaction.amount)}
+                          {formatCurrency(transaction.amount)}
                         </td>
                         <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                           <div>{format(new Date(transaction.date), 'yyyy-MM-dd')}</div>

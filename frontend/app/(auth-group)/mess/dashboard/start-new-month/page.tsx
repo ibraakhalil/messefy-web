@@ -2,6 +2,7 @@
 
 import Button from '@/components/ui/button'
 import FormInput from '@/components/ui/form-input'
+import { formatCurrency } from '@/utils/format-currency'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle, Calendar, CalendarPlus, Loader2, TrendingUp, Users } from 'lucide-react'
 import { useState } from 'react'
@@ -101,7 +102,9 @@ export default function StartNewMonthPage() {
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Current Balance</p>
-              <p className="font-semibold text-gray-900 dark:text-white">${currentMonth.balance}</p>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                {formatCurrency(currentMonth.balance)}
+              </p>
             </div>
           </div>
 
@@ -226,7 +229,7 @@ export default function StartNewMonthPage() {
                     Carry over balance from previous month
                   </label>
                   <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Transfer the remaining balance (${currentMonth.balance}) to the new month
+                    Transfer the remaining balance ({formatCurrency(currentMonth.balance)}) to the new month
                   </p>
                 </div>
               </div>
@@ -282,7 +285,9 @@ export default function StartNewMonthPage() {
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">New month will start with:</span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {carryOverBalance ? `$${currentMonth.balance} balance` : '$0 balance'}
+                  {carryOverBalance
+                    ? `${formatCurrency(currentMonth.balance)} balance`
+                    : `${formatCurrency(0)} balance`}
                 </span>
               </div>
               <div className="flex justify-between">

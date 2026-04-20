@@ -1,5 +1,9 @@
+'use client';
+
 import { ComponentProps } from 'react';
 import Link from 'next/link';
+import { useCurrentPeriod } from '@/hooks/use-periods';
+import { useWorkspace } from '@/providers/workspace-provider';
 
 type LinkProps = Omit<ComponentProps<typeof Link>, 'href'>;
 
@@ -46,8 +50,14 @@ export function InvitationsLink({ children, ...props }: LinkProps) {
 }
 
 export function CurrentMonthLink({ children, ...props }: LinkProps) {
+  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const { data: currentPeriod } = useCurrentPeriod(workspaceId);
+  const href = currentPeriod
+    ? `/mess/dashboard/all-months/${currentPeriod.id}`
+    : '/mess/dashboard/all-months';
+
   return (
-    <Link href="/mess/dashboard/current-month" {...props}>
+    <Link href={href} {...props}>
       {children}
     </Link>
   );

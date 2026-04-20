@@ -2,6 +2,7 @@
 
 import Button from '@/components/ui/button';
 import FormInput from '@/components/ui/form-input';
+import { formatCurrency } from '@/utils/format-currency';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, AlertTriangle, Database, Loader2, Shield, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
@@ -152,7 +153,7 @@ export default function DeleteMessPage() {
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Outstanding Balance</p>
               <p className="font-semibold text-gray-900 dark:text-white">
-                ${messData.currentBalance}
+                {formatCurrency(messData.currentBalance)}
               </p>
             </div>
           </div>

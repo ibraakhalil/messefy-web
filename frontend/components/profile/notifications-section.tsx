@@ -84,7 +84,7 @@ const notifications = [
     id: 'notif-5',
     type: 'payment_due',
     title: 'Payment Due',
-    message: 'You have an outstanding balance of $45 in "Office Mess"',
+    message: 'You have an outstanding balance of ৳45 in "Office Mess"',
     messName: 'Office Mess',
     messCode: 'OFF-2024-001',
     from: 'System',
@@ -95,7 +95,7 @@ const notifications = [
     data: {
       messId: 'mess-off-001',
       amount: 45,
-      currency: 'USD',
+      currency: 'BDT',
     },
   },
 ];

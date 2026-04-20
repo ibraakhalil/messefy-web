@@ -1,5 +1,6 @@
 'use client'
 
+import { formatCurrency } from '@/utils/format-currency'
 import { CalendarDays, Download, Eye, MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 
@@ -134,10 +135,10 @@ export default function HistoryPage() {
                       <span className="font-medium">Meals:</span> {month.totalMeals}
                     </div>
                     <div>
-                      <span className="font-medium">Expenses:</span> ${month.totalExpenses}
+                      <span className="font-medium">Expenses:</span> {formatCurrency(month.totalExpenses)}
                     </div>
                     <div>
-                      <span className="font-medium">Rate:</span> ${month.mealRate}/meal
+                      <span className="font-medium">Rate:</span> {formatCurrency(month.mealRate)}/meal
                     </div>
                   </div>
                 </div>

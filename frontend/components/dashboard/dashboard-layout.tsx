@@ -1,6 +1,8 @@
 'use client';
 
 import { cn } from '@/utils/cn';
+import { useCurrentPeriod } from '@/hooks/use-periods';
+import { useWorkspace } from '@/providers/workspace-provider';
 import {
   BellIcon,
   Calendar,
@@ -44,7 +46,16 @@ function NavItem({ children, icon: Icon, isActive = false }: NavItemProps) {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const path = usePathname();
+  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const { data: currentPeriod } = useCurrentPeriod(workspaceId);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const currentMonthPath = currentPeriod
+    ? `/mess/dashboard/all-months/${currentPeriod.id}`
+    : '/mess/dashboard/all-months';
+  const isCurrentMonthActive = path === currentMonthPath;
+  const isAllMonthsActive =
+    path === '/mess/dashboard/all-months' ||
+    (path.includes('/all-months') && !isCurrentMonthActive);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -92,13 +103,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </Links.DataEntry>
 
           <Links.CurrentMonth>
-            <NavItem icon={Calendar} isActive={path.includes('/current-month')}>
+            <NavItem icon={Calendar} isActive={isCurrentMonthActive}>
               Current Month
             </NavItem>
           </Links.CurrentMonth>
 
           <Links.AllMonths>
-            <NavItem icon={Calendar} isActive={path.includes('/all-months')}>
+            <NavItem icon={Calendar} isActive={isAllMonthsActive}>
               All Months
             </NavItem>
           </Links.AllMonths>
@@ -143,7 +154,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-[var(--container-width)]">{children}</div>
+        </main>
       </div>
     </div>
   );

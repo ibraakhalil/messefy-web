@@ -1,47 +1,46 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 
+import { CreateMonthForm } from '@/components/dashboard/new-month-form';
 import Button from '@/components/ui/button';
 import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
+import { useDeletePeriod, usePeriodsByWorkspace, useUpdatePeriod } from '@/hooks/use-periods';
+import { useWorkspace } from '@/providers/workspace-provider';
+import type { Period } from '@/types/period';
+import { formatCurrency } from '@/utils/format-currency';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import {
+  AlertCircle,
   Calendar,
+  CheckCircle,
+  Clock,
   Download,
   Eye,
   Plus,
-  AlertCircle,
-  CheckCircle,
-  Clock,
   RefreshCw,
   Trash2,
-  BarChart3,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { usePeriodsByWorkspace, useUpdatePeriod, useDeletePeriod } from '@/hooks/use-periods';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
-import { useWorkspace } from '@/providers/workspace-provider';
-import { CreateMonthForm } from '@/components/dashboard/new-month-form';
+
+type DashboardPeriod = Period & {
+  totalDeposits?: number;
+  totalExpenses?: number;
+  totalMeals?: number;
+  mealRate?: number;
+};
 
 export default function AllMonthsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState<any>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const { member } = useWorkspace();
   const workspaceId = member?.workspaceId;
-
-  // Period queries
   const {
     data: periods,
     isLoading: isLoadingPeriods,
     refetch: refetchPeriods,
   } = usePeriodsByWorkspace(workspaceId || '');
 
-  // Mutations
   const updatePeriodMutation = useUpdatePeriod();
   const deletePeriodMutation = useDeletePeriod();
-
-  // Form setup
 
   const handleClosePeriod = async (periodId: string) => {
     try {
@@ -80,11 +79,6 @@ export default function AllMonthsPage() {
     }
   };
 
-  const handleViewPeriod = (period: any) => {
-    setSelectedPeriod(period);
-    setIsViewDialogOpen(true);
-  };
-
   if (isLoadingPeriods) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center p-6">
@@ -96,7 +90,6 @@ export default function AllMonthsPage() {
     );
   }
 
-  // No workspace state
   if (!member) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center p-6">
@@ -123,7 +116,6 @@ export default function AllMonthsPage() {
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header */}
       <div className="tablet:flex-row tablet:items-center tablet:justify-between flex flex-col gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Period Management</h1>
@@ -154,7 +146,7 @@ export default function AllMonthsPage() {
       </div>
 
       <div className="tablet:grid-cols-2 laptop:grid-cols-3 grid grid-cols-1 gap-4">
-        {periods?.map((period: any) => (
+        {periods?.map((period: DashboardPeriod) => (
           <div
             key={period.id}
             className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
@@ -190,24 +182,23 @@ export default function AllMonthsPage() {
               </div>
             </div>
 
-            {/* Period Stats */}
             <div className="mb-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">Deposits:</span>
                 <span className="font-medium text-green-600 dark:text-green-400">
-                  ${period.totalDeposits || 0}
+                  {formatCurrency(period.totalDeposits || 0)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">Expenses:</span>
                 <span className="font-medium text-red-600 dark:text-red-400">
-                  ${period.totalExpenses || 0}
+                  {formatCurrency(period.totalExpenses || 0)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">Balance:</span>
                 <span className="font-medium text-purple-600 dark:text-purple-400">
-                  ${(period.totalDeposits || 0) - (period.totalExpenses || 0)}
+                  {formatCurrency((period.totalDeposits || 0) - (period.totalExpenses || 0))}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
@@ -220,18 +211,19 @@ export default function AllMonthsPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">Meal Rate:</span>
                   <span className="font-medium text-orange-600 dark:text-orange-400">
-                    ${period.mealRate}
+                    {formatCurrency(period.mealRate)}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Actions */}
             <div className="flex flex-wrap gap-2">
-              <Button onClick={() => handleViewPeriod(period)} className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />
-                View
-              </Button>
+              <Link href={`/mess/dashboard/all-months/${period.id}`}>
+                <Button className="flex items-center gap-1">
+                  <Eye className="h-3 w-3" />
+                  View
+                </Button>
+              </Link>
 
               {period.status === 'open' ? (
                 <Button
@@ -266,7 +258,6 @@ export default function AllMonthsPage() {
         ))}
       </div>
 
-      {/* Empty State */}
       {periods?.length === 0 && (
         <div className="flex min-h-[40vh] items-center justify-center">
           <div className="w-full max-w-md text-center">
@@ -277,133 +268,18 @@ export default function AllMonthsPage() {
               No Periods Found
             </h3>
             <p className="mb-6 text-gray-600 dark:text-gray-400">
-              {periods.length === 0
-                ? 'Get started by creating your first period.'
-                : 'No periods match your current filters.'}
+              Get started by creating your first period.
             </p>
-            {periods.length === 0 ? (
-              <Button
-                onClick={() => setIsCreateDialogOpen(true)}
-                className="mx-auto flex items-center gap-2"
-              >
-                <Plus className="size-4" />
-                Create First Period
-              </Button>
-            ) : (
-              <Button onClick={() => ''}>Clear Filters</Button>
-            )}
+            <Button
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="mx-auto flex items-center gap-2"
+            >
+              <Plus className="size-4" />
+              Create First Period
+            </Button>
           </div>
         </div>
       )}
-
-      {/* View Period Dialog */}
-      <ResponsiveDialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <ResponsiveDialog.Content>
-          {selectedPeriod && (
-            <>
-              <ResponsiveDialog.Header>
-                <ResponsiveDialog.Title>
-                  {format(new Date(selectedPeriod.year, selectedPeriod.month - 1), 'MMMM yyyy')}
-                </ResponsiveDialog.Title>
-                <ResponsiveDialog.Description>
-                  Detailed view of period statistics and information.
-                </ResponsiveDialog.Description>
-              </ResponsiveDialog.Header>
-
-              <div className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-                    <div className="mb-2 flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        Period Details
-                      </span>
-                    </div>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Status:</span>
-                        <span
-                          className={`font-medium ${
-                            selectedPeriod.status === 'open'
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-gray-600 dark:text-gray-400'
-                          }`}
-                        >
-                          {selectedPeriod.status === 'open' ? 'Active' : 'Closed'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Created:</span>
-                        <span className="font-medium text-gray-900 dark:text-white">
-                          {format(new Date(selectedPeriod.createdAt), 'MMM dd, yyyy')}
-                        </span>
-                      </div>
-                      {selectedPeriod.closedAt && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Closed:</span>
-                          <span className="font-medium text-gray-900 dark:text-white">
-                            {format(new Date(selectedPeriod.closedAt), 'MMM dd, yyyy')}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-                    <div className="mb-2 flex items-center gap-2">
-                      <BarChart3 className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        Statistics
-                      </span>
-                    </div>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Deposits:</span>
-                        <span className="font-medium text-green-600 dark:text-green-400">
-                          ${selectedPeriod.totalDeposits || 0}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Expenses:</span>
-                        <span className="font-medium text-red-600 dark:text-red-400">
-                          ${selectedPeriod.totalExpenses || 0}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Balance:</span>
-                        <span className="font-medium text-purple-600 dark:text-purple-400">
-                          $
-                          {(selectedPeriod.totalDeposits || 0) -
-                            (selectedPeriod.totalExpenses || 0)}
-                        </span>
-                      </div>
-                      {selectedPeriod.mealRate && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">Meal Rate:</span>
-                          <span className="font-medium text-orange-600 dark:text-orange-400">
-                            ${selectedPeriod.mealRate}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <ResponsiveDialog.Footer>
-                <Button onClick={() => setIsViewDialogOpen(false)}>Close</Button>
-                <Button
-                  onClick={() => {
-                    window.location.href = '/mess/dashboard/current-month';
-                  }}
-                >
-                  Go To Current Period
-                </Button>
-              </ResponsiveDialog.Footer>
-            </>
-          )}
-        </ResponsiveDialog.Content>
-      </ResponsiveDialog>
     </div>
   );
 }
