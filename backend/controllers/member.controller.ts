@@ -2,6 +2,7 @@ import type { Context } from 'hono';
 import { db } from '../db';
 import { members, users } from '../db/schemas';
 import { eq, and } from 'drizzle-orm';
+import { deactivateDetachedOfflineUsers } from '../utils/offline-user';
 
 const OFFLINE_DEFAULT_PASSWORD = '12345678';
 
@@ -184,5 +185,53 @@ export async function leaveWorkspace(c: Context) {
   } catch (error) {
     console.error('Error leaving workspace:', error);
     return c.json({ error: 'Failed to leave workspace' }, 500);
+  }
+}
+
+export async function removeWorkspaceMember(c: Context) {
+  const workspaceId = c.req.param('workspaceId');
+  const memberId = c.req.param('memberId');
+
+  if (!workspaceId || !memberId) {
+    return c.json({ error: 'Workspace ID and member ID are required' }, 400);
+  }
+
+  try {
+    const member = await db.query.members.findFirst({
+      where: and(eq(members.id, memberId), eq(members.workspaceId, workspaceId), eq(members.isActive, true)),
+      with: {
+        user: {
+          columns: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!member) {
+      return c.json({ error: 'Member not found' }, 404);
+    }
+
+    if (member.role === 'owner') {
+      return c.json({ error: 'Workspace owner cannot be removed' }, 400);
+    }
+
+    await db.update(members).set({ isActive: false }).where(eq(members.id, member.id));
+
+    if (member.isOffline) {
+      await deactivateDetachedOfflineUsers([member.userId]);
+    }
+
+    return c.json(
+      {
+        message: 'Member removed successfully',
+        memberId: member.id,
+      },
+      200,
+    );
+  } catch (error) {
+    console.error('Error removing workspace member:', error);
+    return c.json({ error: 'Failed to remove member' }, 500);
   }
 }

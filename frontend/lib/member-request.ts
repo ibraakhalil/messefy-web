@@ -10,3 +10,13 @@ export async function getAllWorkspaceMembers(workspaceId: string): Promise<Membe
     throw error;
   }
 }
+
+export async function removeWorkspaceMember(workspaceId: string, memberId: string) {
+  try {
+    const response = await api.delete(`/members/${workspaceId}/member/${memberId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error removing workspace member:', error);
+    throw error;
+  }
+}
