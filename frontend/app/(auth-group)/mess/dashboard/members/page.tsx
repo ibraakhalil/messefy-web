@@ -137,9 +137,9 @@ export default function MembersPage() {
   };
 
   return (
-    <div className="members-page-shell">
-      <div className="members-page-header">
-        <div className="members-page-title">
+    <div className="mx-auto max-w-6xl space-y-4 p-4 tablet:p-6">
+      <div className="flex flex-col gap-4 laptop:flex-row laptop:items-center laptop:justify-between">
+        <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200">
             <Users className="h-5 w-5" />
           </div>
@@ -148,11 +148,19 @@ export default function MembersPage() {
             <p className="text-sm text-gray-600 dark:text-gray-400">
               A simple view of everyone in your workspace.
             </p>
-            <div className="members-page-summary">
-              <span className="members-page-summary-chip">{totalMembers} total</span>
-              <span className="members-page-summary-chip">{onlineMembers} online</span>
-              <span className="members-page-summary-chip">{offlineMembers} offline</span>
-              <span className="members-page-summary-chip">{managerCount} managers</span>
+            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                {totalMembers} total
+              </span>
+              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                {onlineMembers} online
+              </span>
+              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                {offlineMembers} offline
+              </span>
+              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                {managerCount} managers
+              </span>
             </div>
           </div>
         </div>
@@ -169,7 +177,7 @@ export default function MembersPage() {
         )}
       </div>
 
-      <div className="members-page-toolbar dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm laptop:flex-row laptop:items-center laptop:justify-between dark:border-gray-700 dark:bg-gray-800">
         <div className="w-full laptop:max-w-md">
           <FormInput
             type="text"
@@ -180,7 +188,7 @@ export default function MembersPage() {
           />
         </div>
 
-        <div className="members-page-filters">
+        <div className="flex flex-col gap-3 tablet:flex-row tablet:items-center">
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value as typeof roleFilter)}
@@ -209,11 +217,11 @@ export default function MembersPage() {
       )}
 
       {isLoading ? (
-        <div className="members-list-card px-4 py-12 text-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 py-12 text-center text-sm text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
           Loading members...
         </div>
       ) : filteredMembers.length === 0 ? (
-        <div className="members-list-card px-4 py-12 text-center">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 py-12 text-center shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {searchTerm || roleFilter !== 'All'
               ? 'No members found for the current filters.'
@@ -221,7 +229,7 @@ export default function MembersPage() {
           </p>
         </div>
       ) : (
-        <div className="members-list-card">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
             <div className="flex flex-col gap-1 tablet:flex-row tablet:items-center tablet:justify-between">
               <div>
@@ -235,7 +243,7 @@ export default function MembersPage() {
             </div>
           </div>
 
-          <div className="members-list-head">
+          <div className="hidden grid-cols-[minmax(0,2fr)_auto_auto_auto] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 text-[11px] font-semibold tracking-[0.18em] text-gray-500 uppercase tablet:grid dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
             <span>Member</span>
             <span>Role</span>
             <span>Type</span>
@@ -257,7 +265,10 @@ export default function MembersPage() {
                 removeMemberMutation.variables?.id === workspaceMember.id;
 
               return (
-                <div key={workspaceMember.id} className="members-list-row">
+                <div
+                  key={workspaceMember.id}
+                  className="grid gap-3 px-4 py-3 tablet:grid-cols-[minmax(0,2fr)_auto_auto_auto] tablet:items-center"
+                >
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-700 dark:bg-gray-700 dark:text-gray-200">
                       {initials || 'M'}

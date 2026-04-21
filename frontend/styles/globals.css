@@ -30,46 +30,6 @@
     @apply mx-auto max-w-[1200px];
   }
 
-  .members-page-shell {
-    @apply mx-auto max-w-6xl space-y-4 p-4 tablet:p-6;
-  }
-
-  .members-page-header {
-    @apply flex flex-col gap-4 laptop:flex-row laptop:items-center laptop:justify-between;
-  }
-
-  .members-page-title {
-    @apply flex items-start gap-3;
-  }
-
-  .members-page-summary {
-    @apply flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400;
-  }
-
-  .members-page-summary-chip {
-    @apply inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300;
-  }
-
-  .members-page-toolbar {
-    @apply flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm laptop:flex-row laptop:items-center laptop:justify-between dark:border-gray-700 dark:bg-gray-800;
-  }
-
-  .members-page-filters {
-    @apply flex flex-col gap-3 tablet:flex-row tablet:items-center;
-  }
-
-  .members-list-card {
-    @apply overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800;
-  }
-
-  .members-list-head {
-    @apply hidden grid-cols-[minmax(0,2fr)_auto_auto_auto] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 text-[11px] font-semibold tracking-[0.18em] text-gray-500 uppercase tablet:grid dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400;
-  }
-
-  .members-list-row {
-    @apply grid gap-3 px-4 py-3 tablet:grid-cols-[minmax(0,2fr)_auto_auto_auto] tablet:items-center;
-  }
-
   .button-primary {
     background-color: var(--color-primary);
     color: var(--color-primary-fg);
