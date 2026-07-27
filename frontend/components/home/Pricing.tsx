@@ -59,41 +59,41 @@ export const Pricing = () => {
   return (
     <section
       id="pricing"
-      className="relative overflow-hidden bg-gradient-to-b from-white via-gray-50/30 to-white py-16 sm:py-24"
+      className="relative overflow-hidden bg-primary-bg py-16 transition-colors sm:py-24 dark:bg-gray-950"
     >
       {/* Background decorations */}
-      <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-emerald-100 opacity-10 blur-3xl"></div>
-      <div className="absolute right-1/4 bottom-0 h-80 w-80 rounded-full bg-purple-100 opacity-10 blur-3xl"></div>
+      <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-emerald-100 opacity-10 blur-3xl dark:bg-emerald-900/20"></div>
+      <div className="absolute right-1/4 bottom-0 h-80 w-80 rounded-full bg-purple-100 opacity-10 blur-3xl dark:bg-purple-900/20"></div>
 
       <div className="relative container max-w-6xl px-4">
         {/* Header */}
         <div className="mx-auto mb-16 max-w-2xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-purple-100 px-4 py-2 text-sm font-medium text-emerald-700">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-100 to-purple-100 px-4 py-2 text-sm font-medium text-emerald-700 dark:from-emerald-950/80 dark:to-purple-950/80 dark:text-emerald-300">
             <Sparkles size={16} />
             Pricing Plans
           </div>
-          <h2 className="mb-4 text-3xl leading-tight font-bold text-gray-900 sm:text-5xl">
+          <h2 className="mb-4 text-3xl font-extrabold leading-tight text-pure-color sm:text-5xl dark:text-white">
             Simple
-            <span className="bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-emerald-600 to-purple-600 bg-clip-text text-transparent dark:from-emerald-400 dark:to-purple-400">
               {' '}
               pricing
             </span>
           </h2>
-          <p className="text-lg leading-relaxed text-gray-600">
+          <p className="text-lg leading-relaxed text-subtitle-color dark:text-gray-400">
             Start free. Upgrade when you need more control.
           </p>
 
           {/* Enhanced Billing toggle */}
-          <div className="mt-8 inline-flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg backdrop-blur-sm">
+          <div className="mt-8 inline-flex items-center gap-4 rounded-2xl border border-border-color bg-card-bg p-2 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900">
             <span
-              className={`rounded-xl px-4 py-2 font-medium transition-all duration-300 ${!isYearly ? 'text-gray-900' : 'text-gray-500'}`}
+              className={`rounded-xl px-4 py-2 font-medium transition-all duration-300 ${!isYearly ? 'text-pure-color dark:text-white' : 'text-subtitle-color dark:text-gray-400'}`}
             >
               Monthly
             </span>
             <button
               onClick={() => setIsYearly(!isYearly)}
               className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:outline-none ${
-                isYearly ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gray-200'
+                isYearly ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gray-200 dark:bg-gray-700'
               }`}
               aria-pressed={isYearly}
             >
@@ -105,7 +105,7 @@ export const Pricing = () => {
               ></span>
             </button>
             <span
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 font-medium transition-all duration-300 ${isYearly ? 'text-gray-900' : 'text-gray-500'}`}
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 font-medium transition-all duration-300 ${isYearly ? 'text-pure-color dark:text-white' : 'text-subtitle-color dark:text-gray-400'}`}
             >
               Yearly
               <span className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
@@ -116,7 +116,7 @@ export const Pricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="tablet:grid-cols-3 tablet:gap-6 grid gap-8">
+        <div className="grid gap-8 tablet:grid-cols-3 tablet:gap-6">
           {PricingPlans.map((plan, index) => {
             const Icon = plan.icon
             return (
@@ -143,8 +143,8 @@ export const Pricing = () => {
                 <div
                   className={`relative h-full rounded-3xl border-2 transition-all duration-500 ${
                     plan.popular
-                      ? 'border-emerald-200 bg-gradient-to-b from-white to-emerald-50/30 shadow-2xl shadow-emerald-200/20'
-                      : `${plan.borderColor} bg-gradient-to-b ${plan.bgGradient} shadow-lg hover:shadow-2xl hover:shadow-gray-200/20`
+                      ? 'border-emerald-500/40 bg-card-bg shadow-2xl dark:border-emerald-500/60 dark:bg-gray-900'
+                      : 'border-border-color bg-card-bg shadow-lg hover:shadow-2xl dark:border-gray-800 dark:bg-gray-900/90'
                   } p-8`}
                 >
                   {/* Glow effect */}
@@ -155,26 +155,26 @@ export const Pricing = () => {
                   {/* Plan header */}
                   <div className="mb-6 flex items-center gap-4">
                     <div
-                      className={`h-12 w-12 rounded-2xl bg-gradient-to-r ${plan.color} flex transform items-center justify-center transition-transform duration-300 group-hover:scale-110`}
+                      className={`flex h-12 w-12 transform items-center justify-center rounded-2xl bg-gradient-to-r ${plan.color} transition-transform duration-300 group-hover:scale-110`}
                     >
                       <Icon size={24} className="text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-                      <p className="text-sm text-gray-600">{plan.description}</p>
+                      <h3 className="text-xl font-bold text-pure-color dark:text-white">{plan.name}</h3>
+                      <p className="text-sm text-subtitle-color dark:text-gray-400">{plan.description}</p>
                     </div>
                   </div>
 
                   {/* Price */}
                   <div className="mb-8">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold text-gray-900">
+                      <span className="text-4xl font-bold text-pure-color dark:text-white">
                         ৳{isYearly ? plan.yearlyPrice : plan.monthlyPrice}
                       </span>
-                      <span className="font-medium text-gray-500">/month</span>
+                      <span className="font-medium text-subtitle-color dark:text-gray-400">/month</span>
                     </div>
                     {isYearly && plan.monthlyPrice > 0 && (
-                      <p className="mt-1 text-sm font-medium text-emerald-600">
+                      <p className="mt-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">
                         Save ৳{(plan.monthlyPrice - plan.yearlyPrice) * 12}/year
                       </p>
                     )}
@@ -185,11 +185,11 @@ export const Pricing = () => {
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
                         <div
-                          className={`h-5 w-5 rounded-full bg-gradient-to-r ${plan.color} mt-0.5 flex flex-shrink-0 items-center justify-center`}
+                          className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r ${plan.color}`}
                         >
                           <Check size={12} className="text-white" />
                         </div>
-                        <span className="text-sm leading-relaxed text-gray-700">{feature}</span>
+                        <span className="text-sm leading-relaxed text-pure-color dark:text-gray-300">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -199,7 +199,7 @@ export const Pricing = () => {
                     className={`w-full transform rounded-2xl px-6 py-4 text-sm font-semibold transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:outline-none ${
                       plan.buttonVariant === 'primary'
                         ? `bg-gradient-to-r ${plan.color} text-white shadow-lg hover:shadow-xl focus:ring-emerald-500`
-                        : `border-2 ${plan.borderColor} bg-white text-gray-900 hover:bg-gray-50 focus:ring-gray-500`
+                        : `border-2 border-border-color bg-card-bg text-pure-color hover:bg-gray-50 focus:ring-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700`
                     }`}
                   >
                     {plan.buttonText}
@@ -207,7 +207,7 @@ export const Pricing = () => {
 
                   {/* Additional info for free plan */}
                   {plan.name === 'Free' && (
-                    <p className="mt-4 text-center text-xs text-gray-500">
+                    <p className="mt-4 text-center text-xs text-subtitle-color dark:text-gray-400">
                       No credit card required
                     </p>
                   )}
@@ -219,7 +219,7 @@ export const Pricing = () => {
 
         {/* Bottom section */}
         <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 px-6 py-3 text-sm text-gray-700">
+          <div className="inline-flex items-center gap-2 rounded-xl bg-secondary-bg px-6 py-3 text-sm text-pure-color dark:bg-gray-800 dark:text-gray-300">
             <Shield size={16} />
             30-day money-back guarantee • Cancel anytime
           </div>
@@ -228,5 +228,6 @@ export const Pricing = () => {
     </section>
   )
 }
+
 
 export default Pricing

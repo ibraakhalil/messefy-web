@@ -25,20 +25,20 @@ export default function MessSection() {
   if (!member?.workspace) {
     return (
       <div className="py-8 text-center">
-        <p className="text-gray-500">You are not a member of any workspace</p>
+        <p className="text-subtitle-color dark:text-gray-400">You are not a member of any workspace</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-gray-200 bg-white p-6">
+      <div className="rounded-lg border border-border-color bg-card-bg p-6 dark:border-gray-800 dark:bg-gray-800/90">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-pure-color dark:text-white">
               {member?.workspace?.name || 'Workspace'}
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-subtitle-color dark:text-gray-400">
               Role: <span className="capitalize">{member?.role}</span>
             </p>
           </div>
@@ -48,7 +48,7 @@ export default function MessSection() {
               <ResponsiveDialog.Trigger>
                 <Button
                   variant="secondary"
-                  className="border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50"
+                  className="border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40"
                   leftIcon={LogOut}
                 >
                   Leave Workspace
@@ -66,9 +66,9 @@ export default function MessSection() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-        <h4 className="mb-2 text-sm font-medium text-blue-900">Workspace Information</h4>
-        <ul className="space-y-1 text-sm text-blue-800">
+      <div className="rounded-lg border border-blue-200 bg-blue-50/80 p-4 dark:border-blue-900/60 dark:bg-blue-950/40">
+        <h4 className="mb-2 text-sm font-medium text-blue-900 dark:text-blue-200">Workspace Information</h4>
+        <ul className="space-y-1 text-sm text-blue-800 dark:text-blue-300">
           {member.isOffline ? (
             <li>• Offline members can only be removed by the mess owner</li>
           ) : (

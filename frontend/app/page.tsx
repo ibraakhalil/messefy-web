@@ -16,7 +16,7 @@ export default async function Home() {
   const userData = { user, workspace: member?.workspace };
 
   return (
-    <main>
+    <main className="min-h-screen bg-primary-bg text-pure-color transition-colors duration-300">
       <Header userData={userData} />
       <Hero />
       <Features />
@@ -27,4 +27,5 @@ export default async function Home() {
       <Footer />
     </main>
   );
+
 }

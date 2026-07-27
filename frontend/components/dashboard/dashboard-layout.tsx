@@ -18,6 +18,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { ComponentType, ReactNode, SVGProps, useState } from 'react';
 import { Links } from '../links';
+import ThemeToggle from '../common/theme-toggle';
 import UserDropdown from '../common/user-dropdown';
 
 interface DashboardLayoutProps {
@@ -144,11 +145,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="flex items-center space-x-4">
-            <button className="rounded-full bg-gray-100 p-1 text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">
+          <div className="flex items-center space-x-3">
+            <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 p-1 text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">
               <span className="sr-only">Notifications</span>
-              <BellIcon />
+              <BellIcon className="h-4 w-4" />
             </button>
+            <ThemeToggle />
             <UserDropdown />
           </div>
         </header>

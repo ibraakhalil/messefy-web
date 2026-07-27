@@ -7,6 +7,7 @@ import Logo from '../common/logo';
 import { Session } from 'next-auth';
 import Button from '../ui/button';
 import UserDropdown from '../common/user-dropdown';
+import ThemeToggle from '../common/theme-toggle';
 import { Workspace } from '@/types/workspace';
 
 interface HeaderProps {
@@ -43,7 +44,7 @@ function NavItem({ children }: { children: string }) {
   return (
     <span
       key={children}
-      className="group relative text-base font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900"
+      className="group relative text-base font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
     >
       {children}
       <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
@@ -58,7 +59,7 @@ export const Header = ({ userData }: HeaderProps) => {
   return (
     <header
       id="top"
-      className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/80 backdrop-blur-lg"
+      className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-900/80"
     >
       <div className="container flex max-w-7xl items-center justify-between px-4 py-4">
         <Logo />
@@ -72,6 +73,7 @@ export const Header = ({ userData }: HeaderProps) => {
         </nav>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           {!user && (
             <Link href="/auth/signin">
               <Button>Get Started</Button>
@@ -81,7 +83,7 @@ export const Header = ({ userData }: HeaderProps) => {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="tablet:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md"
+            className="tablet:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:text-white"
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >

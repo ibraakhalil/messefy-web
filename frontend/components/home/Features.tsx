@@ -53,28 +53,28 @@ const FEATURES = [
 
 export const Features = () => {
   return (
-    <section id="features" className="tablet:py-24 bg-gradient-to-b from-gray-50/50 to-white py-16">
+    <section id="features" className="relative py-16 tablet:py-24 bg-primary-bg dark:bg-gray-950 transition-colors">
       <div className="container max-w-7xl px-4">
         {/* Header */}
         <div className="mx-auto mb-16 max-w-4xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-700">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300">
             <Activity size={16} />
             Features
           </div>
-          <h2 className="tablet:text-5xl mb-4 text-4xl leading-tight font-bold text-gray-900">
+          <h2 className="mb-4 text-4xl font-extrabold leading-tight text-pure-color tablet:text-5xl dark:text-white">
             Everything you need to
-            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent dark:from-emerald-400 dark:to-teal-400">
               {' '}
               run a mess
             </span>
           </h2>
-          <p className="text-lg leading-relaxed text-gray-600">
+          <p className="text-lg leading-relaxed text-subtitle-color dark:text-gray-400">
             Fast entry, accurate summaries, clear balances. No spreadsheets needed.
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="tablet:grid-cols-2 laptop:grid-cols-3 grid gap-6">
+        <div className="grid grid-cols-1 gap-6 tablet:grid-cols-2 laptop:grid-cols-3">
           {FEATURES.map((feature, index) => {
             const Icon = feature.icon
             return (
@@ -86,7 +86,7 @@ export const Features = () => {
                 }}
               >
                 {/* Card */}
-                <div className="relative h-full rounded-2xl border border-gray-200/60 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/40">
+                <div className="relative h-full rounded-2xl border border-gray-200/60 bg-card-bg p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900/80 dark:hover:border-gray-700">
                   {/* Gradient border effect */}
                   <div
                     className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-100"
@@ -97,24 +97,24 @@ export const Features = () => {
 
                   {/* Icon */}
                   <div
-                    className={`mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl transition-all duration-300 ${feature.bgColor}`}
+                    className={`mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl transition-all duration-300 ${feature.bgColor} dark:bg-gray-800/80`}
                   >
                     <Icon
                       size={24}
-                      className={`transition-all duration-300 ${feature.iconColor}`}
+                      className={`transition-all duration-300 ${feature.iconColor} dark:text-emerald-400`}
                     />
                   </div>
 
                   {/* Content */}
                   <div className="space-y-3">
-                    <h3 className="text-xl font-semibold text-gray-900 transition-colors group-hover:text-gray-800">
+                    <h3 className="text-xl font-semibold text-pure-color transition-colors group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-400">
                       {feature.title}
                     </h3>
-                    <p className="leading-relaxed text-gray-600">{feature.description}</p>
+                    <p className="leading-relaxed text-subtitle-color dark:text-gray-400">{feature.description}</p>
                   </div>
 
                   {/* Hover arrow */}
-                  <div className="mt-6 flex translate-x-0 transform items-center text-emerald-600 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100">
+                  <div className="mt-6 flex translate-x-0 transform items-center text-emerald-600 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 dark:text-emerald-400">
                     <span className="text-sm font-medium">Learn more</span>
                     <svg
                       className="ml-2 h-4 w-4"
@@ -138,7 +138,7 @@ export const Features = () => {
 
         {/* Bottom CTA */}
         <div className="mt-16 text-center">
-          <div className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-emerald-700 hover:shadow-emerald-200">
+          <div className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-emerald-700 hover:shadow-emerald-200/50">
             <Plus size={18} />
             Start managing your mess today
           </div>
@@ -147,5 +147,6 @@ export const Features = () => {
     </section>
   )
 }
+
 
 export default Features

@@ -134,18 +134,19 @@ export default function ProfileSection({ isLoading = false }: ProfileSectionProp
           />
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-          <p className="text-sm font-medium text-gray-900">Available profile fields</p>
-          <p className="mt-1 text-sm text-gray-600">
+        <div className="rounded-lg border border-border-color bg-secondary-bg p-4 dark:border-gray-700 dark:bg-gray-800/80">
+          <p className="text-sm font-medium text-pure-color dark:text-white">Available profile fields</p>
+          <p className="mt-1 text-sm text-subtitle-color dark:text-gray-400">
             Only fields supported by the backend are shown here. Email is read-only.
           </p>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
+          <div className="flex items-center space-x-2 text-sm text-subtitle-color dark:text-gray-400">
             <Calendar className="h-4 w-4" />
             <span>Joined {format(new Date(user.createdAt), 'MMMM yyyy')}</span>
           </div>
+
 
           {isEditing ? (
             <div className="flex space-x-3">

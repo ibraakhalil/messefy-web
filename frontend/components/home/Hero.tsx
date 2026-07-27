@@ -71,7 +71,7 @@ const COLOR_CLASSES = {
 
 export const Hero = () => {
   return (
-    <section className="relative container grid grid-cols-2 gap-16 py-20">
+    <section className="relative container grid grid-cols-1 gap-16 py-20 laptop:grid-cols-2">
       <div className="reveal">
         {/* Badge */}
         <div className="mb-6 inline-flex items-center gap-2">
@@ -79,17 +79,17 @@ export const Hero = () => {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
             <span className="relative inline-flex size-3 rounded-full bg-green-500" />
           </span>
-          <p className="border-border-color flex items-center gap-2 rounded-full border p-1 px-3 font-sans">
+          <p className="flex items-center gap-2 rounded-full border border-border-color bg-card-bg px-3 py-1 font-sans text-pure-color dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
             <Sparkles className="h-3.5 w-3.5" />
             New • AI-powered meal tracking
           </p>
         </div>
 
         {/* Heading */}
-        <h1 className="text-pure tablet:text-6xl laptop:text-7xl text-5xl leading-tight tracking-tight">
+        <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-pure-color tablet:text-6xl laptop:text-7xl dark:text-white">
           Run your mess like a{' '}
           <span className="relative">
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-pink-400">
               pro
             </span>
             <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
@@ -110,7 +110,7 @@ export const Hero = () => {
         </h1>
 
         {/* Description */}
-        <p className="mt-6 text-xl leading-relaxed text-gray-600">
+        <p className="mt-6 text-xl leading-relaxed text-subtitle-color dark:text-gray-300">
           Effortlessly manage meals, deposits, and expenses. Get instant monthly statements with
           automated calculations.
         </p>
@@ -123,7 +123,7 @@ export const Hero = () => {
           </Button>
           <a
             href="#features"
-            className="text-subtitle-color hover:text-pure-color inline-flex items-center gap-2 text-lg font-semibold"
+            className="inline-flex items-center gap-2 text-lg font-semibold text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
           >
             View features
             <ArrowRight className="h-4 w-4" />
@@ -131,20 +131,20 @@ export const Hero = () => {
         </div>
 
         {/* Feature Cards */}
-        <div className="mt-12 grid grid-cols-3 gap-4">
+        <div className="mt-12 grid grid-cols-1 gap-4 tablet:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, description, colorScheme }) => {
             const colors = COLOR_CLASSES[colorScheme];
             return (
               <div
                 key={title}
-                className={`group border-border-color relative overflow-hidden rounded-2xl border bg-gradient-to-br ${colors.bg} to-transparent p-4 transition-all duration-300 hover:shadow-lg ${colors.border}`}
+                className={`group relative overflow-hidden rounded-2xl border border-border-color bg-gradient-to-br ${colors.bg} to-transparent p-4 transition-all duration-300 hover:shadow-lg dark:border-gray-800 dark:from-gray-800/80 dark:to-gray-900/80 ${colors.border}`}
               >
                 <div
                   className={`absolute top-0 right-0 h-20 w-20 rounded-full ${colors.blur} opacity-20 blur-2xl transition-opacity group-hover:opacity-30`}
                 />
                 <Icon className={`mb-2 h-5 w-5 ${colors.icon}`} />
-                <p className="text-lg font-bold text-gray-900">{title}</p>
-                <p className="mt-1 text-sm text-gray-600">{description}</p>
+                <p className="text-lg font-bold text-pure-color dark:text-white">{title}</p>
+                <p className="mt-1 text-sm text-subtitle-color dark:text-gray-400">{description}</p>
               </div>
             );
           })}
@@ -153,7 +153,7 @@ export const Hero = () => {
 
       <div className="relative">
         <div className="absolute inset-0 rounded-3xl opacity-20 blur-3xl" />
-        <div className="border-border-color relative transform rounded-3xl border p-6">
+        <div className="relative transform rounded-3xl border border-border-color bg-card-bg p-6 shadow-xl dark:border-gray-800 dark:bg-gray-800/90">
           <div className="rounded-2xl">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export const Hero = () => {
                 <span className="size-3 rounded-full bg-yellow-500" />
                 <span className="size-3 rounded-full bg-green-500" />
               </div>
-              <span className="bg-primary/10 rounded-full px-3 py-1 text-xs font-medium">
+              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
                 Live Demo
               </span>
             </div>
@@ -171,7 +171,7 @@ export const Hero = () => {
               {STATS.map(({ label, value, subtext, gradient, textColors }) => (
                 <div
                   key={label}
-                  className={`rounded-2xl bg-gradient-to-br ${gradient} p-4 text-white`}
+                  className={`rounded-2xl bg-gradient-to-br ${gradient} p-4 text-white shadow-md`}
                 >
                   <p className={`text-sm font-medium ${textColors.label}`}>{label}</p>
                   <p className="mt-1 text-3xl font-bold">{value}</p>
@@ -181,22 +181,22 @@ export const Hero = () => {
             </div>
 
             {/* Meal Entry Grid */}
-            <div className="bg-secondary-bg mb-4 rounded-2xl p-4">
+            <div className="mb-4 rounded-2xl bg-secondary-bg p-4 dark:bg-gray-900/60">
               <div className="mb-3 flex items-center justify-between">
-                <p className="font-semibold">Quick Entry Grid</p>
-                <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">
+                <p className="font-semibold text-pure-color dark:text-white">Quick Entry Grid</p>
+                <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-950 dark:text-green-300">
                   Auto-save
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {DEMO_USERS.map((name, index) => (
-                  <div key={name} className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                    <p className="mb-2 text-sm font-medium">{name}</p>
+                  <div key={name} className="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
+                    <p className="mb-2 text-sm font-medium text-pure-color dark:text-gray-200">{name}</p>
                     <div className="flex gap-1">
                       {[1, index === 1 ? 0 : 1, 1].map((meal, mealIndex) => (
                         <span
                           key={mealIndex}
-                          className="rounded-lg bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700"
+                          className="rounded-lg bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-950 dark:text-purple-300"
                         >
                           {meal}
                         </span>
@@ -208,11 +208,11 @@ export const Hero = () => {
             </div>
 
             {/* Balance Indicator */}
-            <div className="rounded-2xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4">
+            <div className="rounded-2xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4 dark:border-green-800/60 dark:from-green-950/40 dark:to-emerald-950/40">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-700">Current Balance</p>
-                  <p className="text-2xl font-bold text-green-900">+৳2,140</p>
+                  <p className="text-sm font-medium text-green-700 dark:text-green-300">Current Balance</p>
+                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">+৳2,140</p>
                 </div>
                 <div className="rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white">
                   All Settled ✓
@@ -227,3 +227,4 @@ export const Hero = () => {
 };
 
 export default Hero;
+

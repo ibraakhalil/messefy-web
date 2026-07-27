@@ -158,7 +158,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
     <div className="space-y-8">
       {/* Password Change Form */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
+        <h2 className="text-xl font-semibold text-pure-color dark:text-white">Change Password</h2>
         <form onSubmit={handleSubmit(onSubmitPasswordChange)} className="mt-4 space-y-4">
           <div className="relative">
             <FormInput
@@ -166,13 +166,13 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               type={showCurrentPassword ? 'text' : 'password'}
               label="Current Password"
               placeholder="••••••••"
-              icon={<Lock className="h-5 w-5 text-gray-400" />}
+              icon={<Lock className="h-5 w-5 text-subtitle-color dark:text-gray-400" />}
               error={errors.currentPassword?.message}
               {...register('currentPassword')}
             />
             <button
               type="button"
-              className="absolute top-9 right-3 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-[38px] text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
               aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
             >
@@ -186,13 +186,13 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               type={showNewPassword ? 'text' : 'password'}
               label="New Password"
               placeholder="••••••••"
-              icon={<Lock className="h-5 w-5 text-gray-400" />}
+              icon={<Lock className="h-5 w-5 text-subtitle-color dark:text-gray-400" />}
               error={errors.newPassword?.message}
               {...register('newPassword')}
             />
             <button
               type="button"
-              className="absolute top-9 right-3 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-[38px] text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
               onClick={() => setShowNewPassword(!showNewPassword)}
               aria-label={showNewPassword ? 'Hide password' : 'Show password'}
             >
@@ -206,13 +206,13 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               type={showConfirmPassword ? 'text' : 'password'}
               label="Confirm New Password"
               placeholder="••••••••"
-              icon={<Lock className="h-5 w-5 text-gray-400" />}
+              icon={<Lock className="h-5 w-5 text-subtitle-color dark:text-gray-400" />}
               error={errors.confirmPassword?.message}
               {...register('confirmPassword')}
             />
             <button
               type="button"
-              className="absolute top-9 right-3 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-[38px] text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
             >
@@ -231,7 +231,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
 
             <button
               type="button"
-              className="text-sm font-medium text-emerald-600 hover:text-emerald-500"
+              className="text-sm font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
               onClick={() => setShowResetConfirmation(true)}
             >
               Forgot password?
@@ -242,7 +242,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
 
       {/* Active Sessions */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">Active Sessions</h2>
+        <h2 className="text-xl font-semibold text-pure-color dark:text-white">Active Sessions</h2>
         <div className="mt-4 space-y-4">
           {activeSessions.map((session) => {
             const Icon = session.icon
@@ -252,22 +252,22 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
             return (
               <div 
                 key={session.id}
-                className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                className="flex items-center justify-between rounded-lg border border-border-color bg-card-bg p-4 shadow-sm dark:border-gray-800 dark:bg-gray-800/90"
               >
                 <div className="flex items-center space-x-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                    <Icon className="h-5 w-5 text-gray-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-bg dark:bg-gray-700">
+                    <Icon className="h-5 w-5 text-subtitle-color dark:text-gray-300" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-pure-color dark:text-white">
                       {session.device} • {session.browser}
                       {isCurrentSession && (
-                        <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                        <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                           Current
                         </span>
                       )}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-subtitle-color dark:text-gray-400">
                       {session.location} • {session.ip} • {session.lastActive}
                     </p>
                   </div>

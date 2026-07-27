@@ -12,7 +12,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     return (
       <div className={cn('w-full space-y-2', className)}>
         {label && (
-          <label htmlFor={id} className="text-subtitle-color block text-sm font-medium">
+          <label htmlFor={id} className="block text-sm font-medium text-subtitle-color dark:text-gray-300">
             {label}
           </label>
         )}
@@ -26,18 +26,19 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             id={id}
             ref={ref}
             className={cn(
-              'border-border-color block w-full rounded-lg border px-4 py-2.5 text-gray-900 placeholder-gray-500 placeholder:text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none',
+              'block w-full rounded-lg border border-border-color bg-card-bg px-4 py-2.5 text-pure-color placeholder-gray-400 placeholder:text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:bg-gray-100 disabled:opacity-75 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:disabled:bg-gray-800/50 dark:disabled:text-gray-400',
               icon && 'pl-10',
               error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
             )}
             {...props}
           />
         </div>
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
     );
   },
 );
+
 
 FormInput.displayName = 'FormInput';
 

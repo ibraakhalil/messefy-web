@@ -1,16 +1,20 @@
-import { ThemeProvider as ThmProvider } from 'next-themes'
+'use client';
 
-export default function ThemeProvider({ children, ...props }: { children: React.ReactNode }) {
+import { ThemeProvider as ThmProvider } from 'next-themes';
+import { ComponentProps } from 'react';
+
+export default function ThemeProvider({ children, ...props }: ComponentProps<typeof ThmProvider>) {
   return (
     <ThmProvider
-      defaultTheme="dark"
-      disableTransitionOnChange
-      enableColorScheme
       attribute="class"
+      defaultTheme="light"
       enableSystem
+      disableTransitionOnChange
       {...props}
     >
       {children}
     </ThmProvider>
-  )
+  );
 }
+
+

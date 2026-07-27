@@ -1,5 +1,44 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+
+  /* Light Theme Variables */
+  --primary: hsl(158 64% 32%);
+  --primary-bg: hsl(0 0% 100%);
+  --primary-fg: hsl(0 0% 100%);
+  --secondary-bg: hsl(210 20% 98%);
+  --card-bg: hsl(0 0% 100%);
+  --card-shade: hsl(210 20% 96%);
+  --subtitle-color: hsl(215 16% 47%);
+  --subtitle-secondary: hsl(215 16% 57%);
+  --pure-color: hsl(222 47% 11%);
+  --icon-color: hsl(215 16% 47%);
+  --border-color: hsl(214 32% 91%);
+  --error: hsl(0 72% 51%);
+  --input-bg: hsl(0 0% 100%);
+  --muted-bg: hsl(210 20% 96%);
+}
+
+.dark {
+  /* Dark Theme Variables */
+  --primary: hsl(158 64% 42%);
+  --primary-bg: hsl(222 47% 9%);
+  --primary-fg: hsl(0 0% 100%);
+  --secondary-bg: hsl(217 33% 15%);
+  --card-bg: hsl(217 33% 17%);
+  --card-shade: hsl(215 28% 22%);
+  --subtitle-color: hsl(215 20% 65%);
+  --subtitle-secondary: hsl(215 16% 55%);
+  --pure-color: hsl(210 40% 98%);
+  --icon-color: hsl(215 20% 65%);
+  --border-color: hsl(217 19% 27%);
+  --error: hsl(0 72% 51%);
+  --input-bg: hsl(217 33% 20%);
+  --muted-bg: hsl(217 33% 22%);
+}
+
 @theme {
   /* Breakpoints */
   --breakpoint-*: initial;
@@ -11,18 +50,20 @@
   --font-sans: var(--font-inter);
 
   /* Colors */
-  --color-primary: hsl(112 39% 36%);
-  --color-primary-bg: hsl(0 0% 100%);
-  --color-primary-fg: hsl(0 0% 100%);
-  --color-secondary-bg: hsl(0 0% 96%);
-  --color-card-bg: hsl(0 0% 100%);
-  --color-card-shade: hsl(180 4% 97%);
-  --color-subtitle-color: hsl(160 7% 51%);
-  --color-subtitle-secondary: hsl(154 9% 39%);
-  --color-pure-color: hsl(100 2% 21%);
-  --color-icon-color: hsl(160 7% 51%);
-  --color-border-color: hsl(0 0% 95%);
-  --color-error: hsl(0 70% 50%);
+  --color-primary: var(--primary);
+  --color-primary-bg: var(--primary-bg);
+  --color-primary-fg: var(--primary-fg);
+  --color-secondary-bg: var(--secondary-bg);
+  --color-card-bg: var(--card-bg);
+  --color-card-shade: var(--card-shade);
+  --color-subtitle-color: var(--subtitle-color);
+  --color-subtitle-secondary: var(--subtitle-secondary);
+  --color-pure-color: var(--pure-color);
+  --color-icon-color: var(--icon-color);
+  --color-border-color: var(--border-color);
+  --color-error: var(--error);
+  --color-input-bg: var(--input-bg);
+  --color-muted-bg: var(--muted-bg);
 }
 
 @layer utilities {

@@ -162,44 +162,45 @@ export default function MessOverview() {
       value: formatCurrency(summary.totals.mealRate),
       helper: 'Per meal',
       icon: Calendar,
-      iconClassName: 'bg-blue-100 text-blue-600',
+      iconClassName: 'bg-blue-100 text-blue-600 dark:bg-blue-950/80 dark:text-blue-400',
     },
     {
       label: 'Total Meals',
       value: String(summary.totals.totalMeals),
       helper: 'Current period',
       icon: Utensils,
-      iconClassName: 'bg-emerald-100 text-emerald-600',
+      iconClassName: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/80 dark:text-emerald-400',
     },
     {
       label: 'Total Expenses',
       value: formatCurrency(summary.totals.totalExpenses),
       helper: 'Shared meal costs',
       icon: Receipt,
-      iconClassName: 'bg-rose-100 text-rose-600',
+      iconClassName: 'bg-rose-100 text-rose-600 dark:bg-rose-950/80 dark:text-rose-400',
     },
     {
       label: 'Total Deposits',
       value: formatCurrency(summary.totals.totalDeposits),
       helper: 'Member contributions',
       icon: Wallet,
-      iconClassName: 'bg-purple-100 text-purple-600',
+      iconClassName: 'bg-purple-100 text-purple-600 dark:bg-purple-950/80 dark:text-purple-400',
     },
     {
       label: 'Net Balance',
       value: formatCurrency(summary.totals.netBalance),
       helper: summary.totals.netBalance >= 0 ? 'Surplus' : 'Shortfall',
       icon: TrendingUp,
-      iconClassName: 'bg-amber-100 text-amber-600',
+      iconClassName: 'bg-amber-100 text-amber-600 dark:bg-amber-950/80 dark:text-amber-400',
     },
     {
       label: 'Active Members',
       value: String(summary.totals.memberCount),
       helper: 'Included in summary',
       icon: Users,
-      iconClassName: 'bg-cyan-100 text-cyan-600',
+      iconClassName: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-950/80 dark:text-cyan-400',
     },
   ];
+
 
   return (
     <div className="space-y-8">

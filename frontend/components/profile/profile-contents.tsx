@@ -57,15 +57,15 @@ export function ProfileContents({ userData }: { userData: UserData }) {
 
   return (
     <div>
-      <nav className="border-border-color mt-6 mb-8 flex overflow-x-auto border-t bg-emerald-50">
+      <nav className="mt-6 mb-8 flex overflow-x-auto rounded-xl border border-border-color bg-card-bg shadow-sm dark:border-gray-800 dark:bg-gray-900">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              'flex min-w-[140px] cursor-pointer flex-col items-center gap-2 border-b-2 border-transparent px-6 py-4 text-sm font-medium whitespace-nowrap transition-all duration-200',
+              'flex min-w-[140px] cursor-pointer flex-col items-center gap-2 border-b-2 border-transparent px-6 py-4 text-sm font-medium whitespace-nowrap transition-all duration-200 text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white',
               {
-                'border-emerald-500 text-emerald-600': activeTab === tab.id,
+                'border-emerald-500 text-emerald-600 bg-emerald-50/60 font-semibold dark:bg-emerald-950/40 dark:text-emerald-400': activeTab === tab.id,
               },
               {
                 hidden: tab.id === 'mess' && !workspace,
@@ -80,6 +80,7 @@ export function ProfileContents({ userData }: { userData: UserData }) {
         ))}
       </nav>
       <div className="space-y-12">
+
         {activeTab === 'overview' && <OverviewSection onNavigate={setActiveTab} />}
         {activeTab === 'profile' && <ProfileSection isLoading={isLoading} />}
         {activeTab === 'mess' && workspace && <MessSection />}

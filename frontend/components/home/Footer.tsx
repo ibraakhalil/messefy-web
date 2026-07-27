@@ -42,19 +42,19 @@ const socialLinks = [
   { name: 'LinkedIn', href: '#', icon: Linkedin },
 ]
 
-const Footer = () => {
+export const Footer = () => {
   return (
-    <footer className="relative overflow-hidden border-t border-gray-200 bg-gradient-to-b from-gray-50 to-gray-100">
+    <footer className="relative overflow-hidden border-t border-border-color bg-secondary-bg transition-colors dark:border-gray-800 dark:bg-gray-950">
       {/* Background decorations */}
-      <div className="absolute top-0 left-0 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-100 opacity-20 blur-3xl"></div>
-      <div className="absolute right-0 bottom-0 h-80 w-80 translate-x-1/2 translate-y-1/2 rounded-full bg-blue-100 opacity-20 blur-3xl"></div>
+      <div className="absolute top-0 left-0 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-100 opacity-20 blur-3xl dark:bg-emerald-950/30"></div>
+      <div className="absolute right-0 bottom-0 h-80 w-80 translate-x-1/2 translate-y-1/2 rounded-full bg-blue-100 opacity-20 blur-3xl dark:bg-blue-950/30"></div>
 
       <div className="relative container max-w-7xl px-4">
         {/* Main footer content */}
         <div className="py-16">
-          <div className="tablet:grid-cols-2 laptop:grid-cols-6 grid gap-12">
+          <div className="grid gap-12 tablet:grid-cols-2 laptop:grid-cols-6">
             {/* Brand section - spans 2 columns on larger screens */}
-            <div className="laptop:col-span-2 space-y-6">
+            <div className="space-y-6 laptop:col-span-2">
               {/* Logo */}
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -63,25 +63,25 @@ const Footer = () => {
                   </div>
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 opacity-30 blur-lg"></div>
                 </div>
-                <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-2xl font-bold text-transparent">
+                <span className="text-2xl font-bold text-pure-color dark:text-white">
                   MessMate
                 </span>
               </div>
 
               {/* Description */}
-              <p className="max-w-sm leading-relaxed text-gray-600">
+              <p className="max-w-sm leading-relaxed text-subtitle-color dark:text-gray-400">
                 Smart meal and expense management for messes, hostels, and co-living spaces.
                 Simplifying shared living, one meal at a time.
               </p>
 
               {/* Contact info */}
-              <div className="space-y-3 text-sm text-gray-600">
+              <div className="space-y-3 text-sm text-subtitle-color dark:text-gray-400">
                 <div className="flex items-center gap-3">
-                  <MapPin size={16} className="text-emerald-600" />
+                  <MapPin size={16} className="text-emerald-600 dark:text-emerald-400" />
                   <span>Dhaka, Bangladesh</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Mail size={16} className="text-emerald-600" />
+                  <Mail size={16} className="text-emerald-600 dark:text-emerald-400" />
                   <span>hello@messmate.com</span>
                 </div>
               </div>
@@ -94,7 +94,7 @@ const Footer = () => {
                     <a
                       key={social.name}
                       href={social.href}
-                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:text-emerald-600 hover:shadow-lg"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-border-color bg-card-bg text-subtitle-color transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:text-emerald-600 hover:shadow-lg dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:border-emerald-500 dark:hover:text-emerald-400"
                       aria-label={social.name}
                     >
                       <Icon size={18} />
@@ -105,10 +105,10 @@ const Footer = () => {
             </div>
 
             {/* Newsletter signup */}
-            <div className="laptop:col-span-2 space-y-6">
+            <div className="space-y-6 laptop:col-span-2">
               <div>
-                <h3 className="mb-2 font-bold text-gray-900">Stay updated</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="mb-2 font-bold text-pure-color dark:text-white">Stay updated</h3>
+                <p className="text-sm text-subtitle-color dark:text-gray-400">
                   Get the latest updates, tips, and features delivered to your inbox.
                 </p>
               </div>
@@ -118,27 +118,27 @@ const Footer = () => {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="flex-1 rounded-xl border border-border-color bg-card-bg px-4 py-3 text-pure-color transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-emerald-500 focus:outline-none dark:border-gray-800 dark:bg-gray-900 dark:text-white"
                   />
                   <button className="transform rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:from-emerald-700 hover:to-teal-700 hover:shadow-lg">
                     <ArrowRight size={18} />
                   </button>
                 </div>
-                <p className="text-xs text-gray-500">No spam, unsubscribe at any time.</p>
+                <p className="text-xs text-subtitle-secondary dark:text-gray-500">No spam, unsubscribe at any time.</p>
               </div>
             </div>
 
             {/* Links sections */}
-            <div className="laptop:col-span-2 grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-8 laptop:col-span-2">
               {/* Product */}
               <div>
-                <h3 className="mb-4 font-bold text-gray-900">Product</h3>
+                <h3 className="mb-4 font-bold text-pure-color dark:text-white">Product</h3>
                 <ul className="space-y-3">
                   {footerLinks.product.map((link) => (
                     <li key={link.name}>
                       <a
                         href={link.href}
-                        className="group flex items-center gap-2 text-sm text-gray-600 transition-colors duration-200 hover:text-emerald-600"
+                        className="group flex items-center gap-2 text-sm text-subtitle-color transition-colors duration-200 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
                       >
                         {link.name}
                         <ArrowRight
@@ -153,13 +153,13 @@ const Footer = () => {
 
               {/* Company */}
               <div>
-                <h3 className="mb-4 font-bold text-gray-900">Company</h3>
+                <h3 className="mb-4 font-bold text-pure-color dark:text-white">Company</h3>
                 <ul className="space-y-3">
                   {footerLinks.company.map((link) => (
                     <li key={link.name}>
                       <a
                         href={link.href}
-                        className="group flex items-center gap-2 text-sm text-gray-600 transition-colors duration-200 hover:text-emerald-600"
+                        className="group flex items-center gap-2 text-sm text-subtitle-color transition-colors duration-200 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
                       >
                         {link.name}
                         <ArrowRight
@@ -174,13 +174,13 @@ const Footer = () => {
 
               {/* Support */}
               <div>
-                <h3 className="mb-4 font-bold text-gray-900">Support</h3>
+                <h3 className="mb-4 font-bold text-pure-color dark:text-white">Support</h3>
                 <ul className="space-y-3">
                   {footerLinks.support.map((link) => (
                     <li key={link.name}>
                       <a
                         href={link.href}
-                        className="group flex items-center gap-2 text-sm text-gray-600 transition-colors duration-200 hover:text-emerald-600"
+                        className="group flex items-center gap-2 text-sm text-subtitle-color transition-colors duration-200 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
                       >
                         {link.name}
                         <ArrowRight
@@ -195,13 +195,13 @@ const Footer = () => {
 
               {/* Legal */}
               <div>
-                <h3 className="mb-4 font-bold text-gray-900">Legal</h3>
+                <h3 className="mb-4 font-bold text-pure-color dark:text-white">Legal</h3>
                 <ul className="space-y-3">
                   {footerLinks.legal.map((link) => (
                     <li key={link.name}>
                       <a
                         href={link.href}
-                        className="group flex items-center gap-2 text-sm text-gray-600 transition-colors duration-200 hover:text-emerald-600"
+                        className="group flex items-center gap-2 text-sm text-subtitle-color transition-colors duration-200 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400"
                       >
                         {link.name}
                         <ArrowRight
@@ -218,9 +218,9 @@ const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-gray-200 py-8">
-          <div className="tablet:flex-row flex flex-col items-center justify-between gap-4">
-            <div className="flex items-center gap-6 text-sm text-gray-600">
+        <div className="border-t border-border-color py-8 dark:border-gray-800">
+          <div className="flex flex-col items-center justify-between gap-4 tablet:flex-row">
+            <div className="flex items-center gap-6 text-sm text-subtitle-color dark:text-gray-400">
               <p className="flex items-center gap-2">
                 © {new Date().getFullYear()} MessMate. Made with
                 <Heart size={14} className="fill-current text-red-500" />
@@ -228,7 +228,7 @@ const Footer = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-6 text-sm text-gray-600">
+            <div className="flex items-center gap-6 text-sm text-subtitle-color dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></div>
                 <span>All systems operational</span>
@@ -246,3 +246,4 @@ const Footer = () => {
 }
 
 export default Footer
+

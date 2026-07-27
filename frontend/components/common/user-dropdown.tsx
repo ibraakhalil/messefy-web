@@ -14,14 +14,14 @@ export default function UserDropdown() {
     <div className="flex items-center gap-2">
       <DropdownMenu>
         <DropdownMenu.Trigger asChild>
-          <button className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:shadow">
+          <button className="inline-flex items-center gap-2 rounded-lg border border-border-color bg-card-bg px-3 py-1.5 text-sm text-pure-color shadow-sm transition-all hover:bg-secondary-bg hover:shadow dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700">
             {user?.image ? (
               <Image
                 src={user.image}
                 alt={user?.name || 'User'}
                 width={24}
                 height={24}
-                className="rounded-full object-cover ring-2 ring-gray-100"
+                className="rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700"
               />
             ) : (
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-[10px] font-semibold text-white">
@@ -29,18 +29,18 @@ export default function UserDropdown() {
               </span>
             )}
             <span className="hidden sm:block">
-              <span className="block text-left text-sm leading-tight font-medium">
+              <span className="block text-left text-sm leading-tight font-medium text-pure-color dark:text-white">
                 {user?.name || 'User'}
               </span>
-              <span className="block text-[11px] leading-tight text-gray-500">Member</span>
+              <span className="block text-[11px] leading-tight text-subtitle-color dark:text-gray-400">Member</span>
             </span>
-            <ChevronDown className="size-4 text-gray-400 transition-transform group-data-[state=open]:rotate-180" />
+            <ChevronDown className="size-4 text-subtitle-color transition-transform group-data-[state=open]:rotate-180 dark:text-gray-400" />
           </button>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content className="w-64" align="end">
-          <div className="mb-2 flex items-center gap-3 rounded-lg bg-gray-50 p-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-sm ring-2 ring-white">
+          <div className="mb-2 flex items-center gap-3 rounded-lg bg-secondary-bg p-3 dark:bg-gray-800/80">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-sm ring-2 ring-white dark:ring-gray-700">
               {user?.image ? (
                 <Image
                   src={user.image}
@@ -54,8 +54,8 @@ export default function UserDropdown() {
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="truncate font-semibold text-gray-900">{user?.name || 'User'}</div>
-              <div className="truncate text-sm text-gray-500">
+              <div className="truncate font-semibold text-pure-color dark:text-white">{user?.name || 'User'}</div>
+              <div className="truncate text-sm text-subtitle-color dark:text-gray-400">
                 {user?.email || 'user@example.com'}
               </div>
             </div>
@@ -63,18 +63,18 @@ export default function UserDropdown() {
 
           <Link
             href="/profile"
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-pure-color transition-colors hover:bg-secondary-bg dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white"
           >
-            <Settings className="size-4 text-gray-500" />
+            <Settings className="size-4 text-subtitle-color dark:text-gray-400" />
             <span className="font-medium">Profile & Settings</span>
           </Link>
 
           {member && (
             <Link
               href="/mess"
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-pure-color transition-colors hover:bg-secondary-bg dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white"
             >
-              <Settings className="size-4 text-gray-500" />
+              <Settings className="size-4 text-subtitle-color dark:text-gray-400" />
               <span className="font-medium">My Mess</span>
             </Link>
           )}
@@ -82,16 +82,16 @@ export default function UserDropdown() {
           {member && ['owner', 'manager'].includes(member.role) && (
             <Link
               href={`/mess/dashboard`}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-pure-color transition-colors hover:bg-secondary-bg dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white"
             >
-              <Settings className="size-4 text-gray-500" />
+              <Settings className="size-4 text-subtitle-color dark:text-gray-400" />
               <span className="font-medium">Dashboard</span>
             </Link>
           )}
 
           <button
             onClick={() => signOut()}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+            className="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
           >
             <LogOut className="size-4" />
             <span>Sign Out</span>
@@ -101,3 +101,4 @@ export default function UserDropdown() {
     </div>
   );
 }
+

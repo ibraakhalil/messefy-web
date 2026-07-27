@@ -16,14 +16,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       primary:
         'bg-gradient-to-r text-center font-semibold text-primary-fg from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700',
       secondary:
-        'bg-white text-gray-700 border border-border-color hover:bg-gray-50 active:bg-gray-100 focus:ring-gray-500',
+        'bg-card-bg text-pure-color border border-border-color hover:bg-secondary-bg active:bg-gray-100 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 focus:ring-gray-500',
       outline:
-        'border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-50 active:bg-gray-100',
-      ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200',
+        'border border-gray-300 bg-transparent text-pure-color hover:bg-secondary-bg active:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800',
+      ghost: 'bg-transparent text-pure-color hover:bg-secondary-bg active:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-800',
       destructive:
         'bg-gradient-to-r from-red-600 to-rose-600 text-white font-semibold hover:from-red-700 hover:to-rose-700',
-      link: 'bg-transparent text-emerald-600 underline-offset-4 hover:underline hover:text-emerald-700 h-auto p-0',
+      link: 'bg-transparent text-emerald-600 underline-offset-4 hover:underline hover:text-emerald-700 h-auto p-0 dark:text-emerald-400',
     };
+
 
     return (
       <button

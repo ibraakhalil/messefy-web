@@ -108,25 +108,25 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
-      <div className="tablet:grid-cols-2 laptop:grid-cols-4 grid gap-6">
+      <div className="grid grid-cols-1 gap-6 tablet:grid-cols-2 laptop:grid-cols-4">
         {userStats.map((stat, index) => (
           <div
             key={index}
-            className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
+            className="overflow-hidden rounded-xl border border-border-color bg-card-bg p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-800/90"
           >
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium text-gray-500">{stat.label}</div>
-              <div className={`${stat.color}`}>{stat.icon}</div>
+              <div className="text-sm font-medium text-subtitle-color dark:text-gray-400">{stat.label}</div>
+              <div className={`${stat.color} dark:text-emerald-400`}>{stat.icon}</div>
             </div>
             <div className="mt-3 flex items-baseline">
-              <div className="text-2xl font-semibold text-gray-900">{stat.value}</div>
+              <div className="text-2xl font-semibold text-pure-color dark:text-white">{stat.value}</div>
               <span
                 className={`ml-2 text-sm font-medium ${
                   stat.change.startsWith('+')
-                    ? 'text-green-600'
+                    ? 'text-green-600 dark:text-green-400'
                     : stat.change.startsWith('-')
-                      ? 'text-red-600'
-                      : 'text-gray-600'
+                      ? 'text-red-600 dark:text-red-400'
+                      : 'text-subtitle-color dark:text-gray-400'
                 }`}
               >
                 {stat.change}
@@ -136,19 +136,19 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
         ))}
       </div>
 
-      <div className="laptop:grid-cols-12 grid gap-6">
+      <div className="grid gap-6 laptop:grid-cols-12">
         {/* Quick Actions */}
         <div className="laptop:col-span-4">
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-medium text-gray-900">Quick Actions</h3>
+          <div className="overflow-hidden rounded-xl border border-border-color bg-card-bg p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800/90">
+            <h3 className="mb-4 text-lg font-medium text-pure-color dark:text-white">Quick Actions</h3>
             <div className="space-y-2">
               {quickActions.map((action) => (
                 <button
                   key={action.id}
                   onClick={() => onNavigate(action.tab)}
-                  className="flex w-full items-center rounded-lg p-3 text-left text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex w-full items-center rounded-lg p-3 text-left text-pure-color transition-colors hover:bg-secondary-bg dark:text-gray-200 dark:hover:bg-gray-700/60"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
                     {action.icon}
                   </span>
                   <span className="ml-3 text-sm font-medium">{action.label}</span>
@@ -160,10 +160,10 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
 
         {/* Pending Items */}
         <div className="laptop:col-span-4">
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-border-color bg-card-bg p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800/90">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">Pending Items</h3>
-              <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+              <h3 className="text-lg font-medium text-pure-color dark:text-white">Pending Items</h3>
+              <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-950 dark:text-red-300">
                 {pendingItems.length}
               </span>
             </div>
@@ -172,18 +172,18 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
                 pendingItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start justify-between rounded-lg bg-amber-50 p-3"
+                    className="flex items-start justify-between rounded-lg bg-amber-50/80 p-3 dark:bg-amber-950/40"
                   >
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-pure-color dark:text-white">
                         {item.type === 'invitation' ? 'Mess Invitation' : 'Join Request'}
                       </p>
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-subtitle-color dark:text-gray-300">
                         {item.type === 'invitation'
                           ? `From ${item.from} to join ${item.messName}`
                           : `Requested to join ${item.messName}`}
                       </p>
-                      <p className="mt-1 text-xs text-gray-500">{item.time}</p>
+                      <p className="mt-1 text-xs text-subtitle-color dark:text-gray-400">{item.time}</p>
                     </div>
                     <Button
                       className="ml-2 h-6 bg-gradient-to-r from-emerald-600 to-teal-600 px-2 text-xs text-white hover:from-emerald-700 hover:to-teal-700"
@@ -195,7 +195,7 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
                 ))
               ) : (
                 <div className="py-4 text-center">
-                  <p className="text-sm text-gray-500">No pending items</p>
+                  <p className="text-sm text-subtitle-color dark:text-gray-400">No pending items</p>
                 </div>
               )}
             </div>
@@ -204,10 +204,10 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
 
         {/* Recent Activity */}
         <div className="laptop:col-span-4">
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-border-color bg-card-bg p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800/90">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">Recent Activity</h3>
-              <button className="text-sm font-medium text-blue-600 hover:text-blue-800">
+              <h3 className="text-lg font-medium text-pure-color dark:text-white">Recent Activity</h3>
+              <button className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                 View All
               </button>
             </div>
@@ -215,13 +215,13 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
               {recentActivities.map((activity) => (
                 <div key={activity.id} className="flex items-start">
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full ${activity.bg} ${activity.color}`}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full ${activity.bg} ${activity.color} dark:bg-gray-700 dark:text-emerald-400`}
                   >
                     {activity.icon}
                   </div>
                   <div className="ml-4 flex-1">
-                    <p className="text-sm font-medium text-gray-900">{activity.action}</p>
-                    <p className="mt-1 flex items-center text-sm text-gray-500">
+                    <p className="text-sm font-medium text-pure-color dark:text-white">{activity.action}</p>
+                    <p className="mt-1 flex items-center text-sm text-subtitle-color dark:text-gray-400">
                       <FiClock className="mr-1.5 h-3.5 w-3.5" />
                       {activity.time}
                     </p>
@@ -234,10 +234,10 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
       </div>
 
       {/* Today's Meal Planning */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-border-color bg-card-bg p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800/90">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900">Today's Meal Planning</h3>
-          <span className="text-sm text-gray-500">
+          <h3 className="text-lg font-medium text-pure-color dark:text-white">Today's Meal Planning</h3>
+          <span className="text-sm text-subtitle-color dark:text-gray-400">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
               month: 'long',
@@ -246,25 +246,27 @@ const OverviewSection = ({ onNavigate }: OverviewSectionProps) => {
           </span>
         </div>
 
-        <div className="tablet:grid-cols-3 grid gap-4">
+        <div className="grid gap-4 tablet:grid-cols-3">
           {['Breakfast', 'Lunch', 'Dinner'].map((meal, index) => {
-            const isPlanned = index < 2 // Mock: breakfast and lunch are planned
+            const isPlanned = index < 2
             return (
               <div
                 key={meal}
                 className={`rounded-lg border p-4 transition-all ${
-                  isPlanned ? 'border-emerald-200 bg-emerald-50' : 'border-gray-200 bg-gray-50'
+                  isPlanned
+                    ? 'border-emerald-200 bg-emerald-50/80 dark:border-emerald-800/60 dark:bg-emerald-950/40'
+                    : 'border-border-color bg-secondary-bg dark:border-gray-700 dark:bg-gray-700/40'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <h4 className="font-medium text-gray-900">{meal}</h4>
+                  <h4 className="font-medium text-pure-color dark:text-white">{meal}</h4>
                   <div
                     className={`h-3 w-3 rounded-full ${
-                      isPlanned ? 'bg-emerald-500' : 'bg-gray-300'
+                      isPlanned ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'
                     }`}
                   />
                 </div>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-subtitle-color dark:text-gray-400">
                   {isPlanned ? 'Planned' : 'Not planned yet'}
                 </p>
                 {!isPlanned && (
