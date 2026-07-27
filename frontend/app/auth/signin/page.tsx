@@ -46,7 +46,7 @@ export default function LoginPage() {
       });
 
       if (result?.error) return setError('Invalid email or password');
-      return router.push('/profile');
+      return router.push('/mess');
     } catch (error) {
       setError('An unexpected error occurred. Please try again later.');
       console.error('Login failed:', error);

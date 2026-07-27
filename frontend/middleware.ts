@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/config/auth';
 
-const protectedRoutes = ['/mess', '/profile'];
+const protectedRoutes = ['/mess'];
 const publicRoutes = ['/auth/signin', '/auth/signup'];
 
 export default auth(async function middleware(request) {
@@ -12,7 +12,7 @@ export default auth(async function middleware(request) {
   const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
 
   if (isPublic && isAuthenticated) {
-    return NextResponse.redirect(new URL('/profile', request.url));
+    return NextResponse.redirect(new URL('/mess', request.url));
   }
 
   if (isProtected && !isAuthenticated) {

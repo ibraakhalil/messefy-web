@@ -71,7 +71,7 @@ export default function DeleteMessPage() {
     try {
       await deleteWorkspace(workspaceId, data.password);
       toast.success('Mess deleted successfully');
-      router.push('/profile');
+      router.push('/mess');
     } catch (error) {
       console.error('Error deleting mess:', error);
       const message =

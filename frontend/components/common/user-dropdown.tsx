@@ -62,22 +62,12 @@ export default function UserDropdown() {
           </div>
 
           <Link
-            href="/profile"
+            href="/mess"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-pure-color transition-colors hover:bg-secondary-bg dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white"
           >
             <Settings className="size-4 text-subtitle-color dark:text-gray-400" />
-            <span className="font-medium">Profile & Settings</span>
+            <span className="font-medium">Profile, Mess & Settings</span>
           </Link>
-
-          {member && (
-            <Link
-              href="/mess"
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-pure-color transition-colors hover:bg-secondary-bg dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white"
-            >
-              <Settings className="size-4 text-subtitle-color dark:text-gray-400" />
-              <span className="font-medium">My Mess</span>
-            </Link>
-          )}
 
           {member && ['owner', 'manager'].includes(member.role) && (
             <Link
