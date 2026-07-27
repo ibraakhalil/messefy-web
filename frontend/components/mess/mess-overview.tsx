@@ -227,22 +227,22 @@ export default function MessOverview() {
             </p>
           </div>
 
-          {canManage ? (
-            <div className="relative flex flex-wrap gap-3">
-              <Link
-                href={`/mess/dashboard/all-months/${currentPeriod.id}`}
-                className="inline-flex h-10 items-center justify-center rounded-lg border border-white/25 bg-white/10 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
-              >
-                View Details
-              </Link>
+          <div className="relative flex flex-wrap gap-3">
+            <Link
+              href={`/mess/months/${currentPeriod.id}`}
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-white/25 bg-white/10 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
+            >
+              View Full Summary
+            </Link>
+            {canManage ? (
               <Link
                 href="/mess/dashboard/data-entry"
                 className="inline-flex h-10 items-center justify-center rounded-lg bg-white px-4 text-sm font-semibold text-emerald-800 shadow-sm transition-colors hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
               >
                 Add Data
               </Link>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </div>
       </section>
 
