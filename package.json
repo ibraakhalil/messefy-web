@@ -1,0 +1,11 @@
+{
+  "name": "messefy-web",
+  "private": true,
+  "scripts": {
+    "db:up": "docker compose up db -d",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs db -f",
+    "db:setup": "cd backend && bun run db:setup",
+    "db:studio": "cd backend && bun run studio"
+  }
+}
