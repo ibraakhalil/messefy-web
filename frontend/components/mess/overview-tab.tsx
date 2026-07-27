@@ -4,9 +4,8 @@ import { Workspace } from '@/types/workspace';
 import { User } from 'next-auth';
 import MessOverview from './mess-overview';
 import JoinOrCreateMess from '@/components/profile/join-create-mess';
-import { Calendar, Mail, User as UserIcon } from 'lucide-react';
-import { useWorkspace } from '@/providers/workspace-provider';
-import Link from 'next/link';
+import { Mail } from 'lucide-react';
+import Image from 'next/image';
 
 interface UserData {
   user: User | undefined;
@@ -15,67 +14,59 @@ interface UserData {
 
 interface OverviewTabProps {
   userData: UserData;
-  onNavigate: (tab: string) => void;
 }
 
-export default function OverviewTab({ userData, onNavigate }: OverviewTabProps) {
+export default function OverviewTab({ userData }: OverviewTabProps) {
   const { user, workspace } = userData;
-  const { member } = useWorkspace();
 
   if (workspace) {
-    return (
-      <div className="space-y-6">
-        <MessOverview />
-      </div>
-    );
+    return <MessOverview />;
   }
 
   return (
-    <div className="space-y-8">
-      {/* Profile Summary Card */}
-      <div className="rounded-xl border border-border-color bg-card-bg p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800/90">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 shadow-sm ring-4 ring-white dark:ring-gray-900">
+    <div className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
+      <div className="via-card-bg tablet:p-8 dark:via-card-bg bg-gradient-to-br from-emerald-50 to-teal-50 p-6 dark:from-emerald-950/40 dark:to-teal-950/30">
+        <div className="tablet:flex-row tablet:items-center flex flex-col gap-5">
+          <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-sm ring-4 ring-white/80 dark:ring-gray-900/60">
             {user?.image ? (
-              <img
+              <Image
                 src={user.image}
                 alt={user?.name || 'User'}
-                className="h-full w-full rounded-full object-cover"
+                width={64}
+                height={64}
+                className="size-full object-cover"
               />
             ) : (
-              <span className="text-3xl font-bold text-white">
+              <span className="text-2xl font-bold text-white">
                 {(user?.name || 'U').substring(0, 1).toUpperCase()}
               </span>
             )}
           </div>
-          
-          <div className="flex-1 space-y-1">
-            <h2 className="text-2xl font-semibold text-pure-color dark:text-white">
-              Welcome, {user?.name || 'User'}!
+
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+              Ready when you are
+            </p>
+            <h2 className="text-pure-color mt-1 text-2xl font-bold text-balance">
+              Welcome, {user?.name || 'User'}
             </h2>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-subtitle-color dark:text-gray-400">
-              <div className="flex items-center gap-1.5">
-                <Mail className="h-4 w-4" />
-                {user?.email}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4" />
-                Joined recently
-              </div>
-            </div>
+            <p className="text-subtitle-color mt-2 flex min-w-0 items-center gap-2 text-sm">
+              <Mail className="size-4 shrink-0" aria-hidden="true" />
+              <span className="truncate">{user?.email}</span>
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Action Area */}
-      <div className="rounded-xl border border-border-color bg-card-bg p-6 shadow-sm dark:border-gray-800 dark:bg-gray-800/90">
-        <h3 className="mb-4 text-lg font-medium text-pure-color dark:text-white">
-          Get Started
-        </h3>
-        <p className="mb-6 text-subtitle-color dark:text-gray-400">
-          You are not currently part of any workspace. Create a new mess to manage meals and expenses, or join an existing one using an invitation.
+      <div className="border-border-color tablet:p-8 border-t p-6">
+        <h3 className="text-pure-color text-lg font-bold">Choose How to Get Started</h3>
+        <p className="text-subtitle-color mt-2 max-w-2xl text-sm leading-6">
+          Create a new mess to manage members and costs, or join an existing group with an
+          invitation.
         </p>
-        <JoinOrCreateMess workspace={workspace} />
+        <div className="mt-6">
+          <JoinOrCreateMess workspace={workspace} />
+        </div>
       </div>
     </div>
   );

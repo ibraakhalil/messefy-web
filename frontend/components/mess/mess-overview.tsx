@@ -8,15 +8,7 @@ import { useWorkspace } from '@/providers/workspace-provider';
 import type { RecentDeposit, RecentExpense, SummaryMember } from '@/types/summary';
 import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, formatDistanceToNow } from 'date-fns';
-import {
-  AlertCircle,
-  Calendar,
-  Receipt,
-  TrendingUp,
-  Users,
-  Utensils,
-  Wallet,
-} from 'lucide-react';
+import { AlertCircle, Calendar, Receipt, TrendingUp, Users, Utensils, Wallet } from 'lucide-react';
 import Link from 'next/link';
 
 function getPeriodName(year: number, month: number) {
@@ -67,7 +59,9 @@ function mapExpenseToActivity(expense: RecentExpense): OverviewActivity {
 
 function MemberRow({ member }: { member: SummaryMember }) {
   const balanceClassName =
-    member.balance < 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400';
+    member.balance < 0
+      ? 'text-red-600 dark:text-red-400'
+      : 'text-emerald-600 dark:text-emerald-400';
 
   return (
     <div className="flex items-center justify-between gap-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-700/50">
@@ -81,16 +75,16 @@ function MemberRow({ member }: { member: SummaryMember }) {
         <p className={`text-sm font-semibold ${balanceClassName}`}>
           {formatCurrency(member.balance)}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          Due {formatCurrency(member.due)}
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Due {formatCurrency(member.due)}</p>
       </div>
     </div>
   );
 }
 
 export default function MessOverview() {
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const { member } = useWorkspace();
+  const workspaceId = member?.workspaceId || '';
+  const canManage = Boolean(member && ['owner', 'manager'].includes(member.role));
   const { data: currentPeriod, isLoading: isLoadingPeriod } = useCurrentPeriod(workspaceId);
   const {
     data: summary,
@@ -101,7 +95,7 @@ export default function MessOverview() {
 
   if (!workspaceId) {
     return (
-      <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-yellow-900">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
         No active workspace selected.
       </div>
     );
@@ -109,8 +103,15 @@ export default function MessOverview() {
 
   if (isLoadingPeriod || isLoadingSummary) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center rounded-xl border border-gray-200 bg-white p-6 text-gray-500 shadow-sm">
-        Loading live mess stats...
+      <div
+        className="border-border-color bg-card-bg text-subtitle-color grid min-h-[40vh] place-items-center rounded-2xl border p-6 shadow-sm"
+        role="status"
+        aria-live="polite"
+      >
+        <div className="text-center">
+          <div className="mx-auto mb-3 size-8 animate-spin rounded-full border-2 border-emerald-600/25 border-t-emerald-600 motion-reduce:animate-none" />
+          Loading live mess stats…
+        </div>
       </div>
     );
   }
@@ -146,8 +147,8 @@ export default function MessOverview() {
 
   const periodName = getPeriodName(summary.period.year, summary.period.month);
   const daysRemaining = getDaysRemaining(summary.period.year, summary.period.month);
-  const recentExpenses = summary.recentExpenses.slice(0, 5);
-  const recentDeposits = summary.recentDeposits.slice(0, 5);
+  const recentExpenses = summary.recentExpenses.slice(0, 4);
+  const recentDeposits = summary.recentDeposits.slice(0, 4);
   const recentActivity = [
     ...summary.recentDeposits.map(mapDepositToActivity),
     ...summary.recentExpenses.map(mapExpenseToActivity),
@@ -201,68 +202,92 @@ export default function MessOverview() {
     },
   ];
 
-
   return (
-    <div className="space-y-8">
-      <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className="space-y-6">
+      <section className="tablet:p-7 relative overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-700 to-teal-700 p-6 text-white shadow-sm dark:border-emerald-900">
+        <div
+          className="pointer-events-none absolute -top-20 -right-16 size-56 rounded-full bg-white/10 blur-2xl"
+          aria-hidden="true"
+        />
         <div className="tablet:flex-row tablet:items-center tablet:justify-between flex flex-col gap-4">
-          <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Current Period</p>
-            <h2 className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
+          <div className="relative">
+            <div className="flex items-center gap-2">
+              <span
+                className="size-2 rounded-full bg-emerald-200 shadow-[0_0_0_4px_rgba(167,243,208,0.15)]"
+                aria-hidden="true"
+              />
+              <p className="text-sm font-semibold text-emerald-50">Current Period</p>
+            </div>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-balance text-white">
               {periodName}
             </h2>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {daysRemaining} days remaining • Status: {summary.period.status}
+            <p className="mt-2 text-sm text-emerald-50/85">
+              {daysRemaining} days remaining <span aria-hidden="true">•</span>{' '}
+              <span className="capitalize">{summary.period.status}</span>
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Link href={`/mess/dashboard/all-months/${currentPeriod.id}`}>
-              <Button variant="secondary">View Details</Button>
-            </Link>
-            <Link href="/mess/dashboard/data-entry">
-              <Button>Add Data</Button>
-            </Link>
-          </div>
+          {canManage ? (
+            <div className="relative flex flex-wrap gap-3">
+              <Link
+                href={`/mess/dashboard/all-months/${currentPeriod.id}`}
+                className="inline-flex h-10 items-center justify-center rounded-lg border border-white/25 bg-white/10 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
+              >
+                View Details
+              </Link>
+              <Link
+                href="/mess/dashboard/data-entry"
+                className="inline-flex h-10 items-center justify-center rounded-lg bg-white px-4 text-sm font-semibold text-emerald-800 shadow-sm transition-colors hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
+              >
+                Add Data
+              </Link>
+            </div>
+          ) : null}
         </div>
       </section>
 
-      <section className="tablet:grid-cols-2 laptop:grid-cols-3 desktop:grid-cols-6 grid grid-cols-1 gap-4">
+      <section
+        className="tablet:grid-cols-3 tablet:gap-4 grid grid-cols-2 gap-3"
+        aria-label="Period summary"
+      >
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.label}
-              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+              className="border-border-color bg-card-bg tablet:p-5 min-w-0 rounded-2xl border p-4 shadow-sm"
             >
-              <div className="mb-2 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.label}</h3>
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <h3 className="text-subtitle-color tablet:text-sm tablet:normal-case truncate text-xs font-semibold tracking-wide uppercase">
+                  {stat.label}
+                </h3>
                 <span
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg ${stat.iconClassName}`}
+                  className={`tablet:flex hidden size-9 shrink-0 items-center justify-center rounded-xl ${stat.iconClassName}`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="size-[18px]" aria-hidden="true" />
                 </span>
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stat.value}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">{stat.helper}</span>
-              </div>
+              <p className="text-pure-color tablet:text-2xl truncate text-xl font-bold tabular-nums">
+                {stat.value}
+              </p>
+              <p className="text-subtitle-color mt-1 truncate text-xs">{stat.helper}</p>
             </div>
           );
         })}
       </section>
 
       <div className="laptop:grid-cols-3 grid grid-cols-1 gap-6">
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Period Snapshot</h2>
-            <Link href="/mess/dashboard/member-balances">
-              <Button variant="secondary" className="text-sm">
+            {canManage ? (
+              <Link
+                href="/mess/dashboard/member-balances"
+                className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              >
                 Balances
-              </Button>
-            </Link>
+              </Link>
+            ) : null}
           </div>
 
           <div className="space-y-3">
@@ -293,7 +318,7 @@ export default function MessOverview() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
             Recent Expenses
           </h2>
@@ -326,7 +351,7 @@ export default function MessOverview() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
             Recent Deposits
           </h2>
@@ -361,16 +386,17 @@ export default function MessOverview() {
       </div>
 
       <div className="laptop:grid-cols-2 grid grid-cols-1 gap-6">
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Member Snapshot
-            </h2>
-            <Link href="/mess/dashboard/member-balances">
-              <Button variant="secondary" className="text-sm">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Member Snapshot</h2>
+            {canManage ? (
+              <Link
+                href="/mess/dashboard/member-balances"
+                className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              >
                 View All
-              </Button>
-            </Link>
+              </Link>
+            ) : null}
           </div>
 
           <div className="space-y-3">
@@ -384,16 +410,19 @@ export default function MessOverview() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Activity Snapshot
             </h2>
-            <Link href="/mess/dashboard/member-balances">
-              <Button variant="secondary" className="text-sm">
+            {canManage ? (
+              <Link
+                href="/mess/dashboard/member-balances"
+                className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              >
                 More Activity
-              </Button>
-            </Link>
+              </Link>
+            ) : null}
           </div>
 
           <div className="space-y-3">
