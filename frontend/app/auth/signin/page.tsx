@@ -9,16 +9,25 @@ import { useForm } from 'react-hook-form';
 import Button from '@/components/ui/button';
 import FormCheckbox from '@/components/ui/form-checkbox';
 import FormInput from '@/components/ui/form-input';
-import { loginSchema, type LoginFormValues } from '@/utils/validation';
+import { createLoginSchema, type LoginFormValues } from '@/utils/validation';
 import { signIn } from 'next-auth/react';
 import { GoogleIcon } from '@/components/svg/google-icon';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const t = useTranslations('Auth.signIn');
+  const validation = useTranslations('Auth.validation');
+  const loginSchema = createLoginSchema({
+    emailRequired: validation('emailRequired'),
+    emailInvalid: validation('emailInvalid'),
+    passwordRequired: validation('passwordRequired'),
+    passwordMin: validation('passwordMin'),
+  });
 
   const {
     register,
@@ -45,10 +54,10 @@ export default function LoginPage() {
         redirect: false,
       });
 
-      if (result?.error) return setError('Invalid email or password');
+      if (result?.error) return setError(t('invalidCredentials'));
       return router.push('/mess');
     } catch (error) {
-      setError('An unexpected error occurred. Please try again later.');
+      setError(t('unexpectedError'));
       console.error('Login failed:', error);
     } finally {
       setIsLoading(false);
@@ -58,14 +67,14 @@ export default function LoginPage() {
   return (
     <div className="border-border-color mt-8 space-y-8 rounded-lg border p-8 shadow-md">
       <div className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900">{t('title')}</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Or{' '}
+          {t('or')}{' '}
           <Link
             href="/auth/signup"
             className="font-medium text-emerald-600 capitalize hover:text-emerald-500"
           >
-            Create a new account
+            {t('createAccount')}
           </Link>
         </p>
       </div>
@@ -81,7 +90,7 @@ export default function LoginPage() {
         <FormInput
           id="email"
           type="email"
-          label="Email address"
+          label={t('email')}
           placeholder="name@example.com"
           icon={<Mail className="h-5 w-5 text-gray-400" />}
           error={errors.email?.message}
@@ -92,7 +101,7 @@ export default function LoginPage() {
           <FormInput
             id="password"
             type={showPassword ? 'text' : 'password'}
-            label="Password"
+            label={t('password')}
             placeholder="••••••••"
             icon={<Lock className="h-5 w-5 text-gray-400" />}
             error={errors.password?.message}
@@ -102,22 +111,22 @@ export default function LoginPage() {
             type="button"
             className="absolute top-10 right-3 text-gray-500 hover:text-gray-700"
             onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-label={showPassword ? t('hidePassword') : t('showPassword')}
           >
             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
           </button>
         </div>
 
         <div className="flex items-center justify-between">
-          <FormCheckbox id="remember-me" label="Remember me" {...register('rememberMe')} />
+          <FormCheckbox id="remember-me" label={t('remember')} {...register('rememberMe')} />
           <Link href="#" className="shrink-0 text-sm font-medium text-emerald-600">
-            Forgot password?
+            {t('forgotPassword')}
           </Link>
         </div>
 
         <div>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign in'}
+            {isLoading ? t('submitting') : t('submit')}
           </Button>
         </div>
       </form>
@@ -127,7 +136,7 @@ export default function LoginPage() {
           <div className="w-full border-t border-gray-300"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-2 text-gray-500">Or continue with</span>
+          <span className="bg-white px-2 text-gray-500">{t('continueWith')}</span>
         </div>
       </div>
 

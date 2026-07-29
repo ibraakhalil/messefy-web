@@ -1,0 +1,250 @@
+{
+  "Metadata": {
+    "appName": "Mess Mate",
+    "title": "Mess Mate — মেসের হিসাব, এক জায়গায়",
+    "description": "মিল, ডিপোজিট, বাজার খরচ ও সদস্যদের মাসিক ব্যালেন্স সহজে পরিচালনার জন্য একটি পূর্ণাঙ্গ মেস ম্যানেজমেন্ট প্ল্যাটফর্ম।",
+    "openGraphTitle": "Mess Mate — মাসের শেষে হিসাব নিয়ে আর তর্ক নয়",
+    "openGraphDescription": "মিল, ডিপোজিট, বাজার খরচ ও সদস্যদের মাসিক ব্যালেন্স—সব এক জায়গায়।",
+    "imageAlt": "Mess Mate মেস ম্যানেজমেন্ট প্ল্যাটফর্ম"
+  },
+  "LocaleSwitcher": {
+    "label": "ভাষা নির্বাচন করুন"
+  },
+  "Home": {
+    "header": {
+      "primaryNavigation": "প্রধান নেভিগেশন",
+      "mobileNavigation": "মোবাইল নেভিগেশন",
+      "features": "সুবিধা",
+      "how": "কীভাবে কাজ করে",
+      "faq": "জিজ্ঞাসা",
+      "workspace": "ওয়ার্কস্পেস",
+      "goToWorkspace": "ওয়ার্কস্পেসে যান",
+      "signIn": "লগইন",
+      "getStarted": "শুরু করুন",
+      "openMenu": "মেনু খুলুন",
+      "closeMenu": "মেনু বন্ধ করুন"
+    },
+    "hero": {
+      "eyebrow": "মেস ম্যানেজমেন্ট, এবার হিসাবমতো",
+      "title": "মাসের শেষে হিসাব নিয়ে আর তর্ক নয়।",
+      "description": "প্রতিদিনের মিল, ডিপোজিট ও বাজার খরচ লিখুন। Mess Mate নিজেই meal rate এবং প্রত্যেক সদস্যের পাওনা–দেনা গুছিয়ে দেখাবে।",
+      "startFree": "ফ্রি শুরু করুন",
+      "goToWorkspace": "ওয়ার্কস্পেসে যান",
+      "howItWorks": "কীভাবে কাজ করে",
+      "benefit1": "ক্রেডিট কার্ড লাগবে না",
+      "benefit2": "অনলাইন ও অফলাইন সদস্য",
+      "benefit3": "মোবাইল থেকেই ব্যবহার",
+      "workspaceName": "শান্তি নিবাস",
+      "currentPeriod": "জুলাই ২০২৬ · চলতি মাস",
+      "active": "হিসাব চালু",
+      "totalMeals": "মোট মিল",
+      "mealRate": "মিল রেট",
+      "totalExpense": "মোট খরচ",
+      "memberBalance": "সদস্য ব্যালেন্স",
+      "balanceHint": "খরচ ও ডিপোজিট অনুযায়ী",
+      "viewAll": "সবাইকে দেখুন",
+      "member": "সদস্য",
+      "meals": "মিল",
+      "balance": "ব্যালেন্স",
+      "member1": "রাহিম",
+      "member2": "করিম",
+      "member3": "জুঁই",
+      "todayMeals": "আজকের মিল",
+      "activeMembers": "সক্রিয় সদস্য",
+      "activeMembersValue": "৮ জন",
+      "highlight1Value": "এক জায়গায়",
+      "highlight1Label": "মিল, খরচ ও ডিপোজিট",
+      "highlight2Value": "সবার জন্য",
+      "highlight2Label": "Owner, manager ও member",
+      "highlight3Value": "প্রতি মাসে",
+      "highlight3Label": "পরিষ্কার হিসাব ও ইতিহাস"
+    },
+    "features": {
+      "eyebrow": "যেসব কাজে সত্যিই সময় বাঁচে",
+      "title": "আলাদা খাতা নয়, পুরো মেস এক সিস্টেমে।",
+      "description": "Mess Mate বানানো হয়েছে বাংলাদেশের মেস, হোস্টেল ও shared living-এর বাস্তব হিসাব মাথায় রেখে। তাই প্রয়োজনীয় বিষয় সামনে, জটিলতা পর্দার পেছনে।",
+      "mealEntry": {
+        "title": "দৈনিক মিল এন্ট্রি",
+        "description": "প্রতিদিন কে কয়টি মিল খেলেন—একটি দ্রুত, পরিচ্ছন্ন গ্রিড থেকে সবার হিসাব আপডেট করুন।"
+      },
+      "deposits": {
+        "title": "ডিপোজিট ট্র্যাকিং",
+        "description": "সদস্যের জমা টাকা তারিখসহ রাখুন। মাস শেষে কে কত দিয়েছেন, খাতা উল্টে খুঁজতে হবে না।"
+      },
+      "expenses": {
+        "title": "বাজার ও অন্যান্য খরচ",
+        "description": "চাল–ডাল থেকে গ্যাস বিল—প্রতিটি খরচ category ও note সহ একই জায়গায় সংরক্ষণ করুন।"
+      },
+      "balance": {
+        "title": "স্বয়ংক্রিয় মিল রেট ও ব্যালেন্স",
+        "description": "মোট খরচ ও মিল থেকে meal rate গণনা করে প্রত্যেক সদস্যের পাওনা–দেনা পরিষ্কারভাবে দেখায়।"
+      },
+      "members": {
+        "title": "অনলাইন ও অফলাইন সদস্য",
+        "description": "অ্যাকাউন্ট আছে বা নেই—সব সদস্যকে একই হিসাবের আওতায় রাখুন এবং প্রয়োজনমতো role দিন।"
+      },
+      "periods": {
+        "title": "মাসভিত্তিক হিসাব",
+        "description": "প্রতিটি মাস আলাদা period হিসেবে পরিচালনা করুন; বর্তমান হিসাব ও পুরোনো ইতিহাস গুছিয়ে রাখুন।"
+      },
+      "roles": {
+        "title": "Role-ভিত্তিক নিয়ন্ত্রণ",
+        "description": "Owner, manager ও member-এর জন্য দায়িত্ব অনুযায়ী access রাখুন; গুরুত্বপূর্ণ কাজ সঠিক হাতেই থাকুক।"
+      },
+      "summary": {
+        "title": "এক নজরে সারাংশ",
+        "description": "মোট মিল, ডিপোজিট, খরচ, meal rate ও সদস্য ব্যালেন্স dashboard থেকেই দেখুন।"
+      }
+    },
+    "how": {
+      "eyebrow": "শুরু করা খুবই সহজ",
+      "title": "চার ধাপে মাসের হিসাব পরিষ্কার।",
+      "description": "প্রথম setup-এর পর প্রতিদিন কয়েক মিনিটই যথেষ্ট। হিসাব মিলাতে আর শেষ রাত পর্যন্ত calculator-এর সঙ্গে বন্ধুত্ব করতে হবে না।",
+      "step1": {
+        "number": "০১",
+        "title": "ওয়ার্কস্পেস তৈরি করুন",
+        "description": "আপনার মেসের নাম দিয়ে workspace খুলুন এবং প্রথম মাসের হিসাব শুরু করুন।"
+      },
+      "step2": {
+        "number": "০২",
+        "title": "সদস্য যোগ করুন",
+        "description": "অ্যাকাউন্টধারী ও অফলাইন—দুই ধরনের সদস্যই যোগ করা যাবে।"
+      },
+      "step3": {
+        "number": "০৩",
+        "title": "দৈনিক তথ্য লিখুন",
+        "description": "মিল, ডিপোজিট ও খরচ অল্প সময়ে আপডেট করুন; ভুল হলে সংশোধনও করুন।"
+      },
+      "step4": {
+        "number": "০৪",
+        "title": "পরিষ্কার হিসাব দেখুন",
+        "description": "Meal rate, মোট খরচ ও সদস্যভিত্তিক balance এক নজরে বুঝুন।"
+      },
+      "managerEyebrow": "ম্যানেজার দেখবেন",
+      "managerTitle": "আজ কী এন্ট্রি বাকি, মাসের অবস্থা কী—সব এক নজরে।",
+      "todayMeals": "আজকের মিল",
+      "monthExpense": "এই মাসের খরচ",
+      "pendingEntries": "বাকি এন্ট্রি",
+      "pendingEntriesValue": "২টি"
+    },
+    "faq": {
+      "title": "জানার মতো সাধারণ প্রশ্ন।",
+      "description": "শুরু করার আগে যে বিষয়গুলো সাধারণত মেস ম্যানেজারের মাথায় আসে।",
+      "item1": {
+        "question": "অ্যাকাউন্ট নেই—এমন সদস্যকে কি যোগ করা যাবে?",
+        "answer": "হ্যাঁ। Offline member হিসেবে নাম দিয়ে যোগ করা যাবে। তার মিল, ডিপোজিট, খরচের অংশ ও মাসিক ব্যালেন্স অন্য সদস্যদের মতোই হিসাব হবে।"
+      },
+      "item2": {
+        "question": "মিল রেট কীভাবে হিসাব হয়?",
+        "answer": "চলতি period-এর shared meal expense মোট মিল দিয়ে ভাগ করে meal rate নির্ধারণ করা হয়। নতুন মিল বা খরচ যোগ হলে summary-ও হালনাগাদ হয়।"
+      },
+      "item3": {
+        "question": "Owner, manager ও member কি একই access পান?",
+        "answer": "না। Owner পুরো workspace পরিচালনা করেন, manager দৈনিক operations সামলান, আর member নিজের প্রয়োজনীয় হিসাব দেখেন।"
+      },
+      "item4": {
+        "question": "প্রতি মাসের হিসাব কি আলাদা থাকবে?",
+        "answer": "হ্যাঁ। প্রতিটি মাস আলাদা period হিসেবে থাকে। এতে চলতি মাসের কাজ ও আগের মাসগুলোর history সহজে আলাদা রাখা যায়।"
+      },
+      "item5": {
+        "question": "মোবাইল থেকে ব্যবহার করা যাবে?",
+        "answer": "অবশ্যই। Homepage থেকে dashboard পর্যন্ত interface ছোট screen ও touch interaction মাথায় রেখে responsive করা হয়েছে।"
+      }
+    },
+    "cta": {
+      "title": "আগামী মাসের হিসাবটা সহজ হোক।",
+      "description": "আজই workspace তৈরি করুন, সদস্য যোগ করুন এবং দৈনিক এন্ট্রি শুরু করুন। মাস শেষে পরিষ্কার হিসাব—ইনশাআল্লাহ, অযথা তর্ক কম।",
+      "goToWorkspace": "ওয়ার্কস্পেসে যান",
+      "startFree": "ফ্রি শুরু করুন",
+      "hasAccount": "আমার অ্যাকাউন্ট আছে"
+    },
+    "footer": {
+      "description": "মেস, হোস্টেল ও shared living-এর meal এবং monthly accounting সহজ করার প্ল্যাটফর্ম।",
+      "navigation": "ফুটার নেভিগেশন",
+      "features": "সুবিধা",
+      "how": "কীভাবে কাজ করে",
+      "faq": "জিজ্ঞাসা",
+      "signIn": "লগইন",
+      "madeIn": "বাংলাদেশে",
+      "withLove": "দিয়ে তৈরি",
+      "love": "ভালোবাসা",
+      "backToTop": "উপরে যান"
+    }
+  },
+  "Auth": {
+    "metadata": {
+      "title": "অ্যাকাউন্ট",
+      "description": "Mess Mate-এ লগইন করুন অথবা নতুন অ্যাকাউন্ট খুলুন"
+    },
+    "signIn": {
+      "title": "আপনার অ্যাকাউন্টে লগইন করুন",
+      "or": "অথবা",
+      "createAccount": "নতুন অ্যাকাউন্ট খুলুন",
+      "email": "ইমেইল ঠিকানা",
+      "password": "পাসওয়ার্ড",
+      "remember": "আমাকে মনে রাখুন",
+      "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+      "submit": "লগইন",
+      "submitting": "লগইন হচ্ছে...",
+      "continueWith": "অথবা চালিয়ে যান",
+      "invalidCredentials": "ইমেইল অথবা পাসওয়ার্ড সঠিক নয়",
+      "unexpectedError": "অপ্রত্যাশিত সমস্যা হয়েছে। একটু পরে আবার চেষ্টা করুন।",
+      "showPassword": "পাসওয়ার্ড দেখান",
+      "hidePassword": "পাসওয়ার্ড লুকান"
+    },
+    "signUp": {
+      "title": "নতুন অ্যাকাউন্ট তৈরি করুন",
+      "hasAccount": "ইতোমধ্যে অ্যাকাউন্ট আছে?",
+      "signIn": "লগইন করুন",
+      "name": "পুরো নাম",
+      "namePlaceholder": "আপনার নাম",
+      "email": "ইমেইল ঠিকানা",
+      "password": "পাসওয়ার্ড",
+      "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+      "showPassword": "পাসওয়ার্ড দেখান",
+      "hidePassword": "পাসওয়ার্ড লুকান",
+      "termsPrefix": "আমি",
+      "terms": "সেবার শর্তাবলি",
+      "and": "এবং",
+      "privacy": "গোপনীয়তা নীতি",
+      "termsSuffix": "মেনে নিচ্ছি",
+      "submit": "অ্যাকাউন্ট তৈরি করুন",
+      "submitting": "অ্যাকাউন্ট তৈরি হচ্ছে...",
+      "continueWith": "অথবা সাইন আপ করুন",
+      "success": "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!",
+      "failed": "সাইন আপ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
+    },
+    "validation": {
+      "emailRequired": "ইমেইল আবশ্যক",
+      "emailInvalid": "সঠিক ইমেইল ঠিকানা লিখুন",
+      "passwordRequired": "পাসওয়ার্ড আবশ্যক",
+      "passwordMin": "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে",
+      "nameRequired": "নাম আবশ্যক",
+      "nameMax": "নাম ৫০ অক্ষরের কম হতে হবে",
+      "passwordUppercase": "পাসওয়ার্ডে অন্তত একটি বড় হাতের অক্ষর থাকতে হবে",
+      "passwordLowercase": "পাসওয়ার্ডে অন্তত একটি ছোট হাতের অক্ষর থাকতে হবে",
+      "passwordNumber": "পাসওয়ার্ডে অন্তত একটি সংখ্যা থাকতে হবে",
+      "confirmPasswordRequired": "পাসওয়ার্ড আবার লিখুন",
+      "termsRequired": "শর্তাবলি মেনে নিতে হবে",
+      "passwordMismatch": "পাসওয়ার্ড দুটি মিলছে না"
+    }
+  },
+  "Common": {
+    "user": "ব্যবহারকারী",
+    "member": "সদস্য",
+    "profileSettings": "প্রোফাইল, মেস ও সেটিংস",
+    "dashboard": "ড্যাশবোর্ড",
+    "signOut": "লগআউট",
+    "notifications": "নোটিফিকেশন",
+    "dashboardNav": {
+      "dashboard": "ড্যাশবোর্ড",
+      "invitations": "আমন্ত্রণ",
+      "dataEntry": "ডেটা এন্ট্রি",
+      "currentMonth": "চলতি মাস",
+      "allMonths": "সব মাস",
+      "memberBalances": "সদস্য ব্যালেন্স",
+      "allMembers": "সব সদস্য",
+      "settings": "সেটিংস"
+    }
+  }
+}

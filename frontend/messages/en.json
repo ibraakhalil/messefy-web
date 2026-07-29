@@ -1,0 +1,250 @@
+{
+  "Metadata": {
+    "appName": "Mess Mate",
+    "title": "Mess Mate — Mess accounting in one place",
+    "description": "A complete mess management platform for meals, deposits, expenses and monthly member balances.",
+    "openGraphTitle": "Mess Mate — No more end-of-month accounting arguments",
+    "openGraphDescription": "Meals, deposits, expenses and member balances—all in one place.",
+    "imageAlt": "Mess Mate mess management platform"
+  },
+  "LocaleSwitcher": {
+    "label": "Choose language"
+  },
+  "Home": {
+    "header": {
+      "primaryNavigation": "Primary navigation",
+      "mobileNavigation": "Mobile navigation",
+      "features": "Features",
+      "how": "How it works",
+      "faq": "FAQ",
+      "workspace": "Workspace",
+      "goToWorkspace": "Go to workspace",
+      "signIn": "Sign in",
+      "getStarted": "Get started",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
+    },
+    "hero": {
+      "eyebrow": "Mess management that adds up",
+      "title": "No more arguments over month-end accounts.",
+      "description": "Record daily meals, deposits and market expenses. Mess Mate automatically organizes the meal rate and every member's balance.",
+      "startFree": "Start for free",
+      "goToWorkspace": "Go to workspace",
+      "howItWorks": "How it works",
+      "benefit1": "No credit card required",
+      "benefit2": "Online and offline members",
+      "benefit3": "Works beautifully on mobile",
+      "workspaceName": "Shanti Nibash",
+      "currentPeriod": "July 2026 · Current month",
+      "active": "Accounts active",
+      "totalMeals": "Total meals",
+      "mealRate": "Meal rate",
+      "totalExpense": "Total expense",
+      "memberBalance": "Member balances",
+      "balanceHint": "Based on expenses and deposits",
+      "viewAll": "View everyone",
+      "member": "Member",
+      "meals": "Meals",
+      "balance": "Balance",
+      "member1": "Rahim",
+      "member2": "Karim",
+      "member3": "Jui",
+      "todayMeals": "Today's meals",
+      "activeMembers": "Active members",
+      "activeMembersValue": "8 people",
+      "highlight1Value": "One place",
+      "highlight1Label": "Meals, expenses and deposits",
+      "highlight2Value": "For everyone",
+      "highlight2Label": "Owners, managers and members",
+      "highlight3Value": "Every month",
+      "highlight3Label": "Clear accounts and history"
+    },
+    "features": {
+      "eyebrow": "Tools that genuinely save time",
+      "title": "No separate ledgers. Your whole mess in one system.",
+      "description": "Mess Mate is designed around the real accounting needs of messes, hostels and shared living in Bangladesh—essentials up front, complexity behind the scenes.",
+      "mealEntry": {
+        "title": "Daily meal entry",
+        "description": "Update everyone's daily meal count from one fast, uncluttered grid."
+      },
+      "deposits": {
+        "title": "Deposit tracking",
+        "description": "Record member deposits with dates and see who paid what without searching a ledger."
+      },
+      "expenses": {
+        "title": "Market and other expenses",
+        "description": "Keep everything from groceries to gas bills together, complete with categories and notes."
+      },
+      "balance": {
+        "title": "Automatic meal rate and balances",
+        "description": "Calculate the meal rate from expenses and meals, then show each member's payable or receivable balance."
+      },
+      "members": {
+        "title": "Online and offline members",
+        "description": "Manage every member in the same account, whether or not they have an app account, and assign roles as needed."
+      },
+      "periods": {
+        "title": "Month-based accounting",
+        "description": "Run each month as a separate period and keep current accounts neatly separated from history."
+      },
+      "roles": {
+        "title": "Role-based control",
+        "description": "Give owners, managers and members access based on responsibility, keeping important actions in the right hands."
+      },
+      "summary": {
+        "title": "Summary at a glance",
+        "description": "See total meals, deposits, expenses, meal rate and member balances right from the dashboard."
+      }
+    },
+    "how": {
+      "eyebrow": "Getting started is simple",
+      "title": "Clear monthly accounts in four steps.",
+      "description": "After the first setup, a few minutes a day is enough. No more late-night friendship with a calculator.",
+      "step1": {
+        "number": "01",
+        "title": "Create a workspace",
+        "description": "Name your mess, open a workspace and start the first accounting period."
+      },
+      "step2": {
+        "number": "02",
+        "title": "Add members",
+        "description": "Add both account holders and offline members."
+      },
+      "step3": {
+        "number": "03",
+        "title": "Enter daily activity",
+        "description": "Quickly update meals, deposits and expenses—and correct mistakes when needed."
+      },
+      "step4": {
+        "number": "04",
+        "title": "Review clear accounts",
+        "description": "Understand meal rate, total expense and member balances at a glance."
+      },
+      "managerEyebrow": "Managers can see",
+      "managerTitle": "What is left to enter today and how the month is going—all at a glance.",
+      "todayMeals": "Today's meals",
+      "monthExpense": "This month's expense",
+      "pendingEntries": "Pending entries",
+      "pendingEntriesValue": "2"
+    },
+    "faq": {
+      "title": "Common questions worth answering.",
+      "description": "The things mess managers usually want to know before getting started.",
+      "item1": {
+        "question": "Can I add a member who has no account?",
+        "answer": "Yes. Add them by name as an offline member. Their meals, deposits, expense share and monthly balance are calculated just like everyone else's."
+      },
+      "item2": {
+        "question": "How is the meal rate calculated?",
+        "answer": "Shared meal expenses for the current period are divided by total meals. The summary updates whenever a meal or expense is added."
+      },
+      "item3": {
+        "question": "Do owners, managers and members get the same access?",
+        "answer": "No. Owners manage the workspace, managers handle daily operations, and members see the accounts they need."
+      },
+      "item4": {
+        "question": "Are accounts kept separately for each month?",
+        "answer": "Yes. Every month is a separate period, keeping current activity and previous history neatly organized."
+      },
+      "item5": {
+        "question": "Can I use it from a phone?",
+        "answer": "Absolutely. From the homepage to the dashboard, the interface is responsive and designed for small screens and touch."
+      }
+    },
+    "cta": {
+      "title": "Make next month's accounts easier.",
+      "description": "Create a workspace today, add members and start daily entries. By month end, the accounts will be clear—with fewer unnecessary arguments, in sha Allah.",
+      "goToWorkspace": "Go to workspace",
+      "startFree": "Start for free",
+      "hasAccount": "I already have an account"
+    },
+    "footer": {
+      "description": "A platform that simplifies meal and monthly accounting for messes, hostels and shared living.",
+      "navigation": "Footer navigation",
+      "features": "Features",
+      "how": "How it works",
+      "faq": "FAQ",
+      "signIn": "Sign in",
+      "madeIn": "Made in Bangladesh",
+      "withLove": "with",
+      "love": "love",
+      "backToTop": "Back to top"
+    }
+  },
+  "Auth": {
+    "metadata": {
+      "title": "Account",
+      "description": "Sign in or create your Mess Mate account"
+    },
+    "signIn": {
+      "title": "Sign in to your account",
+      "or": "Or",
+      "createAccount": "create a new account",
+      "email": "Email address",
+      "password": "Password",
+      "remember": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "continueWith": "Or continue with",
+      "invalidCredentials": "Invalid email or password",
+      "unexpectedError": "An unexpected error occurred. Please try again later.",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "signUp": {
+      "title": "Create your account",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "name": "Full name",
+      "namePlaceholder": "Your name",
+      "email": "Email address",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "termsPrefix": "I agree to the",
+      "terms": "Terms of Service",
+      "and": "and",
+      "privacy": "Privacy Policy",
+      "termsSuffix": "",
+      "submit": "Create account",
+      "submitting": "Creating account...",
+      "continueWith": "Or sign up with",
+      "success": "Account created successfully!",
+      "failed": "Signup failed. Please try again."
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMin": "Password must be at least 8 characters",
+      "nameRequired": "Name is required",
+      "nameMax": "Name must be less than 50 characters",
+      "passwordUppercase": "Password must contain at least one uppercase letter",
+      "passwordLowercase": "Password must contain at least one lowercase letter",
+      "passwordNumber": "Password must contain at least one number",
+      "confirmPasswordRequired": "Confirm password is required",
+      "termsRequired": "You must accept the terms and conditions",
+      "passwordMismatch": "Passwords do not match"
+    }
+  },
+  "Common": {
+    "user": "User",
+    "member": "Member",
+    "profileSettings": "Profile, Mess & Settings",
+    "dashboard": "Dashboard",
+    "signOut": "Sign out",
+    "notifications": "Notifications",
+    "dashboardNav": {
+      "dashboard": "Dashboard",
+      "invitations": "Invitations",
+      "dataEntry": "Data entry",
+      "currentMonth": "Current month",
+      "allMonths": "All months",
+      "memberBalances": "Member balances",
+      "allMembers": "All members",
+      "settings": "Settings"
+    }
+  }
+}

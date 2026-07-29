@@ -1,45 +1,63 @@
 import { z } from 'zod';
 
-// Login form schema
-export const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'Email is required' })
-    .email({ message: 'Invalid email address' }),
-  password: z
-    .string()
-    .min(1, { message: 'Password is required' })
-    .min(8, { message: 'Password must be at least 8 characters' }),
-  rememberMe: z.boolean().optional(),
-});
+interface LoginValidationMessages {
+  emailRequired: string;
+  emailInvalid: string;
+  passwordRequired: string;
+  passwordMin: string;
+}
 
-// Signup form schema
-export const signupSchema = z
-  .object({
-    name: z
-      .string()
-      .min(1, { message: 'Name is required' })
-      .max(50, { message: 'Name must be less than 50 characters' }),
+interface SignupValidationMessages extends LoginValidationMessages {
+  nameRequired: string;
+  nameMax: string;
+  passwordUppercase: string;
+  passwordLowercase: string;
+  passwordNumber: string;
+  confirmPasswordRequired: string;
+  termsRequired: string;
+  passwordMismatch: string;
+}
+
+export const createLoginSchema = (messages: LoginValidationMessages) =>
+  z.object({
     email: z
       .string()
-      .min(1, { message: 'Email is required' })
-      .email({ message: 'Invalid email address' }),
+      .min(1, { message: messages.emailRequired })
+      .email({ message: messages.emailInvalid }),
     password: z
       .string()
-      .min(1, { message: 'Password is required' })
-      .min(8, { message: 'Password must be at least 8 characters' })
-      .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
-      .regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter' })
-      .regex(/[0-9]/, { message: 'Password must contain at least one number' }),
-    confirmPassword: z.string().min(1, { message: 'Confirm password is required' }),
-    terms: z.literal(true, {
-      errorMap: () => ({ message: 'You must accept the terms and conditions' }),
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
+      .min(1, { message: messages.passwordRequired })
+      .min(8, { message: messages.passwordMin }),
+    rememberMe: z.boolean().optional(),
   });
 
-export type LoginFormValues = z.infer<typeof loginSchema>;
-export type SignupFormValues = z.infer<typeof signupSchema>;
+export const createSignupSchema = (messages: SignupValidationMessages) =>
+  z
+    .object({
+      name: z
+        .string()
+        .min(1, { message: messages.nameRequired })
+        .max(50, { message: messages.nameMax }),
+      email: z
+        .string()
+        .min(1, { message: messages.emailRequired })
+        .email({ message: messages.emailInvalid }),
+      password: z
+        .string()
+        .min(1, { message: messages.passwordRequired })
+        .min(8, { message: messages.passwordMin })
+        .regex(/[A-Z]/, { message: messages.passwordUppercase })
+        .regex(/[a-z]/, { message: messages.passwordLowercase })
+        .regex(/[0-9]/, { message: messages.passwordNumber }),
+      confirmPassword: z.string().min(1, { message: messages.confirmPasswordRequired }),
+      terms: z.literal(true, {
+        errorMap: () => ({ message: messages.termsRequired }),
+      }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: messages.passwordMismatch,
+      path: ['confirmPassword'],
+    });
+
+export type LoginFormValues = z.infer<ReturnType<typeof createLoginSchema>>;
+export type SignupFormValues = z.infer<ReturnType<typeof createSignupSchema>>;

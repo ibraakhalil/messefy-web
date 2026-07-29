@@ -1,120 +1,128 @@
 'use client';
 
-import { Menu } from 'lucide-react';
+import { ArrowRight, LayoutDashboard, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import Logo from '../common/logo';
 import { Session } from 'next-auth';
-import Button from '../ui/button';
 import UserDropdown from '../common/user-dropdown';
 import ThemeToggle from '../common/theme-toggle';
-import { Workspace } from '@/types/workspace';
+import LocaleSwitcher from '../common/locale-switcher';
+import { useTranslations } from 'next-intl';
 
 interface HeaderProps {
-  userData: {
-    user: Session['user'];
-    workspace: Workspace | undefined;
-  };
+  user: Session['user'] | undefined;
 }
 
-const navItems = [
-  {
-    id: 'features',
-    label: 'Features',
-    href: '#features',
-  },
-  {
-    id: 'how',
-    label: 'How it works',
-    href: '#how',
-  },
-  {
-    id: 'about',
-    label: 'About',
-    href: '/about',
-  },
-  {
-    id: 'contact',
-    label: 'Contact',
-    href: '/contact',
-  },
-];
-
-function NavItem({ children }: { children: string }) {
-  return (
-    <span
-      key={children}
-      className="group relative text-base font-medium text-gray-600 transition-colors duration-200 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-    >
-      {children}
-      <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-600 to-teal-600 transition-all duration-300 group-hover:w-full"></span>
-    </span>
-  );
-}
-
-export const Header = ({ userData }: HeaderProps) => {
-  const { user } = userData;
+export const Header = ({ user }: HeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = useTranslations('Home.header');
+  const navItems = [
+    { id: 'features', label: t('features'), href: '#features' },
+    { id: 'how', label: t('how'), href: '#how' },
+    { id: 'faq', label: t('faq'), href: '#faq' },
+  ] as const;
 
   return (
     <header
       id="top"
-      className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-900/80"
+      className="border-border-color/70 bg-primary-bg/90 sticky top-0 z-50 w-full border-b backdrop-blur-xl"
     >
-      <div className="container flex max-w-7xl items-center justify-between px-4 py-4">
-        <Logo />
+      <div className="tablet:px-6 container flex h-[72px] items-center justify-between px-4">
+        <Logo className="[&_span]:text-xl" />
 
-        <nav className="tablet:flex hidden items-center gap-8">
+        <nav className="tablet:flex hidden items-center gap-7" aria-label={t('primaryNavigation')}>
           {navItems.map((item) => (
-            <Link href={item.href} key={item.id}>
-              <NavItem>{item.label}</NavItem>
+            <Link
+              href={item.href}
+              key={item.id}
+              className="text-subtitle-color hover:text-primary focus-visible:outline-primary text-sm font-medium transition-colors focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-4"
+            >
+              {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <LocaleSwitcher compact className="hidden min-[390px]:inline-flex" />
           <ThemeToggle />
-          {!user && (
-            <Link href="/auth/signin">
-              <Button>Get Started</Button>
-            </Link>
+          {user ? (
+            <div className="tablet:flex hidden items-center gap-2">
+              <Link
+                href="/mess"
+                className="bg-primary text-primary-fg focus-visible:outline-primary inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                <LayoutDashboard className="size-4" />
+                {t('workspace')}
+              </Link>
+              <UserDropdown />
+            </div>
+          ) : (
+            <div className="tablet:flex hidden items-center gap-2">
+              <Link
+                href="/auth/signin"
+                className="text-subtitle-color hover:text-pure-color rounded-lg px-3 py-2 text-sm font-semibold transition-colors"
+              >
+                {t('signIn')}
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="bg-primary text-primary-fg focus-visible:outline-primary inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                {t('getStarted')}
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
           )}
-          {user && <UserDropdown />}
 
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="tablet:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white/80 text-gray-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-gray-300 hover:text-gray-900 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600 dark:hover:text-white"
-            aria-label="Toggle menu"
+            type="button"
+            onClick={() => setIsMenuOpen((open) => !open)}
+            className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg tablet:hidden flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
+            aria-label={isMenuOpen ? t('closeMenu') : t('openMenu')}
             aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
-            <Menu className="h-5 w-5" />
+            {isMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
       </div>
 
-      {/* Enhanced Mobile menu */}
       <div
-        className={`container max-w-7xl px-4 ${
-          isMenuOpen ? 'block' : 'hidden'
-        } tablet:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-lg`}
+        id="mobile-menu"
+        className={`${isMenuOpen ? 'block' : 'hidden'} border-border-color bg-primary-bg tablet:hidden border-t`}
       >
-        <nav className="space-y-1 py-4">
+        <nav className="container space-y-1 px-4 py-4" aria-label={t('mobileNavigation')}>
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.id}
               href={item.href}
-              className="block rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-gray-50/80 hover:text-gray-900"
+              onClick={() => setIsMenuOpen(false)}
+              className="text-subtitle-color hover:bg-secondary-bg hover:text-pure-color block rounded-lg px-3 py-3 text-sm font-medium transition-colors"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
-          <div className="mt-2 border-t border-gray-200/50 pt-2">
-            <a
-              href="/auth/signin"
-              className="block rounded-xl border border-gray-200/60 bg-gray-50/50 px-4 py-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100/80 hover:text-gray-900"
+          <div
+            className={`border-border-color mt-3 grid gap-2 border-t pt-4 ${
+              user ? 'grid-cols-1' : 'grid-cols-2'
+            }`}
+          >
+            {!user ? (
+              <Link
+                href="/auth/signin"
+                className="border-border-color bg-card-bg inline-flex h-11 items-center justify-center rounded-lg border px-4 text-sm font-semibold"
+              >
+                {t('signIn')}
+              </Link>
+            ) : null}
+            <Link
+              href={user ? '/mess' : '/auth/signup'}
+              className="bg-primary text-primary-fg inline-flex h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold"
             >
-              Sign in
-            </a>
+              {user ? t('goToWorkspace') : t('getStarted')}
+              <ArrowRight className="size-4" />
+            </Link>
           </div>
         </nav>
       </div>

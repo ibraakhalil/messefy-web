@@ -3,19 +3,18 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-
   /* Light Theme Variables */
-  --primary: hsl(158 64% 32%);
-  --primary-bg: hsl(0 0% 100%);
+  --primary: hsl(158 65% 27%);
+  --primary-bg: hsl(48 33% 98%);
   --primary-fg: hsl(0 0% 100%);
-  --secondary-bg: hsl(210 20% 98%);
+  --secondary-bg: hsl(45 29% 95%);
   --card-bg: hsl(0 0% 100%);
-  --card-shade: hsl(210 20% 96%);
-  --subtitle-color: hsl(215 16% 47%);
-  --subtitle-secondary: hsl(215 16% 57%);
-  --pure-color: hsl(222 47% 11%);
-  --icon-color: hsl(215 16% 47%);
-  --border-color: hsl(214 32% 91%);
+  --card-shade: hsl(43 27% 93%);
+  --subtitle-color: hsl(160 10% 36%);
+  --subtitle-secondary: hsl(160 8% 48%);
+  --pure-color: hsl(164 35% 12%);
+  --icon-color: hsl(160 10% 36%);
+  --border-color: hsl(45 18% 84%);
   --error: hsl(0 72% 51%);
   --input-bg: hsl(0 0% 100%);
   --muted-bg: hsl(210 20% 96%);
@@ -24,16 +23,16 @@
 .dark {
   /* Dark Theme Variables */
   --primary: hsl(158 64% 42%);
-  --primary-bg: hsl(222 47% 9%);
+  --primary-bg: hsl(164 35% 7%);
   --primary-fg: hsl(0 0% 100%);
-  --secondary-bg: hsl(217 33% 15%);
-  --card-bg: hsl(217 33% 17%);
-  --card-shade: hsl(215 28% 22%);
-  --subtitle-color: hsl(215 20% 65%);
-  --subtitle-secondary: hsl(215 16% 55%);
-  --pure-color: hsl(210 40% 98%);
-  --icon-color: hsl(215 20% 65%);
-  --border-color: hsl(217 19% 27%);
+  --secondary-bg: hsl(162 25% 11%);
+  --card-bg: hsl(163 24% 10%);
+  --card-shade: hsl(162 20% 15%);
+  --subtitle-color: hsl(154 10% 67%);
+  --subtitle-secondary: hsl(154 8% 55%);
+  --pure-color: hsl(48 30% 96%);
+  --icon-color: hsl(154 10% 67%);
+  --border-color: hsl(162 15% 21%);
   --error: hsl(0 72% 51%);
   --input-bg: hsl(217 33% 20%);
   --muted-bg: hsl(217 33% 22%);
@@ -92,5 +91,26 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: hsl(158 64% 32% / 0.18);
+  }
+
+  a,
+  button,
+  summary {
+    -webkit-tap-highlight-color: transparent;
   }
 }

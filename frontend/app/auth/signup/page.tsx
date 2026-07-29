@@ -10,18 +10,35 @@ import { AxiosError } from 'axios';
 import Button from '@/components/ui/button';
 import FormCheckbox from '@/components/ui/form-checkbox';
 import FormInput from '@/components/ui/form-input';
-import { signupSchema, type SignupFormValues } from '@/utils/validation';
+import { createSignupSchema, type SignupFormValues } from '@/utils/validation';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { GoogleIcon } from '@/components/svg/google-icon';
 import { env } from '@/config/env';
 import { signIn } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations('Auth.signUp');
+  const validation = useTranslations('Auth.validation');
+  const signupSchema = createSignupSchema({
+    emailRequired: validation('emailRequired'),
+    emailInvalid: validation('emailInvalid'),
+    passwordRequired: validation('passwordRequired'),
+    passwordMin: validation('passwordMin'),
+    nameRequired: validation('nameRequired'),
+    nameMax: validation('nameMax'),
+    passwordUppercase: validation('passwordUppercase'),
+    passwordLowercase: validation('passwordLowercase'),
+    passwordNumber: validation('passwordNumber'),
+    confirmPasswordRequired: validation('confirmPasswordRequired'),
+    termsRequired: validation('termsRequired'),
+    passwordMismatch: validation('passwordMismatch'),
+  });
 
   const {
     register,
@@ -45,11 +62,11 @@ export default function SignupPage() {
 
       await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/signup`, signupData);
 
-      toast.success('Account created successfully!');
+      toast.success(t('success'));
       router.push('/auth/signin');
     } catch (error) {
       const axiosError = error as AxiosError<{ error?: string }>;
-      const errorMessage = axiosError.response?.data?.error || 'Signup failed. Please try again.';
+      const errorMessage = axiosError.response?.data?.error || t('failed');
 
       if (errorMessage.toLowerCase().includes('email')) {
         setError('email', { type: 'manual', message: errorMessage });
@@ -62,11 +79,11 @@ export default function SignupPage() {
   return (
     <div className="border-border-color mt-8 space-y-8 rounded-lg border p-8 shadow-md">
       <div className="text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900">Create your account</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900">{t('title')}</h2>
         <p className="mt-2 text-sm text-gray-600">
-          Already have an account?{' '}
+          {t('hasAccount')}{' '}
           <Link href="/auth/signin" className="font-medium text-emerald-600 hover:text-emerald-500">
-            Sign in
+            {t('signIn')}
           </Link>
         </p>
       </div>
@@ -75,8 +92,8 @@ export default function SignupPage() {
         <FormInput
           id="name"
           type="text"
-          label="Full name"
-          placeholder="John Doe"
+          label={t('name')}
+          placeholder={t('namePlaceholder')}
           icon={<User className="size-5 text-gray-400" />}
           error={errors.name?.message}
           {...register('name')}
@@ -85,7 +102,7 @@ export default function SignupPage() {
         <FormInput
           id="email"
           type="email"
-          label="Email address"
+          label={t('email')}
           placeholder="name@example.com"
           icon={<Mail className="size-5 text-gray-400" />}
           error={errors.email?.message}
@@ -96,7 +113,7 @@ export default function SignupPage() {
           <FormInput
             id="password"
             type={showPassword ? 'text' : 'password'}
-            label="Password"
+            label={t('password')}
             placeholder="••••••••"
             icon={<Lock className="size-5 text-gray-400" />}
             error={errors.password?.message}
@@ -106,7 +123,7 @@ export default function SignupPage() {
             type="button"
             className="absolute top-10 right-3 text-gray-500 hover:text-gray-700"
             onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-label={showPassword ? t('hidePassword') : t('showPassword')}
           >
             {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
           </button>
@@ -116,7 +133,7 @@ export default function SignupPage() {
           <FormInput
             id="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}
-            label="Confirm password"
+            label={t('confirmPassword')}
             placeholder="••••••••"
             icon={<Lock className="size-5 text-gray-400" />}
             error={errors.confirmPassword?.message}
@@ -126,7 +143,7 @@ export default function SignupPage() {
             type="button"
             className="absolute top-10 right-3 text-gray-500 hover:text-gray-700"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+            aria-label={showConfirmPassword ? t('hidePassword') : t('showPassword')}
           >
             {showConfirmPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
           </button>
@@ -136,14 +153,15 @@ export default function SignupPage() {
           id="terms"
           label={
             <span>
-              I agree to the{' '}
+              {t('termsPrefix')}{' '}
               <a href="#" className="font-medium text-emerald-600 hover:text-emerald-500">
-                Terms of Service
+                {t('terms')}
               </a>{' '}
-              and{' '}
+              {t('and')}{' '}
               <a href="#" className="font-medium text-emerald-600 hover:text-emerald-500">
-                Privacy Policy
-              </a>
+                {t('privacy')}
+              </a>{' '}
+              {t('termsSuffix')}
             </span>
           }
           {...register('terms')}
@@ -151,7 +169,7 @@ export default function SignupPage() {
 
         <div>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Creating account...' : 'Create account'}
+            {isLoading ? t('submitting') : t('submit')}
           </Button>
         </div>
       </form>
@@ -161,7 +179,7 @@ export default function SignupPage() {
           <div className="w-full border-t border-gray-300"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-white px-2 text-gray-500">Or sign up with</span>
+          <span className="bg-white px-2 text-gray-500">{t('continueWith')}</span>
         </div>
       </div>
 

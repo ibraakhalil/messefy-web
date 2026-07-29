@@ -20,6 +20,7 @@ import { ComponentType, ReactNode, SVGProps, useState } from 'react';
 import { Links } from '../links';
 import ThemeToggle from '../common/theme-toggle';
 import UserDropdown from '../common/user-dropdown';
+import { useTranslations } from 'next-intl';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -46,6 +47,7 @@ function NavItem({ children, icon: Icon, isActive = false }: NavItemProps) {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const t = useTranslations('Common');
   const path = usePathname();
   const workspaceId = useWorkspace().member?.workspaceId || '';
   const { data: currentPeriod } = useCurrentPeriod(workspaceId);
@@ -88,48 +90,48 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <nav className="flex-1 space-y-1 px-2 py-4">
           <Links.Dashboard>
             <NavItem icon={LayoutGrid} isActive={path === '/mess/dashboard'}>
-              Dashboard
+              {t('dashboardNav.dashboard')}
             </NavItem>
           </Links.Dashboard>
           <Links.Invitations>
             <NavItem icon={Send} isActive={path.includes('/invitations')}>
-              Invitations
+              {t('dashboardNav.invitations')}
             </NavItem>
           </Links.Invitations>
 
           <Links.DataEntry>
             <NavItem icon={PlusCircle} isActive={path.includes('/data-entry')}>
-              Data Entry
+              {t('dashboardNav.dataEntry')}
             </NavItem>
           </Links.DataEntry>
 
           <Links.CurrentMonth>
             <NavItem icon={Calendar} isActive={isCurrentMonthActive}>
-              Current Month
+              {t('dashboardNav.currentMonth')}
             </NavItem>
           </Links.CurrentMonth>
 
           <Links.AllMonths>
             <NavItem icon={Calendar} isActive={isAllMonthsActive}>
-              All Months
+              {t('dashboardNav.allMonths')}
             </NavItem>
           </Links.AllMonths>
 
           <Links.MemberBalances>
             <NavItem icon={Wallet} isActive={path.includes('/member-balances')}>
-              Member Balances
+              {t('dashboardNav.memberBalances')}
             </NavItem>
           </Links.MemberBalances>
 
           <Links.Members>
             <NavItem icon={Users} isActive={path.includes('/members')}>
-              All Members
+              {t('dashboardNav.allMembers')}
             </NavItem>
           </Links.Members>
 
           <Links.Settings>
             <NavItem icon={Settings} isActive={path.includes('/settings')}>
-              Settings
+              {t('dashboardNav.settings')}
             </NavItem>
           </Links.Settings>
         </nav>
@@ -147,7 +149,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </button>
           <div className="flex items-center space-x-3">
             <button className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 p-1 text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white">
-              <span className="sr-only">Notifications</span>
+              <span className="sr-only">{t('notifications')}</span>
               <BellIcon className="h-4 w-4" />
             </button>
             <ThemeToggle />

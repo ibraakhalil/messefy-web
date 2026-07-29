@@ -20,6 +20,19 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Localization
+
+Localization is powered by `next-intl`. Bengali (`bn`) is the default locale and English (`en`) is
+also supported.
+
+- Configure locales and the default in `i18n/config.ts`.
+- Add or update copy in both `messages/bn.json` and `messages/en.json`.
+- Read translated copy with `useTranslations` or `getTranslations`.
+- Use `LocaleSwitcher` for language selection. The selection is stored in the
+  `MESSMATE_LOCALE` HTTP-only cookie.
+- Keep both message catalogs structurally identical; `global.d.ts` provides type-safe namespaces
+  and keys using the Bengali catalog as the source of truth.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

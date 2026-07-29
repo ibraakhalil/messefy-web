@@ -1,65 +1,48 @@
-'use client'
+import { ChevronDown, HelpCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
-import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
-
-const FAQItems = [
-  {
-    question: 'Can members be added without creating user accounts?',
-    answer: 'Yes—add offline members by name and track their meals and balances.',
-  },
-  {
-    question: 'How is the meal rate calculated?',
-    answer: 'By total shared meal expenses divided by total meals in the period.',
-  },
-  {
-    question: 'Can I export monthly statements?',
-    answer: 'Yes—CSV export is available on all plans.',
-  },
-  {
-    question: 'Do you support multiple currencies?',
-    answer: 'Yes—set the default currency per workspace.',
-  },
-]
+const faqItems = ['item1', 'item2', 'item3', 'item4', 'item5'] as const;
 
 const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const t = useTranslations('Home.faq');
 
   return (
-    <section id="faq" className="bg-primary-bg py-16 transition-colors sm:py-20 dark:bg-gray-900">
-      <div className="container max-w-4xl px-4">
-        <div className="reveal mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold text-pure-color sm:text-4xl dark:text-white">Frequently asked questions</h2>
-          <p className="mt-3 text-subtitle-color dark:text-gray-400">Everything you need to know about MessMate.</p>
+    <section id="faq" className="border-border-color bg-secondary-bg tablet:py-24 border-y py-18">
+      <div className="tablet:px-6 laptop:grid-cols-[0.72fr_1.28fr] container grid gap-10 px-4">
+        <div className="laptop:sticky laptop:top-28 laptop:self-start">
+          <span className="bg-primary text-primary-fg flex size-11 items-center justify-center rounded-xl">
+            <HelpCircle className="size-5" />
+          </span>
+          <h2 className="tablet:text-5xl mt-5 max-w-[12ch] text-3xl leading-tight font-black tracking-[-0.03em]">
+            {t('title')}
+          </h2>
+          <p className="text-subtitle-color mt-4 max-w-md text-base leading-7">
+            {t('description')}
+          </p>
         </div>
 
-        <div className="mt-8 space-y-3">
-          {FAQItems.map((item, index) => (
+        <div className="space-y-3">
+          {faqItems.map((item, index) => (
             <details
-              key={index}
-              className="reveal group rounded-xl border border-border-color bg-card-bg p-5 transition-all open:shadow-sm dark:border-gray-800 dark:bg-gray-800/80"
-              open={openIndex === index}
-              onClick={(e) => {
-                e.preventDefault()
-                setOpenIndex(openIndex === index ? null : index)
-              }}
+              key={item}
+              className="group border-border-color bg-card-bg open:border-primary/25 rounded-2xl border open:shadow-sm"
+              open={index === 0}
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-                <span className="font-semibold text-pure-color dark:text-white">{item.question}</span>
-                <span
-                  className={`rounded-md border border-border-color p-1 text-subtitle-color transition-transform duration-200 dark:border-gray-700 dark:text-gray-300 ${openIndex === index ? 'rotate-180' : ''}`}
-                >
-                  <ChevronDown size={18} />
+              <summary className="focus-visible:outline-primary tablet:px-6 flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-5 font-extrabold focus-visible:rounded-2xl focus-visible:outline-2">
+                <span>{t(`${item}.question`)}</span>
+                <span className="bg-secondary-bg text-subtitle-color flex size-8 shrink-0 items-center justify-center rounded-full transition-transform group-open:rotate-180">
+                  <ChevronDown className="size-4" />
                 </span>
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-subtitle-color dark:text-gray-300">{item.answer}</p>
+              <p className="text-subtitle-color tablet:px-6 tablet:text-base px-5 pb-5 text-sm leading-7">
+                {t(`${item}.answer`)}
+              </p>
             </details>
           ))}
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default FAQ
-
+export default FAQ;

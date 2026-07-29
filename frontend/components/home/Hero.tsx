@@ -1,225 +1,182 @@
-import { ArrowRight, Sparkles, Zap, FileDown } from 'lucide-react';
-import Button from '../ui/button';
+import {
+  ArrowRight,
+  CalendarDays,
+  Check,
+  CircleDollarSign,
+  ReceiptText,
+  Utensils,
+  UsersRound,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
-// Constants
-const FEATURES = [
-  {
-    icon: Zap,
-    title: '10x faster',
-    description: 'Smart meal entry grid',
-    colorScheme: 'purple',
-  },
-  {
-    icon: Sparkles,
-    title: 'Real-time',
-    description: 'Live rates & balances',
-    colorScheme: 'pink',
-  },
-  {
-    icon: FileDown,
-    title: 'Export',
-    description: 'One-click reports',
-    colorScheme: 'yellow',
-  },
-] as const;
+interface HeroProps {
+  isAuthenticated: boolean;
+}
 
-const DEMO_USERS = ['Rahim', 'Karim', 'Jui'] as const;
+export const Hero = ({ isAuthenticated }: HeroProps) => {
+  const t = useTranslations('Home.hero');
+  const primaryHref = isAuthenticated ? '/mess' : '/auth/signup';
+  const memberRows = [
+    { name: t('member1'), meals: '42.5', balance: '+৳1,240', positive: true },
+    { name: t('member2'), meals: '38', balance: '-৳480', positive: false },
+    { name: t('member3'), meals: '41', balance: '+৳760', positive: true },
+  ] as const;
 
-const STATS = [
-  {
-    label: 'Todays Meals',
-    value: '124.5',
-    subtext: '↑ 12% from yesterday',
-    gradient: 'from-purple-500 to-purple-600',
-    textColors: {
-      label: 'text-purple-100',
-      subtext: 'text-purple-200',
-    },
-  },
-  {
-    label: 'Meal Rate',
-    value: '৳53.25',
-    subtext: 'Auto-calculated',
-    gradient: 'from-pink-500 to-pink-600',
-    textColors: {
-      label: 'text-pink-100',
-      subtext: 'text-pink-200',
-    },
-  },
-] as const;
-
-const COLOR_CLASSES = {
-  purple: {
-    border: '',
-    bg: 'from-purple-50',
-    blur: 'bg-purple-200',
-    icon: 'text-purple-600',
-  },
-  pink: {
-    border: '',
-    bg: 'from-pink-50',
-    blur: 'bg-pink-200',
-    icon: 'text-pink-600',
-  },
-  yellow: {
-    border: 'border-yellow-100',
-    bg: 'from-yellow-50',
-    blur: 'bg-yellow-200',
-    icon: 'text-yellow-600',
-  },
-} as const;
-
-export const Hero = () => {
   return (
-    <section className="relative container grid grid-cols-1 gap-16 py-20 laptop:grid-cols-2">
-      <div className="reveal">
-        {/* Badge */}
-        <div className="mb-6 inline-flex items-center gap-2">
-          <span className="relative flex size-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-            <span className="relative inline-flex size-3 rounded-full bg-green-500" />
-          </span>
-          <p className="flex items-center gap-2 rounded-full border border-border-color bg-card-bg px-3 py-1 font-sans text-pure-color dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
-            <Sparkles className="h-3.5 w-3.5" />
-            New • AI-powered meal tracking
-          </p>
-        </div>
-
-        {/* Heading */}
-        <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-pure-color tablet:text-6xl laptop:text-7xl dark:text-white">
-          Run your mess like a{' '}
-          <span className="relative">
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-pink-400">
-              pro
+    <section className="relative">
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 -z-10 h-[700px] bg-[radial-gradient(circle_at_18%_18%,rgba(16,185,129,0.12),transparent_34%),radial-gradient(circle_at_82%_10%,rgba(245,158,11,0.10),transparent_30%)]"
+      />
+      <div className="tablet:px-6 tablet:py-20 laptop:grid-cols-[1.02fr_0.98fr] laptop:py-24 container grid items-center gap-14 px-4 py-14">
+        <div className="max-w-2xl">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-700/15 bg-emerald-700/7 px-3 py-1.5 text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+            <span className="flex size-6 items-center justify-center rounded-full bg-emerald-700 text-white">
+              <Check className="size-3.5" strokeWidth={3} />
             </span>
-            <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
-              <path
-                d="M2 9C2 9 75.5 2 150 2C224.5 2 298 9 298 9"
-                stroke="url(#gradient)"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#9333ea" />
-                  <stop offset="100%" stopColor="#ec4899" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </span>
-        </h1>
+            {t('eyebrow')}
+          </div>
 
-        {/* Description */}
-        <p className="mt-6 text-xl leading-relaxed text-subtitle-color dark:text-gray-300">
-          Effortlessly manage meals, deposits, and expenses. Get instant monthly statements with
-          automated calculations.
-        </p>
+          <h1 className="text-pure-color tablet:text-6xl laptop:text-[4.2rem] max-w-[12ch] text-[2.65rem] leading-[1.08] font-black tracking-[-0.04em]">
+            {t('title')}
+          </h1>
 
-        {/* CTAs */}
-        <div className="mt-10 flex flex-wrap items-center gap-4">
-          <Button variant="secondary">
-            Start free
-            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Button>
-          <a
-            href="#features"
-            className="inline-flex items-center gap-2 text-lg font-semibold text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
-          >
-            View features
-            <ArrowRight className="h-4 w-4" />
-          </a>
+          <p className="text-subtitle-color tablet:text-xl mt-6 max-w-xl text-lg leading-8">
+            {t('description')}
+          </p>
+
+          <div className="mt-8 flex flex-col gap-3 min-[440px]:flex-row">
+            <Link
+              href={primaryHref}
+              className="bg-primary text-primary-fg focus-visible:outline-primary inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-base font-bold shadow-[0_10px_30px_-12px_rgba(4,120,87,0.65)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_-12px_rgba(4,120,87,0.7)] focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              {isAuthenticated ? t('goToWorkspace') : t('startFree')}
+              <ArrowRight className="size-5" />
+            </Link>
+            <Link
+              href="#how"
+              className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg focus-visible:outline-primary inline-flex h-12 items-center justify-center rounded-xl border px-6 text-base font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              {t('howItWorks')}
+            </Link>
+          </div>
+
+          <div className="text-subtitle-color mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            {[t('benefit1'), t('benefit2'), t('benefit3')].map((item) => (
+              <span key={item} className="inline-flex items-center gap-1.5">
+                <Check className="text-primary size-4" strokeWidth={2.5} />
+                {item}
+              </span>
+            ))}
+          </div>
         </div>
 
-        {/* Feature Cards */}
-        <div className="mt-12 grid grid-cols-1 gap-4 tablet:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, description, colorScheme }) => {
-            const colors = COLOR_CLASSES[colorScheme];
-            return (
-              <div
-                key={title}
-                className={`group relative overflow-hidden rounded-2xl border border-border-color bg-gradient-to-br ${colors.bg} to-transparent p-4 transition-all duration-300 hover:shadow-lg dark:border-gray-800 dark:from-gray-800/80 dark:to-gray-900/80 ${colors.border}`}
-              >
-                <div
-                  className={`absolute top-0 right-0 h-20 w-20 rounded-full ${colors.blur} opacity-20 blur-2xl transition-opacity group-hover:opacity-30`}
-                />
-                <Icon className={`mb-2 h-5 w-5 ${colors.icon}`} />
-                <p className="text-lg font-bold text-pure-color dark:text-white">{title}</p>
-                <p className="mt-1 text-sm text-subtitle-color dark:text-gray-400">{description}</p>
+        <div className="relative mx-auto w-full max-w-[560px]">
+          <div
+            aria-hidden="true"
+            className="absolute -inset-5 -z-10 rotate-2 rounded-[2rem] bg-emerald-700/8"
+          />
+          <div className="border-border-color bg-card-bg overflow-hidden rounded-[1.65rem] border shadow-[0_28px_80px_-34px_rgba(11,54,40,0.4)]">
+            <div className="border-border-color flex items-center justify-between border-b px-5 py-4">
+              <div>
+                <p className="text-sm font-bold">{t('workspaceName')}</p>
+                <p className="text-subtitle-color mt-0.5 text-xs">{t('currentPeriod')}</p>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="relative">
-        <div className="absolute inset-0 rounded-3xl opacity-20 blur-3xl" />
-        <div className="relative transform rounded-3xl border border-border-color bg-card-bg p-6 shadow-xl dark:border-gray-800 dark:bg-gray-800/90">
-          <div className="rounded-2xl">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="size-3 rounded-full bg-red-500" />
-                <span className="size-3 rounded-full bg-yellow-500" />
-                <span className="size-3 rounded-full bg-green-500" />
-              </div>
-              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                Live Demo
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600/10 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                {t('active')}
               </span>
             </div>
 
-            {/* Stats Cards */}
-            <div className="mb-4 grid grid-cols-2 gap-3">
-              {STATS.map(({ label, value, subtext, gradient, textColors }) => (
-                <div
-                  key={label}
-                  className={`rounded-2xl bg-gradient-to-br ${gradient} p-4 text-white shadow-md`}
-                >
-                  <p className={`text-sm font-medium ${textColors.label}`}>{label}</p>
-                  <p className="mt-1 text-3xl font-bold">{value}</p>
-                  <p className={`mt-1 text-xs ${textColors.subtext}`}>{subtext}</p>
+            <div className="bg-border-color grid grid-cols-3 gap-px">
+              {[
+                { label: t('totalMeals'), value: '368.5', icon: Utensils },
+                { label: t('mealRate'), value: '৳58.20', icon: CircleDollarSign },
+                { label: t('totalExpense'), value: '৳21,446', icon: ReceiptText },
+              ].map(({ label, value, icon: Icon }) => (
+                <div key={label} className="bg-card-bg tablet:px-4 px-3 py-4">
+                  <Icon className="text-primary mb-3 size-4" />
+                  <p className="text-subtitle-color tablet:text-xs text-[11px]">{label}</p>
+                  <p className="tablet:text-lg mt-1 text-sm font-extrabold tracking-tight">
+                    {value}
+                  </p>
                 </div>
               ))}
             </div>
 
-            {/* Meal Entry Grid */}
-            <div className="mb-4 rounded-2xl bg-secondary-bg p-4 dark:bg-gray-900/60">
+            <div className="tablet:p-5 p-4">
               <div className="mb-3 flex items-center justify-between">
-                <p className="font-semibold text-pure-color dark:text-white">Quick Entry Grid</p>
-                <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-950 dark:text-green-300">
-                  Auto-save
+                <div>
+                  <p className="text-sm font-bold">{t('memberBalance')}</p>
+                  <p className="text-subtitle-color mt-0.5 text-xs">{t('balanceHint')}</p>
+                </div>
+                <span className="border-border-color bg-secondary-bg text-subtitle-color rounded-lg border px-2.5 py-1.5 text-xs font-semibold">
+                  {t('viewAll')}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                {DEMO_USERS.map((name, index) => (
-                  <div key={name} className="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
-                    <p className="mb-2 text-sm font-medium text-pure-color dark:text-gray-200">{name}</p>
-                    <div className="flex gap-1">
-                      {[1, index === 1 ? 0 : 1, 1].map((meal, mealIndex) => (
-                        <span
-                          key={mealIndex}
-                          className="rounded-lg bg-purple-100 px-2 py-1 text-xs font-medium text-purple-700 dark:bg-purple-950 dark:text-purple-300"
-                        >
-                          {meal}
-                        </span>
-                      ))}
+              <div className="border-border-color overflow-hidden rounded-xl border">
+                <div className="bg-secondary-bg text-subtitle-color grid grid-cols-[1fr_68px_92px] px-3 py-2 text-[11px] font-semibold">
+                  <span>{t('member')}</span>
+                  <span className="text-right">{t('meals')}</span>
+                  <span className="text-right">{t('balance')}</span>
+                </div>
+                {memberRows.map((member, index) => (
+                  <div
+                    key={member.name}
+                    className={`grid grid-cols-[1fr_68px_92px] items-center px-3 py-3 text-sm ${
+                      index !== memberRows.length - 1 ? 'border-border-color border-b' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-8 items-center justify-center rounded-full bg-amber-100 text-xs font-black text-amber-800 dark:bg-amber-400/15 dark:text-amber-300">
+                        {member.name.slice(0, 1)}
+                      </span>
+                      <span className="font-semibold">{member.name}</span>
                     </div>
+                    <span className="text-subtitle-color text-right">{member.meals}</span>
+                    <span
+                      className={`text-right font-bold ${
+                        member.positive
+                          ? 'text-emerald-700 dark:text-emerald-400'
+                          : 'text-rose-600 dark:text-rose-400'
+                      }`}
+                    >
+                      {member.balance}
+                    </span>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Balance Indicator */}
-            <div className="rounded-2xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-4 dark:border-green-800/60 dark:from-green-950/40 dark:to-emerald-950/40">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-green-700 dark:text-green-300">Current Balance</p>
-                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">+৳2,140</p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="border-border-color bg-secondary-bg rounded-xl border p-3">
+                  <CalendarDays className="mb-2 size-4 text-amber-600" />
+                  <p className="text-subtitle-color text-xs">{t('todayMeals')}</p>
+                  <p className="mt-1 text-lg font-extrabold">12.5</p>
                 </div>
-                <div className="rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white">
-                  All Settled ✓
+                <div className="bg-primary text-primary-fg rounded-xl p-3">
+                  <UsersRound className="mb-2 size-4" />
+                  <p className="text-xs text-white/70">{t('activeMembers')}</p>
+                  <p className="mt-1 text-lg font-extrabold">{t('activeMembersValue')}</p>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="tablet:px-6 tablet:pb-20 container px-4 pb-14">
+        <div className="border-border-color bg-card-bg grid gap-3 rounded-2xl border p-3 shadow-sm min-[560px]:grid-cols-3">
+          {[
+            { value: t('highlight1Value'), label: t('highlight1Label') },
+            { value: t('highlight2Value'), label: t('highlight2Label') },
+            { value: t('highlight3Value'), label: t('highlight3Label') },
+          ].map((item) => (
+            <div key={item.value} className="rounded-xl px-4 py-3 text-center">
+              <p className="text-primary font-extrabold">{item.value}</p>
+              <p className="text-subtitle-color mt-1 text-sm">{item.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -227,4 +184,3 @@ export const Hero = () => {
 };
 
 export default Hero;
-
