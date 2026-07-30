@@ -214,6 +214,67 @@ export async function getMealEntriesByPeriod(c: Context) {
   }
 }
 
+export async function getMealChartByPeriod(c: Context) {
+  const periodId = c.req.param('periodId');
+  const authUserId = c.get('userId');
+
+  if (!periodId || !isValidUUID(periodId)) {
+    return c.json({ error: 'Invalid period ID' }, 400);
+  }
+
+  try {
+    const period = await db.query.periods.findFirst({
+      where: (p, { eq }) => eq(p.id, periodId),
+    });
+
+    if (!period) {
+      return c.json({ error: 'Period not found' }, 404);
+    }
+
+    const authMember = await db.query.members.findFirst({
+      where: (m, { eq, and }) =>
+        and(eq(m.workspaceId, period.workspaceId), eq(m.userId, authUserId), eq(m.isActive, true)),
+    });
+
+    if (!authMember) {
+      return c.json({ error: 'You are not authorized to view this period' }, 403);
+    }
+
+    const [periodMembers, entries] = await Promise.all([
+      db.query.members.findMany({
+        where: (m, { eq }) => eq(m.workspaceId, period.workspaceId),
+        with: { user: true },
+      }),
+      db.query.mealEntries.findMany({
+        where: (me, { eq }) => eq(me.periodId, periodId),
+        orderBy: [desc(mealEntries.date)],
+      }),
+    ]);
+
+    const membersWithMeals = new Set(entries.map((entry) => entry.memberId));
+
+    return c.json({
+      members: periodMembers
+        .filter((member) => member.isActive || membersWithMeals.has(member.id))
+        .map((member) => ({
+          id: member.id,
+          name: member.user?.name?.trim() || member.name?.trim() || 'Unnamed member',
+        })),
+      entries: entries.map((entry) => ({
+        id: entry.id,
+        memberId: entry.memberId,
+        date: entry.date,
+        breakfast: entry.breakfast,
+        lunch: entry.lunch,
+        dinner: entry.dinner,
+      })),
+    });
+  } catch (error) {
+    console.error('Error fetching meal chart:', error);
+    return c.json({ error: 'Failed to fetch meal chart' }, 500);
+  }
+}
+
 export async function getMealEntriesByMember(c: Context) {
   const { periodId, memberId } = c.req.param();
   const authUserId = c.get('userId');

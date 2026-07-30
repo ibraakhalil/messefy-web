@@ -6,7 +6,14 @@ import type { User } from 'next-auth';
 import dynamic from 'next/dynamic';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Bell, BriefcaseBusiness, CircleUserRound, LayoutGrid, ShieldCheck } from 'lucide-react';
+import {
+  Bell,
+  BriefcaseBusiness,
+  CalendarRange,
+  CircleUserRound,
+  LayoutGrid,
+  ShieldCheck,
+} from 'lucide-react';
 
 import OverviewTab from './overview-tab';
 
@@ -22,6 +29,9 @@ const SecuritySection = dynamic(() => import('@/components/profile/security-sect
 const WorkspaceTab = dynamic(() => import('./workspace-tab'), {
   loading: () => <SectionSkeleton />,
 });
+const MealChartTab = dynamic(() => import('./meal-chart-tab'), {
+  loading: () => <SectionSkeleton />,
+});
 
 const tabs = [
   {
@@ -29,6 +39,12 @@ const tabs = [
     label: 'Overview',
     icon: LayoutGrid,
     description: 'Your mess at a glance',
+  },
+  {
+    id: 'meal-chart',
+    label: 'Meal Chart',
+    icon: CalendarRange,
+    description: 'Daily member meals',
   },
   {
     id: 'profile',
@@ -83,7 +99,9 @@ export function MessPageContents({
   const router = useRouter();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
-  const visibleTabs = userData.workspace ? tabs : tabs.filter((tab) => tab.id !== 'workspace');
+  const visibleTabs = userData.workspace
+    ? tabs
+    : tabs.filter((tab) => tab.id !== 'workspace' && tab.id !== 'meal-chart');
   const selectedTab = visibleTabs.find((tab) => tab.id === activeTab) ?? visibleTabs[0];
 
   const selectTab = (tab: TabId) => {
@@ -191,6 +209,8 @@ export function MessPageContents({
         >
           {selectedTab.id === 'overview' ? (
             <OverviewTab userData={userData} />
+          ) : selectedTab.id === 'meal-chart' ? (
+            <MealChartTab />
           ) : (
             <div className="border-border-color bg-card-bg tablet:p-7 rounded-2xl border p-5 shadow-sm">
               <div className="border-border-color mb-7 border-b pb-5">

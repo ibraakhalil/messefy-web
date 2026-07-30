@@ -3,6 +3,7 @@ import {
   createMealEntry,
   createBatchMealEntries,
   getMealEntriesByPeriod,
+  getMealChartByPeriod,
   getMealEntriesByMember,
   getMealEntryById,
   updateMealEntry,
@@ -20,6 +21,9 @@ mealRoute.post('/batch', userAuthValidation, createBatchMealEntries);
 
 // Get all meal entries for a specific period
 mealRoute.get('/period/:periodId', userAuthValidation, getMealEntriesByPeriod);
+
+// Get the daily chart with every workspace member, including zero-meal members
+mealRoute.get('/period/:periodId/chart', userAuthValidation, getMealChartByPeriod);
 
 // Get meal entries for a specific member in a period
 mealRoute.get('/period/:periodId/member/:memberId', userAuthValidation, getMealEntriesByMember);

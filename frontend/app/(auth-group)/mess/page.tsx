@@ -4,7 +4,14 @@ import { auth } from '@/config/auth';
 import { getValidWorkspaceMember } from '@/lib/workspace-requests';
 import { MessPageContents } from '@/components/mess/mess-page-contents';
 
-const validTabs = ['overview', 'profile', 'notifications', 'security', 'workspace'] as const;
+const validTabs = [
+  'overview',
+  'meal-chart',
+  'profile',
+  'notifications',
+  'security',
+  'workspace',
+] as const;
 
 type MessPageProps = {
   searchParams: Promise<{ tab?: string }>;

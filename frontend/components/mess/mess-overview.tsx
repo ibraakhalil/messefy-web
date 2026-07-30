@@ -2,14 +2,15 @@
 
 import NoActivePeriodState from '@/components/dashboard/no-active-period-state';
 import Button from '@/components/ui/button';
-import { useCurrentPeriod } from '@/hooks/use-periods';
-import { useCurrentWorkspaceSummary } from '@/hooks/use-summary';
+import { usePeriodSelection } from '@/hooks/use-period-selection';
+import { usePeriodSummary } from '@/hooks/use-summary';
 import { useWorkspace } from '@/providers/workspace-provider';
 import type { RecentDeposit, RecentExpense, SummaryMember } from '@/types/summary';
 import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, formatDistanceToNow } from 'date-fns';
 import { AlertCircle, Calendar, Receipt, TrendingUp, Users, Utensils, Wallet } from 'lucide-react';
 import Link from 'next/link';
+import { PeriodSelect } from './period-select';
 
 function getPeriodName(year: number, month: number) {
   return new Date(year, month - 1).toLocaleString('default', {
@@ -85,13 +86,21 @@ export default function MessOverview() {
   const { member } = useWorkspace();
   const workspaceId = member?.workspaceId || '';
   const canManage = Boolean(member && ['owner', 'manager'].includes(member.role));
-  const { data: currentPeriod, isLoading: isLoadingPeriod } = useCurrentPeriod(workspaceId);
+  const {
+    periods,
+    selectedPeriod,
+    selectedPeriodId,
+    selectPeriod,
+    isLoading: isLoadingPeriod,
+    error: periodError,
+    refetch: refetchPeriods,
+  } = usePeriodSelection(workspaceId);
   const {
     data: summary,
     isLoading: isLoadingSummary,
-    error,
-    refetch,
-  } = useCurrentWorkspaceSummary(workspaceId, !!currentPeriod);
+    error: summaryError,
+    refetch: refetchSummary,
+  } = usePeriodSummary(selectedPeriodId);
 
   if (!workspaceId) {
     return (
@@ -116,28 +125,32 @@ export default function MessOverview() {
     );
   }
 
-  if (!currentPeriod) {
-    return (
-      <NoActivePeriodState
-        title="Live Stats Need An Active Period"
-        description="Start a meal month first. Then this page will show current totals, recent deposits, expenses, and member balances."
-      />
-    );
-  }
-
-  if (error) {
+  if (periodError || summaryError) {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 p-6">
         <div className="flex items-start gap-3">
           <AlertCircle className="mt-0.5 h-5 w-5 text-red-600" />
           <div>
             <h2 className="font-semibold text-red-900">Failed to load live mess stats.</h2>
-            <Button onClick={() => refetch()} variant="secondary" className="mt-3">
+            <Button
+              onClick={() => (periodError ? refetchPeriods() : refetchSummary())}
+              variant="secondary"
+              className="mt-3"
+            >
               Try Again
             </Button>
           </div>
         </div>
       </div>
+    );
+  }
+
+  if (!selectedPeriod) {
+    return (
+      <NoActivePeriodState
+        title="No Meal Periods Yet"
+        description="Start a meal month first. Then this page will show totals, recent deposits, expenses, and member balances."
+      />
     );
   }
 
@@ -147,6 +160,7 @@ export default function MessOverview() {
 
   const periodName = getPeriodName(summary.period.year, summary.period.month);
   const daysRemaining = getDaysRemaining(summary.period.year, summary.period.month);
+  const isOpenPeriod = selectedPeriod.status === 'open';
   const recentExpenses = summary.recentExpenses.slice(0, 4);
   const recentDeposits = summary.recentDeposits.slice(0, 4);
   const recentActivity = [
@@ -168,7 +182,7 @@ export default function MessOverview() {
     {
       label: 'Total Meals',
       value: String(summary.totals.totalMeals),
-      helper: 'Current period',
+      helper: periodName,
       icon: Utensils,
       iconClassName: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/80 dark:text-emerald-400',
     },
@@ -209,39 +223,51 @@ export default function MessOverview() {
           className="pointer-events-none absolute -top-20 -right-16 size-56 rounded-full bg-white/10 blur-2xl"
           aria-hidden="true"
         />
-        <div className="tablet:flex-row tablet:items-center tablet:justify-between flex flex-col gap-4">
+        <div className="tablet:flex-row tablet:items-center tablet:justify-between flex flex-col gap-5">
           <div className="relative">
             <div className="flex items-center gap-2">
               <span
                 className="size-2 rounded-full bg-emerald-200 shadow-[0_0_0_4px_rgba(167,243,208,0.15)]"
                 aria-hidden="true"
               />
-              <p className="text-sm font-semibold text-emerald-50">Current Period</p>
+              <p className="text-sm font-semibold text-emerald-50">Selected Period</p>
+              <span className="rounded-full bg-white/15 px-2 py-0.5 text-xs font-semibold text-white">
+                {isOpenPeriod ? 'Active' : 'Closed'}
+              </span>
             </div>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-balance text-white">
               {periodName}
             </h2>
             <p className="mt-2 text-sm text-emerald-50/85">
-              {daysRemaining} days remaining <span aria-hidden="true">•</span>{' '}
-              <span className="capitalize">{summary.period.status}</span>
+              {isOpenPeriod ? `${daysRemaining} days remaining` : 'Closed period'}
             </p>
           </div>
 
-          <div className="relative flex flex-wrap gap-3">
-            <Link
-              href={`/mess/months/${currentPeriod.id}`}
-              className="inline-flex h-10 items-center justify-center rounded-lg border border-white/25 bg-white/10 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
-            >
-              View Full Summary
-            </Link>
-            {canManage ? (
+          <div className="tablet:w-auto relative w-full">
+            <div className="tablet:flex-nowrap flex flex-wrap items-end gap-2">
+              <div className="tablet:w-56 tablet:flex-none min-w-0 flex-1">
+                <PeriodSelect
+                  id="overview-period"
+                  periods={periods}
+                  value={selectedPeriodId}
+                  onChange={selectPeriod}
+                />
+              </div>
               <Link
-                href="/mess/dashboard/data-entry"
-                className="inline-flex h-10 items-center justify-center rounded-lg bg-white px-4 text-sm font-semibold text-emerald-800 shadow-sm transition-colors hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
+                href={`/mess/months/${selectedPeriod.id}`}
+                className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
               >
-                Add Data
+                Full Summary
               </Link>
-            ) : null}
+              {canManage && isOpenPeriod ? (
+                <Link
+                  href="/mess/dashboard/data-entry"
+                  className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-emerald-800 shadow-sm transition-colors hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
+                >
+                  Add Data
+                </Link>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
