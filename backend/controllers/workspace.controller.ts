@@ -1,6 +1,7 @@
 import type { Context } from 'hono';
 import { db } from '../db';
 import { adjustments, deposits, expenses, invitations, mealEntries, members, periods, users, workspaces } from '../db/schemas';
+import { requireWorkspaceMember } from '../utils/workspace-access';
 import { and, eq } from 'drizzle-orm';
 import { deleteDetachedOfflineUsers, getOfflineUserIdsByWorkspace } from '../utils/offline-user';
 
@@ -140,12 +141,21 @@ export async function getValidWorkspaceMember(c: Context) {
 
 export async function getWorkspaceMembers(c: Context) {
   const workspaceId = c.req.param('workspaceId');
+  const userId = c.get('userId');
 
   try {
+    await requireWorkspaceMember(workspaceId, userId);
+
     const members = await db.query.members.findMany({
       where: (m, { eq, and }) => and(eq(m.workspaceId, workspaceId), eq(m.isActive, true)),
       with: {
-        user: true,
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 

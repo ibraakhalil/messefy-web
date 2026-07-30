@@ -44,7 +44,7 @@ export const Header = ({ user }: HeaderProps) => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <LocaleSwitcher compact className="hidden min-[390px]:inline-flex" />
+          <LocaleSwitcher />
           <ThemeToggle />
           {user ? (
             <div className="tablet:flex hidden items-center gap-2">

@@ -219,9 +219,6 @@ export default function MealChartTab() {
               </span>
             </div>
             <h2 className="mt-1 text-2xl font-bold">{selectedMonthLabel} Meal Chart</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-emerald-50/85">
-              Daily totals and each member&apos;s meal count for the selected period.
-            </p>
           </div>
 
           <div className="tablet:w-56 w-full shrink-0">
@@ -270,13 +267,6 @@ export default function MealChartTab() {
         </section>
       ) : (
         <section className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
-          <div className="border-border-color tablet:px-6 border-b px-5 py-4">
-            <h3 className="text-pure-color text-lg font-bold">Daily breakdown</h3>
-            <p className="text-subtitle-color mt-1 text-sm">
-              Newest days appear first. Scroll sideways to see every member.
-            </p>
-          </div>
-
           <div className="tablet:hidden divide-border-color divide-y">
             {chart.days.map((day) => {
               const date = fromDateKey(day.date);

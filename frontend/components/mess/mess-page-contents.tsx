@@ -4,16 +4,10 @@ import type { Workspace } from '@/types/workspace';
 import { cn } from '@/utils/cn';
 import type { User } from 'next-auth';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import {
-  Bell,
-  BriefcaseBusiness,
-  CalendarRange,
-  CircleUserRound,
-  LayoutGrid,
-  ShieldCheck,
-} from 'lucide-react';
+import { Bell, CalendarRange, CircleUserRound, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
 
 import OverviewTab from './overview-tab';
 
@@ -26,10 +20,10 @@ const NotificationsSection = dynamic(() => import('@/components/profile/notifica
 const SecuritySection = dynamic(() => import('@/components/profile/security-section'), {
   loading: () => <SectionSkeleton />,
 });
-const WorkspaceTab = dynamic(() => import('./workspace-tab'), {
+const MealChartTab = dynamic(() => import('./meal-chart-tab'), {
   loading: () => <SectionSkeleton />,
 });
-const MealChartTab = dynamic(() => import('./meal-chart-tab'), {
+const TotalMessMembers = dynamic(() => import('./total-mess-members'), {
   loading: () => <SectionSkeleton />,
 });
 
@@ -45,6 +39,12 @@ const tabs = [
     label: 'Meal Chart',
     icon: CalendarRange,
     description: 'Daily member meals',
+  },
+  {
+    id: 'members',
+    label: 'Members',
+    icon: Users,
+    description: 'Everyone in your mess',
   },
   {
     id: 'profile',
@@ -63,12 +63,6 @@ const tabs = [
     label: 'Security',
     icon: ShieldCheck,
     description: 'Password & sessions',
-  },
-  {
-    id: 'workspace',
-    label: 'Workspace',
-    icon: BriefcaseBusiness,
-    description: 'Mess settings',
   },
 ] as const;
 
@@ -101,7 +95,7 @@ export function MessPageContents({
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const visibleTabs = userData.workspace
     ? tabs
-    : tabs.filter((tab) => tab.id !== 'workspace' && tab.id !== 'meal-chart');
+    : tabs.filter((tab) => tab.id !== 'meal-chart' && tab.id !== 'members');
   const selectedTab = visibleTabs.find((tab) => tab.id === activeTab) ?? visibleTabs[0];
 
   const selectTab = (tab: TabId) => {
@@ -111,24 +105,34 @@ export function MessPageContents({
 
   return (
     <>
-      <section className="tablet:mb-8 tablet:flex-row tablet:items-end tablet:justify-between mb-6 flex flex-col gap-4">
+      <section className="tablet:mb-8 tablet:flex-row tablet:items-center tablet:justify-between mb-6 flex flex-col gap-4">
         <div>
           <p className="mb-2 text-sm font-semibold tracking-wide text-emerald-700 uppercase dark:text-emerald-400">
             Personal Hub
           </p>
           <h1 className="text-pure-color tablet:text-4xl text-3xl font-bold tracking-tight text-balance">
-            {userData.workspace ? 'Manage Your Mess' : 'Welcome to Mess Mate'}
+            {userData.workspace ? userData.workspace.name : 'Welcome to Mess Mate'}
           </h1>
           <p className="text-subtitle-color tablet:text-base mt-2 max-w-2xl text-sm leading-6">
             {userData.workspace
-              ? `${userData.workspace.name} stats, account preferences, and workspace controls in one place.`
+              ? 'Mess stats, account preferences, and controls in one place.'
               : 'Set up your account, create a mess, or join your friends with an invitation.'}
           </p>
         </div>
+
+        {userData.workspace && (
+          <Link
+            href="/mess/dashboard"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+          >
+            <LayoutGrid className="size-4" aria-hidden="true" />
+            <span>Dashboard</span>
+          </Link>
+        )}
       </section>
 
       <div className="laptop:grid-cols-[248px_minmax(0,1fr)] grid items-start gap-6">
-        <aside className="border-border-color bg-card-bg laptop:sticky laptop:top-20 laptop:block laptop:h-[calc(100dvh-6rem)] laptop:overflow-y-auto laptop:overscroll-contain hidden rounded-2xl border p-2 shadow-sm">
+        <aside className="border-border-color bg-card-bg laptop:sticky laptop:top-20 laptop:block laptop:h-[calc(100dvh-7rem)] laptop:overflow-y-auto laptop:overscroll-contain hidden rounded-2xl border p-2 shadow-sm">
           <nav aria-label="Account sections">
             <div className="space-y-1" role="tablist" aria-orientation="vertical">
               {visibleTabs.map((tab) => {
@@ -211,6 +215,8 @@ export function MessPageContents({
             <OverviewTab userData={userData} />
           ) : selectedTab.id === 'meal-chart' ? (
             <MealChartTab />
+          ) : selectedTab.id === 'members' ? (
+            <TotalMessMembers />
           ) : (
             <div className="border-border-color bg-card-bg tablet:p-7 rounded-2xl border p-5 shadow-sm">
               <div className="border-border-color mb-7 border-b pb-5">
@@ -222,7 +228,6 @@ export function MessPageContents({
               {selectedTab.id === 'profile' ? <ProfileSection /> : null}
               {selectedTab.id === 'notifications' ? <NotificationsSection /> : null}
               {selectedTab.id === 'security' ? <SecuritySection /> : null}
-              {selectedTab.id === 'workspace' && userData.workspace ? <WorkspaceTab /> : null}
             </div>
           )}
         </section>

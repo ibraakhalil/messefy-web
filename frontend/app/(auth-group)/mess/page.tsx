@@ -7,10 +7,10 @@ import { MessPageContents } from '@/components/mess/mess-page-contents';
 const validTabs = [
   'overview',
   'meal-chart',
+  'members',
   'profile',
   'notifications',
   'security',
-  'workspace',
 ] as const;
 
 type MessPageProps = {
@@ -24,13 +24,12 @@ export default async function MessPage({ searchParams }: MessPageProps) {
   const userData = { user, workspace: member?.workspace };
   const { tab } = await searchParams;
   const requestedTab = validTabs.find((item) => item === tab);
-  const initialTab = requestedTab === 'workspace' && !member?.workspace ? 'overview' : requestedTab;
 
   return (
     <div className="bg-secondary-bg/70 dark:bg-primary-bg min-h-screen">
       <ProfileHeader userData={userData} />
       <PageWrapper className="tablet:px-6 tablet:py-8 px-4 py-6">
-        <MessPageContents userData={userData} initialTab={initialTab} />
+        <MessPageContents userData={userData} initialTab={requestedTab} />
       </PageWrapper>
     </div>
   );

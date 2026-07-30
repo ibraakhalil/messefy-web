@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 import { useWorkspace } from '@/providers/workspace-provider';
 import { useTranslations } from 'next-intl';
-import LocaleSwitcher from './locale-switcher';
 
 export default function UserDropdown() {
   const session = useSession();
@@ -85,10 +84,6 @@ export default function UserDropdown() {
               <span className="font-medium">{t('dashboard')}</span>
             </Link>
           )}
-
-          <div className="px-2 py-1.5">
-            <LocaleSwitcher className="w-full justify-between" />
-          </div>
 
           <button
             onClick={() => signOut()}
