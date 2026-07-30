@@ -13,6 +13,12 @@ const inter = localFont({
   variable: '--font-inter',
 });
 
+const kalpurush = localFont({
+  src: '../public/fonts/kalpurush.ttf',
+  variable: '--font-kalpurush',
+  display: 'swap',
+});
+
 export async function generateMetadata(): Promise<Metadata> {
   const [locale, t] = await Promise.all([getLocale(), getTranslations('Metadata')]);
 
@@ -54,7 +60,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   ]);
 
   return (
-    <html lang={locale} suppressHydrationWarning className={inter.variable}>
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`${inter.variable} ${kalpurush.variable}`}
+    >
       <body className="bg-primary-bg text-pure-color font-sans">
         <NextIntlClientProvider messages={messages}>
           <Providers>

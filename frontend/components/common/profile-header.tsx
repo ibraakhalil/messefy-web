@@ -7,6 +7,7 @@ import ThemeToggle from './theme-toggle';
 import LocaleSwitcher from './locale-switcher';
 import { Session } from 'next-auth';
 import { Workspace } from '@/types/workspace';
+import { useTranslations } from 'next-intl';
 
 export type AppHeaderProps = {
   userData: {
@@ -17,6 +18,7 @@ export type AppHeaderProps = {
 
 export default function ProfileHeader({ userData }: AppHeaderProps) {
   const user = userData?.user;
+  const t = useTranslations('Home.header');
 
   return (
     <header className="border-border-color bg-card-bg/90 sticky top-0 z-40 w-full border-b backdrop-blur-xl">
@@ -32,7 +34,7 @@ export default function ProfileHeader({ userData }: AppHeaderProps) {
               onClick={() => signIn()}
               className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
             >
-              Sign In
+              {t('signIn')}
             </button>
           ) : (
             <UserDropdown />

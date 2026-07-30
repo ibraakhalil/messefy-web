@@ -1,10 +1,6 @@
 import type { Period } from '@/types/period';
 import { CalendarDays, ChevronDown } from 'lucide-react';
-
-const periodFormatter = new Intl.DateTimeFormat('en-BD', {
-  month: 'long',
-  year: 'numeric',
-});
+import { useLocale, useTranslations } from 'next-intl';
 
 export function PeriodSelect({
   periods,
@@ -19,6 +15,15 @@ export function PeriodSelect({
   id: string;
   label?: string;
 }) {
+  const t = useTranslations('Mess.periodSelect');
+  const locale = useLocale();
+  const localeCode = locale === 'bn' ? 'bn-BD' : 'en-US';
+
+  const periodFormatter = new Intl.DateTimeFormat(localeCode, {
+    month: 'long',
+    year: 'numeric',
+  });
+
   return (
     <div className="w-full">
       {label && (
@@ -33,7 +38,7 @@ export function PeriodSelect({
         />
         <select
           id={id}
-          aria-label={label || 'Select month'}
+          aria-label={label || t('label')}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           className="h-11 w-full cursor-pointer appearance-none rounded-xl border border-white/40 bg-white py-2 pr-9 pl-10 text-sm font-semibold text-emerald-950 shadow-sm transition outline-none focus:border-white focus:ring-2 focus:ring-white/50"
@@ -41,7 +46,7 @@ export function PeriodSelect({
           {periods.map((period) => (
             <option key={period.id} value={period.id}>
               {periodFormatter.format(new Date(period.year, period.month - 1))}
-              {period.status === 'open' ? ' — Active' : ''}
+              {period.status === 'open' ? ` — ${t('active')}` : ''}
             </option>
           ))}
         </select>

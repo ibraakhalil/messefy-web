@@ -6,6 +6,7 @@ import { usePeriodSelection } from '@/hooks/use-period-selection';
 import { useWorkspace } from '@/providers/workspace-provider';
 import { AlertCircle, CalendarDays, ChartNoAxesColumn, Users, Utensils } from 'lucide-react';
 import { useMemo } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { PeriodSelect } from './period-select';
 
 type MemberSummary = {
@@ -19,20 +20,6 @@ type DailySummary = {
   total: number;
   byMember: Map<string, number>;
 };
-
-const periodFormatter = new Intl.DateTimeFormat('en-BD', {
-  month: 'long',
-  year: 'numeric',
-});
-
-const dayFormatter = new Intl.DateTimeFormat('en-BD', {
-  day: 'numeric',
-  month: 'short',
-});
-
-const weekdayFormatter = new Intl.DateTimeFormat('en-BD', {
-  weekday: 'short',
-});
 
 function toDateKey(date: Date) {
   const year = date.getFullYear();
@@ -69,6 +56,7 @@ function getPeriodDays(year: number, month: number) {
 }
 
 function MealChartLoading() {
+  const t = useTranslations('Mess.mealChart');
   return (
     <div className="space-y-4" role="status" aria-live="polite">
       <div className="bg-card-shade h-32 animate-pulse rounded-2xl motion-reduce:animate-none" />
@@ -81,12 +69,29 @@ function MealChartLoading() {
         ))}
       </div>
       <div className="bg-card-shade h-80 animate-pulse rounded-2xl motion-reduce:animate-none" />
-      <span className="sr-only">Loading meal chart…</span>
+      <span className="sr-only">{t('loading')}</span>
     </div>
   );
 }
 
 export default function MealChartTab() {
+  const t = useTranslations('Mess.mealChart');
+  const locale = useLocale();
+  const localeCode = locale === 'bn' ? 'bn-BD' : 'en-US';
+
+  const periodFormatter = useMemo(
+    () => new Intl.DateTimeFormat(localeCode, { month: 'long', year: 'numeric' }),
+    [localeCode],
+  );
+  const dayFormatter = useMemo(
+    () => new Intl.DateTimeFormat(localeCode, { day: 'numeric', month: 'short' }),
+    [localeCode],
+  );
+  const weekdayFormatter = useMemo(
+    () => new Intl.DateTimeFormat(localeCode, { weekday: 'short' }),
+    [localeCode],
+  );
+
   const workspaceId = useWorkspace().member?.workspaceId || '';
   const {
     periods,
@@ -163,16 +168,16 @@ export default function MealChartTab() {
         role="alert"
       >
         <AlertCircle className="mx-auto size-8 text-red-600 dark:text-red-400" aria-hidden="true" />
-        <h2 className="mt-3 font-bold text-red-950 dark:text-red-100">Meal chart could not load</h2>
+        <h2 className="mt-3 font-bold text-red-950 dark:text-red-100">{t('errorTitle')}</h2>
         <p className="mt-1 text-sm text-red-800 dark:text-red-200">
-          Please check your connection and try again.
+          {t('errorDesc')}
         </p>
         <Button
           variant="secondary"
           className="mt-4"
           onClick={() => (periodError ? refetchPeriods() : refetchMeals())}
         >
-          Try Again
+          {t('tryAgain')}
         </Button>
       </div>
     );
@@ -184,9 +189,9 @@ export default function MealChartTab() {
         <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
           <CalendarDays className="size-7" aria-hidden="true" />
         </span>
-        <h2 className="text-pure-color mt-4 text-xl font-bold">No meal periods yet</h2>
+        <h2 className="text-pure-color mt-4 text-xl font-bold">{t('noPeriodsTitle')}</h2>
         <p className="text-subtitle-color mx-auto mt-2 max-w-md text-sm leading-6">
-          Start a meal period first. Its daily meal chart will appear here automatically.
+          {t('noPeriodsDesc')}
         </p>
       </div>
     );
@@ -197,10 +202,10 @@ export default function MealChartTab() {
   const isOpenPeriod = selectedPeriod.status === 'open';
   const selectedMonthLabel = periodFormatter.format(periodDate);
   const statItems = [
-    { label: 'Total meals', value: chart.totalMeals, icon: Utensils },
-    { label: 'Days recorded', value: chart.recordedDays, icon: CalendarDays },
-    { label: 'Average / day', value: chart.average.toFixed(1), icon: ChartNoAxesColumn },
-    { label: 'Members', value: chart.members.length, icon: Users },
+    { label: t('totalMeals'), value: chart.totalMeals, icon: Utensils },
+    { label: t('recordedDays'), value: chart.recordedDays, icon: CalendarDays },
+    { label: t('avgPerDay'), value: chart.average.toFixed(1), icon: ChartNoAxesColumn },
+    { label: t('activeMembers'), value: chart.members.length, icon: Users },
   ];
 
   return (
@@ -213,12 +218,12 @@ export default function MealChartTab() {
         <div className="tablet:flex-row tablet:items-end tablet:justify-between relative flex flex-col gap-5">
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold text-emerald-100">Meal period</p>
+              <p className="text-sm font-semibold text-emerald-100">{t('dailyMealChart')}</p>
               <span className="rounded-full bg-white/15 px-2 py-0.5 text-xs font-semibold text-white">
-                {isOpenPeriod ? 'Active' : 'Closed'}
+                {isOpenPeriod ? t('activeMonth') : t('closedMonth')}
               </span>
             </div>
-            <h2 className="mt-1 text-2xl font-bold">{selectedMonthLabel} Meal Chart</h2>
+            <h2 className="mt-1 text-2xl font-bold">{selectedMonthLabel}</h2>
           </div>
 
           <div className="tablet:w-56 w-full shrink-0">
@@ -234,7 +239,7 @@ export default function MealChartTab() {
 
       <section
         className="tablet:grid-cols-4 grid grid-cols-2 gap-3"
-        aria-label="Meal chart summary"
+        aria-label={t('dailyMealChartDesc')}
       >
         {statItems.map((item) => {
           const Icon = item.icon;
@@ -260,9 +265,9 @@ export default function MealChartTab() {
       {chart.members.length === 0 ? (
         <section className="border-border-color bg-card-bg rounded-2xl border p-10 text-center shadow-sm">
           <Utensils className="text-subtitle-color mx-auto size-8" aria-hidden="true" />
-          <h3 className="text-pure-color mt-3 font-bold">No meals recorded yet</h3>
+          <h3 className="text-pure-color mt-3 font-bold">{t('dailyMealChart')}</h3>
           <p className="text-subtitle-color mt-1 text-sm">
-            Daily member breakdowns will appear as soon as the first meal is added.
+            {t('dailyMealChartDesc')}
           </p>
         </section>
       ) : (
@@ -270,21 +275,22 @@ export default function MealChartTab() {
           <div className="tablet:hidden divide-border-color divide-y">
             {chart.days.map((day) => {
               const date = fromDateKey(day.date);
+              const isToday = day.date === todayKey;
               return (
                 <article key={day.date} className="p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-pure-color font-bold">
-                        {day.date === todayKey ? 'Today' : dayFormatter.format(date)}
+                        {isToday ? (locale === 'bn' ? 'আজ' : 'Today') : dayFormatter.format(date)}
                       </p>
                       <p className="text-subtitle-color text-xs">{weekdayFormatter.format(date)}</p>
                     </div>
                     <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-800 tabular-nums dark:bg-emerald-950 dark:text-emerald-300">
-                      {day.total} total
+                      {day.total} {t('total')}
                     </span>
                   </div>
                   {day.total === 0 ? (
-                    <p className="text-subtitle-color mt-4 text-sm">No meals recorded.</p>
+                    <p className="text-subtitle-color mt-4 text-sm">—</p>
                   ) : (
                     <dl className="mt-4 grid grid-cols-2 gap-2">
                       {chart.members.map((member) => {
@@ -309,7 +315,7 @@ export default function MealChartTab() {
           <div className="tablet:block hidden overflow-x-auto">
             <table className="w-full min-w-max border-collapse text-left text-sm">
               <caption className="sr-only">
-                Daily total meals and individual member meal counts for {selectedMonthLabel}
+                {t('dailyMealChartDesc')}
               </caption>
               <thead className="bg-secondary-bg text-subtitle-color">
                 <tr>
@@ -317,10 +323,10 @@ export default function MealChartTab() {
                     scope="col"
                     className="bg-secondary-bg sticky left-0 z-20 min-w-32 px-5 py-3 font-semibold"
                   >
-                    Date
+                    {t('date')}
                   </th>
                   <th scope="col" className="px-4 py-3 text-center font-semibold">
-                    Day total
+                    {t('total')}
                   </th>
                   {chart.members.map((member) => (
                     <th
@@ -330,7 +336,7 @@ export default function MealChartTab() {
                     >
                       <span className="text-pure-color block max-w-36 truncate">{member.name}</span>
                       <span className="mt-0.5 block text-xs font-normal">
-                        {member.total} in period
+                        {member.total}
                       </span>
                     </th>
                   ))}
@@ -352,7 +358,7 @@ export default function MealChartTab() {
                         }`}
                       >
                         <span className="text-pure-color block">
-                          {isToday ? 'Today' : dayFormatter.format(date)}
+                          {isToday ? (locale === 'bn' ? 'আজ' : 'Today') : dayFormatter.format(date)}
                         </span>
                         <span className="text-subtitle-color block text-xs font-normal">
                           {weekdayFormatter.format(date)}

@@ -6,6 +6,7 @@ import MessOverview from './mess-overview';
 import JoinOrCreateMess from '@/components/profile/join-create-mess';
 import { Mail } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface UserData {
   user: User | undefined;
@@ -18,6 +19,7 @@ interface OverviewTabProps {
 
 export default function OverviewTab({ userData }: OverviewTabProps) {
   const { user, workspace } = userData;
+  const t = useTranslations('Mess.overview');
 
   if (workspace) {
     return <MessOverview />;
@@ -45,10 +47,10 @@ export default function OverviewTab({ userData }: OverviewTabProps) {
 
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-              Ready when you are
+              {t('readyWhenYouAre')}
             </p>
             <h2 className="text-pure-color mt-1 text-2xl font-bold text-balance">
-              Welcome, {user?.name || 'User'}
+              {t('welcomeUser', { name: user?.name || 'User' })}
             </h2>
             <p className="text-subtitle-color mt-2 flex min-w-0 items-center gap-2 text-sm">
               <Mail className="size-4 shrink-0" aria-hidden="true" />
@@ -59,10 +61,9 @@ export default function OverviewTab({ userData }: OverviewTabProps) {
       </div>
 
       <div className="border-border-color tablet:p-8 border-t p-6">
-        <h3 className="text-pure-color text-lg font-bold">Choose How to Get Started</h3>
+        <h3 className="text-pure-color text-lg font-bold">{t('chooseHowToStart')}</h3>
         <p className="text-subtitle-color mt-2 max-w-2xl text-sm leading-6">
-          Create a new mess to manage members and costs, or join an existing group with an
-          invitation.
+          {t('chooseHowToStartDesc')}
         </p>
         <div className="mt-6">
           <JoinOrCreateMess workspace={workspace} />

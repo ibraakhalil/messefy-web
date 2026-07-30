@@ -4,6 +4,7 @@ import Button from '@/components/ui/button';
 import FormInput from '@/components/ui/form-input';
 import { Bell, CheckCircle, ChefHat, Clock, Search, Trash2, UserPlus, XCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface NotificationsSectionProps {
   isLoading?: boolean;
@@ -101,6 +102,7 @@ const notifications = [
 ];
 
 export default function NotificationsSection({ isLoading = false }: NotificationsSectionProps) {
+  const t = useTranslations('Notifications');
   const [filter, setFilter] = useState<'all' | 'unread' | 'invitations' | 'requests'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [processingNotifications, setProcessingNotifications] = useState<Set<string>>(new Set());
@@ -128,10 +130,8 @@ export default function NotificationsSection({ isLoading = false }: Notification
   const handleAcceptInvitation = async (notificationId: string) => {
     setProcessingNotifications((prev) => new Set(prev).add(notificationId));
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log('Invitation accepted:', notificationId);
-      // Success notification would go here
     } catch (error) {
       console.error('Failed to accept invitation:', error);
     } finally {
@@ -146,10 +146,8 @@ export default function NotificationsSection({ isLoading = false }: Notification
   const handleRejectInvitation = async (notificationId: string) => {
     setProcessingNotifications((prev) => new Set(prev).add(notificationId));
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log('Invitation rejected:', notificationId);
-      // Success notification would go here
     } catch (error) {
       console.error('Failed to reject invitation:', error);
     } finally {
@@ -163,9 +161,7 @@ export default function NotificationsSection({ isLoading = false }: Notification
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      // Simulate API call
       console.log('Marked as read:', notificationId);
-      // Update local state or refetch
     } catch (error) {
       console.error('Failed to mark as read:', error);
     }
@@ -174,10 +170,8 @@ export default function NotificationsSection({ isLoading = false }: Notification
   const handleDeleteNotification = async (notificationId: string) => {
     setProcessingNotifications((prev) => new Set(prev).add(notificationId));
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
       console.log('Notification deleted:', notificationId);
-      // Success notification would go here
     } catch (error) {
       console.error('Failed to delete notification:', error);
     } finally {
@@ -255,10 +249,10 @@ export default function NotificationsSection({ isLoading = false }: Notification
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t('title')}</h2>
           {unreadCount > 0 && (
             <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
-              {unreadCount} unread
+              {unreadCount} {t('unread')}
             </span>
           )}
         </div>
@@ -266,11 +260,10 @@ export default function NotificationsSection({ isLoading = false }: Notification
           variant="secondary"
           className="text-sm"
           onClick={() => {
-            // Mark all as read
             console.log('Mark all as read');
           }}
         >
-          Mark All Read
+          {t('markAllRead')}
         </Button>
       </div>
 
@@ -279,7 +272,7 @@ export default function NotificationsSection({ isLoading = false }: Notification
         <div className="flex-1">
           <FormInput
             id="search"
-            placeholder="Search notifications..."
+            placeholder={t('searchPlaceholder')}
             icon={<Search className="h-4 w-4 text-gray-400" />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -287,10 +280,9 @@ export default function NotificationsSection({ isLoading = false }: Notification
         </div>
         <div className="flex gap-2">
           {[
-            { key: 'all', label: 'All' },
-            { key: 'unread', label: 'Unread' },
-            { key: 'invitations', label: 'Invitations' },
-            { key: 'requests', label: 'Requests' },
+            { key: 'all', label: t('all') },
+            { key: 'unread', label: t('unread') },
+            { key: 'invitations', label: t('invitations') },
           ].map(({ key, label }) => (
             <button
               key={key}

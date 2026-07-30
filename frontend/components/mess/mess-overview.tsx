@@ -8,12 +8,14 @@ import { useWorkspace } from '@/providers/workspace-provider';
 import type { RecentDeposit, RecentExpense, SummaryMember } from '@/types/summary';
 import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, formatDistanceToNow } from 'date-fns';
+import { bn, enUS } from 'date-fns/locale';
 import { AlertCircle, Calendar, Receipt, TrendingUp, Users, Utensils, Wallet } from 'lucide-react';
 import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { PeriodSelect } from './period-select';
 
-function getPeriodName(year: number, month: number) {
-  return new Date(year, month - 1).toLocaleString('default', {
+function getPeriodName(year: number, month: number, localeCode: string) {
+  return new Date(year, month - 1).toLocaleString(localeCode, {
     month: 'long',
     year: 'numeric',
   });
@@ -36,22 +38,22 @@ type OverviewActivity = {
   type: 'deposit' | 'expense';
 };
 
-function mapDepositToActivity(deposit: RecentDeposit): OverviewActivity {
+function mapDepositToActivity(deposit: RecentDeposit, defaultMeta: string): OverviewActivity {
   return {
     id: `deposit-${deposit.id}`,
     title: deposit.memberName,
-    meta: deposit.note?.trim() || 'Deposit added',
+    meta: deposit.note?.trim() || defaultMeta,
     amount: deposit.amount,
     createdAt: deposit.createdAt,
     type: 'deposit',
   };
 }
 
-function mapExpenseToActivity(expense: RecentExpense): OverviewActivity {
+function mapExpenseToActivity(expense: RecentExpense, defaultMeta: string): OverviewActivity {
   return {
     id: `expense-${expense.id}`,
     title: expense.title,
-    meta: expense.note?.trim() || expense.allocationType || 'Expense added',
+    meta: expense.note?.trim() || expense.allocationType || defaultMeta,
     amount: expense.amount,
     createdAt: expense.createdAt,
     type: 'expense',
@@ -59,6 +61,7 @@ function mapExpenseToActivity(expense: RecentExpense): OverviewActivity {
 }
 
 function MemberRow({ member }: { member: SummaryMember }) {
+  const t = useTranslations('Mess.overview');
   const balanceClassName =
     member.balance < 0
       ? 'text-red-600 dark:text-red-400'
@@ -69,20 +72,27 @@ function MemberRow({ member }: { member: SummaryMember }) {
       <div className="min-w-0">
         <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{member.name}</p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          {member.meals} meals • {formatCurrency(member.deposits)} deposits
+          {member.meals} {t('meals')} • {formatCurrency(member.deposits)} {t('deposits')}
         </p>
       </div>
       <div className="text-right">
         <p className={`text-sm font-semibold ${balanceClassName}`}>
           {formatCurrency(member.balance)}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Due {formatCurrency(member.due)}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          {t('due')} {formatCurrency(member.due)}
+        </p>
       </div>
     </div>
   );
 }
 
 export default function MessOverview() {
+  const t = useTranslations('Mess.overview');
+  const locale = useLocale();
+  const localeCode = locale === 'bn' ? 'bn-BD' : 'en-US';
+  const dateFnsLocale = locale === 'bn' ? bn : enUS;
+
   const { member } = useWorkspace();
   const workspaceId = member?.workspaceId || '';
   const canManage = Boolean(member && ['owner', 'manager'].includes(member.role));
@@ -105,7 +115,7 @@ export default function MessOverview() {
   if (!workspaceId) {
     return (
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
-        No active workspace selected.
+        {t('noWorkspace')}
       </div>
     );
   }
@@ -119,7 +129,7 @@ export default function MessOverview() {
       >
         <div className="text-center">
           <div className="mx-auto mb-3 size-8 animate-spin rounded-full border-2 border-emerald-600/25 border-t-emerald-600 motion-reduce:animate-none" />
-          Loading live mess stats…
+          {t('loadingStats')}
         </div>
       </div>
     );
@@ -131,13 +141,13 @@ export default function MessOverview() {
         <div className="flex items-start gap-3">
           <AlertCircle className="mt-0.5 h-5 w-5 text-red-600" />
           <div>
-            <h2 className="font-semibold text-red-900">Failed to load live mess stats.</h2>
+            <h2 className="font-semibold text-red-900">{t('failedToLoad')}</h2>
             <Button
               onClick={() => (periodError ? refetchPeriods() : refetchSummary())}
               variant="secondary"
               className="mt-3"
             >
-              Try Again
+              {t('tryAgain')}
             </Button>
           </div>
         </div>
@@ -148,8 +158,8 @@ export default function MessOverview() {
   if (!selectedPeriod) {
     return (
       <NoActivePeriodState
-        title="No Meal Periods Yet"
-        description="Start a meal month first. Then this page will show totals, recent deposits, expenses, and member balances."
+        title={t('noPeriodsTitle')}
+        description={t('noPeriodsDesc')}
       />
     );
   }
@@ -158,14 +168,14 @@ export default function MessOverview() {
     return null;
   }
 
-  const periodName = getPeriodName(summary.period.year, summary.period.month);
+  const periodName = getPeriodName(summary.period.year, summary.period.month, localeCode);
   const daysRemaining = getDaysRemaining(summary.period.year, summary.period.month);
   const isOpenPeriod = selectedPeriod.status === 'open';
   const recentExpenses = summary.recentExpenses.slice(0, 4);
   const recentDeposits = summary.recentDeposits.slice(0, 4);
   const recentActivity = [
-    ...summary.recentDeposits.map(mapDepositToActivity),
-    ...summary.recentExpenses.map(mapExpenseToActivity),
+    ...summary.recentDeposits.map((d) => mapDepositToActivity(d, t('depositAdded'))),
+    ...summary.recentExpenses.map((e) => mapExpenseToActivity(e, t('expenseAdded'))),
   ]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 6);
@@ -173,44 +183,44 @@ export default function MessOverview() {
 
   const stats = [
     {
-      label: 'Meal Rate',
+      label: t('stats.mealRate'),
       value: formatCurrency(summary.totals.mealRate),
-      helper: 'Per meal',
+      helper: t('stats.perMeal'),
       icon: Calendar,
       iconClassName: 'bg-blue-100 text-blue-600 dark:bg-blue-950/80 dark:text-blue-400',
     },
     {
-      label: 'Total Meals',
+      label: t('stats.totalMeals'),
       value: String(summary.totals.totalMeals),
       helper: periodName,
       icon: Utensils,
       iconClassName: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/80 dark:text-emerald-400',
     },
     {
-      label: 'Total Expenses',
+      label: t('stats.totalExpenses'),
       value: formatCurrency(summary.totals.totalExpenses),
-      helper: 'Shared meal costs',
+      helper: t('stats.sharedMealCosts'),
       icon: Receipt,
       iconClassName: 'bg-rose-100 text-rose-600 dark:bg-rose-950/80 dark:text-rose-400',
     },
     {
-      label: 'Total Deposits',
+      label: t('stats.totalDeposits'),
       value: formatCurrency(summary.totals.totalDeposits),
-      helper: 'Member contributions',
+      helper: t('stats.memberContributions'),
       icon: Wallet,
       iconClassName: 'bg-purple-100 text-purple-600 dark:bg-purple-950/80 dark:text-purple-400',
     },
     {
-      label: 'Net Balance',
+      label: t('stats.netBalance'),
       value: formatCurrency(summary.totals.netBalance),
-      helper: summary.totals.netBalance >= 0 ? 'Surplus' : 'Shortfall',
+      helper: summary.totals.netBalance >= 0 ? t('stats.surplus') : t('stats.shortfall'),
       icon: TrendingUp,
       iconClassName: 'bg-amber-100 text-amber-600 dark:bg-amber-950/80 dark:text-amber-400',
     },
     {
-      label: 'Active Members',
+      label: t('stats.activeMembers'),
       value: String(summary.totals.memberCount),
-      helper: 'Included in summary',
+      helper: t('stats.includedInSummary'),
       icon: Users,
       iconClassName: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-950/80 dark:text-cyan-400',
     },
@@ -230,16 +240,18 @@ export default function MessOverview() {
                 className="size-2 rounded-full bg-emerald-200 shadow-[0_0_0_4px_rgba(167,243,208,0.15)]"
                 aria-hidden="true"
               />
-              <p className="text-sm font-semibold text-emerald-50">Selected Period</p>
+              <p className="text-sm font-semibold text-emerald-50">{t('selectedPeriod')}</p>
               <span className="rounded-full bg-white/15 px-2 py-0.5 text-xs font-semibold text-white">
-                {isOpenPeriod ? 'Active' : 'Closed'}
+                {isOpenPeriod ? t('active') : t('closed')}
               </span>
             </div>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-balance text-white">
               {periodName}
             </h2>
             <p className="mt-2 text-sm text-emerald-50/85">
-              {isOpenPeriod ? `${daysRemaining} days remaining` : 'Closed period'}
+              {isOpenPeriod
+                ? t('daysRemaining', { count: daysRemaining })
+                : t('closedPeriod')}
             </p>
           </div>
 
@@ -257,14 +269,14 @@ export default function MessOverview() {
                 href={`/mess/months/${selectedPeriod.id}`}
                 className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
               >
-                Full Summary
+                {t('fullSummary')}
               </Link>
               {canManage && isOpenPeriod ? (
                 <Link
                   href="/mess/dashboard/data-entry"
                   className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-emerald-800 shadow-sm transition-colors hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
                 >
-                  Add Data
+                  {t('addData')}
                 </Link>
               ) : null}
             </div>
@@ -305,38 +317,38 @@ export default function MessOverview() {
       <div className="laptop:grid-cols-3 grid grid-cols-1 gap-6">
         <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Period Snapshot</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('periodSnapshot')}</h2>
             {canManage ? (
               <Link
                 href="/mess/dashboard/member-balances"
                 className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
-                Balances
+                {t('balances')}
               </Link>
             ) : null}
           </div>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Status</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('status')}</span>
               <span className="font-medium text-gray-900 capitalize dark:text-white">
-                {summary.period.status}
+                {summary.period.status === 'open' ? t('active') : t('closed')}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Meal Expenses</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('mealExpenses')}</span>
               <span className="font-medium text-gray-900 dark:text-white">
                 {formatCurrency(summary.totals.mealExpenses)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Total Due</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('totalDue')}</span>
               <span className="font-medium text-gray-900 dark:text-white">
                 {formatCurrency(summary.totals.totalDue)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">Adjustments</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('adjustments')}</span>
               <span className="font-medium text-gray-900 dark:text-white">
                 {formatCurrency(summary.totals.totalAdjustments)}
               </span>
@@ -346,12 +358,12 @@ export default function MessOverview() {
 
         <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-            Recent Expenses
+            {t('recentExpenses')}
           </h2>
 
           <div className="space-y-3">
             {recentExpenses.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">No expenses recorded yet.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('noExpenses')}</p>
             ) : (
               recentExpenses.map((expense) => (
                 <div key={expense.id} className="flex items-center justify-between gap-3">
@@ -360,7 +372,7 @@ export default function MessOverview() {
                       {expense.title}
                     </p>
                     <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                      {expense.note?.trim() || expense.allocationType || 'Expense added'}
+                      {expense.note?.trim() || expense.allocationType || t('expenseAdded')}
                     </p>
                   </div>
                   <div className="text-right">
@@ -368,7 +380,7 @@ export default function MessOverview() {
                       {formatCurrency(expense.amount)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(expense.createdAt).toLocaleString()}
+                      {new Date(expense.createdAt).toLocaleString(localeCode)}
                     </p>
                   </div>
                 </div>
@@ -379,12 +391,12 @@ export default function MessOverview() {
 
         <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-            Recent Deposits
+            {t('recentDeposits')}
           </h2>
 
           <div className="space-y-3">
             {recentDeposits.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">No deposits recorded yet.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('noDeposits')}</p>
             ) : (
               recentDeposits.map((deposit) => (
                 <div key={deposit.id} className="flex items-center justify-between gap-3">
@@ -393,7 +405,7 @@ export default function MessOverview() {
                       {deposit.memberName}
                     </p>
                     <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                      {deposit.note?.trim() || 'Deposit added'}
+                      {deposit.note?.trim() || t('depositAdded')}
                     </p>
                   </div>
                   <div className="text-right">
@@ -401,7 +413,7 @@ export default function MessOverview() {
                       {formatCurrency(deposit.amount)}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(deposit.createdAt).toLocaleString()}
+                      {new Date(deposit.createdAt).toLocaleString(localeCode)}
                     </p>
                   </div>
                 </div>
@@ -414,13 +426,13 @@ export default function MessOverview() {
       <div className="laptop:grid-cols-2 grid grid-cols-1 gap-6">
         <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Member Snapshot</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('memberSnapshot')}</h2>
             {canManage ? (
               <Link
                 href="/mess/dashboard/member-balances"
                 className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
-                View All
+                {t('viewAll')}
               </Link>
             ) : null}
           </div>
@@ -428,7 +440,7 @@ export default function MessOverview() {
           <div className="space-y-3">
             {memberPreview.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                No members available in this summary yet.
+                {t('noMembersSummary')}
               </p>
             ) : (
               memberPreview.map((member) => <MemberRow key={member.memberId} member={member} />)
@@ -439,14 +451,14 @@ export default function MessOverview() {
         <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Activity Snapshot
+              {t('activitySnapshot')}
             </h2>
             {canManage ? (
               <Link
                 href="/mess/dashboard/member-balances"
                 className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
-                More Activity
+                {t('moreActivity')}
               </Link>
             ) : null}
           </div>
@@ -454,7 +466,7 @@ export default function MessOverview() {
           <div className="space-y-3">
             {recentActivity.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                No deposit or expense activity recorded in this period yet.
+                {t('noActivity')}
               </p>
             ) : (
               recentActivity.map((activity) => {
@@ -472,6 +484,7 @@ export default function MessOverview() {
                         {activity.meta} •{' '}
                         {formatDistanceToNow(new Date(activity.createdAt), {
                           addSuffix: true,
+                          locale: dateFnsLocale,
                         })}
                       </p>
                     </div>

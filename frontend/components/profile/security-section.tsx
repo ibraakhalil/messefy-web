@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { Lock, Eye, EyeOff, LogOut, RefreshCw, AlertTriangle, Laptop, Smartphone, Globe } from 'lucide-react'
 import FormInput from '@/components/ui/form-input'
 import Button from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 // Define the schema for password change form
 const passwordChangeSchema = z
@@ -64,6 +65,8 @@ const activeSessions = [
 ]
 
 export default function SecuritySection({ isLoading = false }: SecuritySectionProps) {
+  const t = useTranslations('Security');
+  const tAuth = useTranslations('Auth.signIn');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -158,13 +161,13 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
     <div className="space-y-8">
       {/* Password Change Form */}
       <div>
-        <h2 className="text-xl font-semibold text-pure-color dark:text-white">Change Password</h2>
+        <h2 className="text-xl font-semibold text-pure-color dark:text-white">{t('changePassword')}</h2>
         <form onSubmit={handleSubmit(onSubmitPasswordChange)} className="mt-4 space-y-4">
           <div className="relative">
             <FormInput
               id="currentPassword"
               type={showCurrentPassword ? 'text' : 'password'}
-              label="Current Password"
+              label={t('currentPassword')}
               placeholder="••••••••"
               icon={<Lock className="h-5 w-5 text-subtitle-color dark:text-gray-400" />}
               error={errors.currentPassword?.message}
@@ -174,7 +177,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               type="button"
               className="absolute right-3 top-[38px] text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
+              aria-label={showCurrentPassword ? tAuth('hidePassword') : tAuth('showPassword')}
             >
               {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -184,7 +187,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
             <FormInput
               id="newPassword"
               type={showNewPassword ? 'text' : 'password'}
-              label="New Password"
+              label={t('newPassword')}
               placeholder="••••••••"
               icon={<Lock className="h-5 w-5 text-subtitle-color dark:text-gray-400" />}
               error={errors.newPassword?.message}
@@ -194,7 +197,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               type="button"
               className="absolute right-3 top-[38px] text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
               onClick={() => setShowNewPassword(!showNewPassword)}
-              aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+              aria-label={showNewPassword ? tAuth('hidePassword') : tAuth('showPassword')}
             >
               {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -204,7 +207,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
             <FormInput
               id="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
-              label="Confirm New Password"
+              label={t('confirmPassword')}
               placeholder="••••••••"
               icon={<Lock className="h-5 w-5 text-subtitle-color dark:text-gray-400" />}
               error={errors.confirmPassword?.message}
@@ -214,7 +217,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               type="button"
               className="absolute right-3 top-[38px] text-subtitle-color hover:text-pure-color dark:text-gray-400 dark:hover:text-white"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              aria-label={showConfirmPassword ? tAuth('hidePassword') : tAuth('showPassword')}
             >
               {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -226,7 +229,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700"
               disabled={isChangingPassword}
             >
-              {isChangingPassword ? 'Changing Password...' : 'Change Password'}
+              {isChangingPassword ? t('updatingPassword') : t('updatePassword')}
             </Button>
 
             <button
@@ -234,7 +237,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
               className="text-sm font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
               onClick={() => setShowResetConfirmation(true)}
             >
-              Forgot password?
+              {tAuth('forgotPassword')}
             </button>
           </div>
         </form>
@@ -242,7 +245,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
 
       {/* Active Sessions */}
       <div>
-        <h2 className="text-xl font-semibold text-pure-color dark:text-white">Active Sessions</h2>
+        <h2 className="text-xl font-semibold text-pure-color dark:text-white">{t('activeSessions')}</h2>
         <div className="mt-4 space-y-4">
           {activeSessions.map((session) => {
             const Icon = session.icon
@@ -263,7 +266,7 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
                       {session.device} • {session.browser}
                       {isCurrentSession && (
                         <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                          Current
+                          {t('currentDevice')}
                         </span>
                       )}
                     </p>
@@ -281,12 +284,12 @@ export default function SecuritySection({ isLoading = false }: SecuritySectionPr
                   {isLoggingOut ? (
                     <>
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
-                      <span>Logging out...</span>
+                      <span>...</span>
                     </>
                   ) : (
                     <>
                       <LogOut className="h-4 w-4" />
-                      <span>Logout</span>
+                      <span>{t('logoutSession')}</span>
                     </>
                   )}
                 </Button>

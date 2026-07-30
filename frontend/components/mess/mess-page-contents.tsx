@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Bell, CalendarRange, CircleUserRound, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import OverviewTab from './overview-tab';
 
@@ -27,46 +28,16 @@ const TotalMessMembers = dynamic(() => import('./total-mess-members'), {
   loading: () => <SectionSkeleton />,
 });
 
-const tabs = [
-  {
-    id: 'overview',
-    label: 'Overview',
-    icon: LayoutGrid,
-    description: 'Your mess at a glance',
-  },
-  {
-    id: 'meal-chart',
-    label: 'Meal Chart',
-    icon: CalendarRange,
-    description: 'Daily member meals',
-  },
-  {
-    id: 'members',
-    label: 'Members',
-    icon: Users,
-    description: 'Everyone in your mess',
-  },
-  {
-    id: 'profile',
-    label: 'Profile',
-    icon: CircleUserRound,
-    description: 'Personal details',
-  },
-  {
-    id: 'notifications',
-    label: 'Notifications',
-    icon: Bell,
-    description: 'Invitations & alerts',
-  },
-  {
-    id: 'security',
-    label: 'Security',
-    icon: ShieldCheck,
-    description: 'Password & sessions',
-  },
+const tabDefs = [
+  { id: 'overview', key: 'overview', icon: LayoutGrid },
+  { id: 'meal-chart', key: 'mealChart', icon: CalendarRange },
+  { id: 'members', key: 'members', icon: Users },
+  { id: 'profile', key: 'profile', icon: CircleUserRound },
+  { id: 'notifications', key: 'notifications', icon: Bell },
+  { id: 'security', key: 'security', icon: ShieldCheck },
 ] as const;
 
-type TabId = (typeof tabs)[number]['id'];
+type TabId = (typeof tabDefs)[number]['id'];
 
 interface UserData {
   user: User | undefined;
@@ -74,11 +45,12 @@ interface UserData {
 }
 
 function SectionSkeleton() {
+  const t = useTranslations('Mess');
   return (
-    <div className="space-y-4" aria-label="Loading section" role="status">
+    <div className="space-y-4" aria-label={t('loadingSection')} role="status">
       <div className="bg-card-shade h-10 w-2/5 animate-pulse rounded-lg motion-reduce:animate-none" />
       <div className="bg-card-shade h-28 animate-pulse rounded-xl motion-reduce:animate-none" />
-      <span className="sr-only">Loading…</span>
+      <span className="sr-only">{t('loading')}</span>
     </div>
   );
 }
@@ -92,7 +64,15 @@ export function MessPageContents({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations('Mess');
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
+
+  const tabs = tabDefs.map((tab) => ({
+    ...tab,
+    label: t(`tabs.${tab.key}`),
+    description: t(`tabs.${tab.key}Desc`),
+  }));
+
   const visibleTabs = userData.workspace
     ? tabs
     : tabs.filter((tab) => tab.id !== 'meal-chart' && tab.id !== 'members');
@@ -108,15 +88,15 @@ export function MessPageContents({
       <section className="tablet:mb-8 tablet:flex-row tablet:items-center tablet:justify-between mb-6 flex flex-col gap-4">
         <div>
           <p className="mb-2 text-sm font-semibold tracking-wide text-emerald-700 uppercase dark:text-emerald-400">
-            Personal Hub
+            {t('personalHub')}
           </p>
           <h1 className="text-pure-color tablet:text-4xl text-3xl font-bold tracking-tight text-balance">
-            {userData.workspace ? userData.workspace.name : 'Welcome to Mess Mate'}
+            {userData.workspace ? userData.workspace.name : t('welcomeTitle')}
           </h1>
           <p className="text-subtitle-color tablet:text-base mt-2 max-w-2xl text-sm leading-6">
             {userData.workspace
-              ? 'Mess stats, account preferences, and controls in one place.'
-              : 'Set up your account, create a mess, or join your friends with an invitation.'}
+              ? t('welcomeSubtitleWithWorkspace')
+              : t('welcomeSubtitleNoWorkspace')}
           </p>
         </div>
 
@@ -126,14 +106,14 @@ export function MessPageContents({
             className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
           >
             <LayoutGrid className="size-4" aria-hidden="true" />
-            <span>Dashboard</span>
+            <span>{t('dashboard')}</span>
           </Link>
         )}
       </section>
 
       <div className="laptop:grid-cols-[248px_minmax(0,1fr)] grid items-start gap-6">
         <aside className="border-border-color bg-card-bg laptop:sticky laptop:top-20 laptop:block laptop:h-[calc(100dvh-7rem)] laptop:overflow-y-auto laptop:overscroll-contain hidden rounded-2xl border p-2 shadow-sm">
-          <nav aria-label="Account sections">
+          <nav aria-label={t('accountSections')}>
             <div className="space-y-1" role="tablist" aria-orientation="vertical">
               {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
@@ -174,7 +154,7 @@ export function MessPageContents({
         </aside>
 
         <nav
-          aria-label="Account sections"
+          aria-label={t('accountSections')}
           className="border-border-color bg-card-bg laptop:hidden -mx-4 overflow-x-auto border-y px-4"
         >
           <div className="flex min-w-max gap-1" role="tablist">

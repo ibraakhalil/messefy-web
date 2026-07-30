@@ -9,6 +9,7 @@ import JoinMessModal from './join-mess-modal';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/utils/axios';
 import { toast } from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 interface JoinOrCreateMessProps {
   workspace?: Workspace;
@@ -22,6 +23,7 @@ interface Invitation {
 }
 
 export default function JoinOrCreateMess({ workspace }: JoinOrCreateMessProps) {
+  const t = useTranslations('Mess.joinOrCreate');
   const queryClient = useQueryClient();
 
   const { data: invitation, isLoading } = useQuery({
@@ -60,7 +62,7 @@ export default function JoinOrCreateMess({ workspace }: JoinOrCreateMessProps) {
       <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2">
         <Clock className="h-4 w-4 text-amber-600" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-amber-900">Waiting for approval</p>
+          <p className="text-sm font-medium text-amber-900">{t('waitingApproval')}</p>
           <p className="text-xs text-amber-700">{invitation.workspaceName}</p>
         </div>
         <Button onClick={() => cancelInvitation(invitation.id)} disabled={isPending}>
@@ -75,15 +77,15 @@ export default function JoinOrCreateMess({ workspace }: JoinOrCreateMessProps) {
       <Links.CreateMess>
         <Button variant="secondary" className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
-          Create Mess
+          {t('createMess')}
         </Button>
       </Links.CreateMess>
-      <span className="text-gray-500">or</span>
+      <span className="text-gray-500">{t('or')}</span>
       <ResponsiveDialog>
         <ResponsiveDialog.Trigger>
           <Button className="flex items-center gap-2">
             <UserPlus className="h-4 w-4" />
-            Join Mess
+            {t('joinMess')}
           </Button>
         </ResponsiveDialog.Trigger>
         <ResponsiveDialog.Content>
