@@ -14,7 +14,6 @@ export interface SummaryTotals {
   totalDeposits: number;
   totalExpenses: number;
   mealExpenses: number;
-  totalAdjustments: number;
   totalDue: number;
   mealRate: number;
   netBalance: number;
@@ -29,7 +28,6 @@ export interface SummaryMember {
   isOffline: boolean;
   meals: number;
   deposits: number;
-  adjustments: number;
   due: number;
   balance: number;
 }

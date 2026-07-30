@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
 import { db } from '../db';
-import { adjustments, deposits, expenses, mealEntries, periods } from '../db/schemas';
+import { deposits, expenses, mealEntries, periods } from '../db/schemas';
 import { getCurrentOpenPeriod, requireScopedPeriod } from './workspace-access';
 
 function toAmount(value: string | number | null | undefined) {
@@ -24,7 +24,7 @@ async function buildSummary(periodId: string) {
     throw new Error('Period not found');
   }
 
-  const [workspaceMembers, periodMeals, periodDeposits, periodExpenses, periodAdjustments] =
+  const [workspaceMembers, periodMeals, periodDeposits, periodExpenses] =
     await Promise.all([
       db.query.members.findMany({
         where: (memberTable, { eq, and }) =>
@@ -64,14 +64,10 @@ async function buildSummary(periodId: string) {
         where: (expenseTable, { eq }) => eq(expenseTable.periodId, periodId),
         orderBy: [desc(expenses.createdAt)],
       }),
-      db.query.adjustments.findMany({
-        where: (adjustmentTable, { eq }) => eq(adjustmentTable.periodId, periodId),
-      }),
     ]);
 
   const mealCountsByMember = new Map<string, number>();
   const depositsByMember = new Map<string, number>();
-  const adjustmentsByMember = new Map<string, number>();
 
   for (const entry of periodMeals) {
     mealCountsByMember.set(entry.memberId, (mealCountsByMember.get(entry.memberId) ?? 0) + toMealCount(entry));
@@ -79,13 +75,6 @@ async function buildSummary(periodId: string) {
 
   for (const deposit of periodDeposits) {
     depositsByMember.set(deposit.memberId, (depositsByMember.get(deposit.memberId) ?? 0) + toAmount(deposit.amount));
-  }
-
-  for (const adjustment of periodAdjustments) {
-    adjustmentsByMember.set(
-      adjustment.memberId,
-      (adjustmentsByMember.get(adjustment.memberId) ?? 0) + toAmount(adjustment.amount),
-    );
   }
 
   const totalMeals = periodMeals.reduce((sum, entry) => sum + toMealCount(entry), 0);
@@ -96,18 +85,13 @@ async function buildSummary(periodId: string) {
       .filter((expense) => expense.allocationType === 'by_meals')
       .reduce((sum, expense) => sum + toAmount(expense.amount), 0),
   );
-  const totalAdjustments = roundAmount(
-    periodAdjustments.reduce((sum, adjustment) => sum + toAmount(adjustment.amount), 0),
-  );
   const mealRate = totalMeals > 0 ? roundAmount(mealExpenses / totalMeals) : 0;
 
   const members = workspaceMembers
     .map((member) => {
       const memberMeals = mealCountsByMember.get(member.id) ?? 0;
       const memberDeposits = roundAmount(depositsByMember.get(member.id) ?? 0);
-      const memberAdjustments = roundAmount(adjustmentsByMember.get(member.id) ?? 0);
-      const byMealsShare = roundAmount(memberMeals * mealRate);
-      const totalDue = roundAmount(byMealsShare - memberAdjustments);
+      const totalDue = roundAmount(memberMeals * mealRate);
       const balance = roundAmount(memberDeposits - totalDue);
 
       return {
@@ -119,7 +103,6 @@ async function buildSummary(periodId: string) {
         isOffline: member.isOffline,
         meals: memberMeals,
         deposits: memberDeposits,
-        adjustments: memberAdjustments,
         due: totalDue,
         balance,
       };
@@ -161,7 +144,6 @@ async function buildSummary(periodId: string) {
       totalDeposits,
       totalExpenses,
       mealExpenses,
-      totalAdjustments,
       totalDue,
       mealRate,
       netBalance: roundAmount(totalDeposits - totalDue),

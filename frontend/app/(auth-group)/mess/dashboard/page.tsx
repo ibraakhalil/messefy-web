@@ -158,7 +158,6 @@ export default function DashboardPage() {
     mealRate: summary.totals.mealRate,
     totalDue: summary.totals.totalDue,
     mealExpenses: summary.totals.mealExpenses,
-    totalAdjustments: summary.totals.totalAdjustments,
   };
 
   const outstandingMembers = [...summary.members]
@@ -466,12 +465,6 @@ export default function DashboardPage() {
                 <span className="text-gray-500 dark:text-gray-400">Meal Expenses</span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {formatCurrency(currentMonth.mealExpenses)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-gray-500 dark:text-gray-400">Adjustments</span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {formatCurrency(currentMonth.totalAdjustments)}
                 </span>
               </div>
             </div>

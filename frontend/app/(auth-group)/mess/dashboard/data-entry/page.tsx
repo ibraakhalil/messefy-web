@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import { DollarSign, Receipt, Utensils } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import MealEntryForm from '@/components/mess/data-entry/meal-entry-form';
@@ -9,31 +9,59 @@ import ExpenseEntryForm from '@/components/mess/data-entry/expense-entry-form';
 import { useWorkspace } from '@/providers/workspace-provider';
 import { useCurrentPeriod } from '@/hooks/use-periods';
 import NoActivePeriodState from '@/components/dashboard/no-active-period-state';
+import { cn } from '@/utils/cn';
 
 type EntryType = 'meal' | 'deposit' | 'expense';
 
 const ENTRY_STYLES: Record<
   EntryType,
-  { headerIcon: string; selectedCard: string; selectedCardIcon: string }
+  { headerIcon: string; activeTab: string; activeTabIcon: string }
 > = {
   meal: {
     headerIcon: 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400',
-    selectedCard: 'border-orange-500 bg-orange-50 dark:bg-orange-900/20',
-    selectedCardIcon:
-      'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400',
+    activeTab:
+      'border-orange-500 bg-orange-50/80 text-orange-700 dark:border-orange-400 dark:bg-orange-950/30 dark:text-orange-300',
+    activeTabIcon: 'bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400',
   },
   deposit: {
     headerIcon: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400',
-    selectedCard: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20',
-    selectedCardIcon:
-      'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400',
+    activeTab:
+      'border-emerald-500 bg-emerald-50/80 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-950/30 dark:text-emerald-300',
+    activeTabIcon: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400',
   },
   expense: {
     headerIcon: 'bg-rose-100 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400',
-    selectedCard: 'border-rose-500 bg-rose-50 dark:bg-rose-900/20',
-    selectedCardIcon: 'bg-rose-100 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400',
+    activeTab:
+      'border-rose-500 bg-rose-50/80 text-rose-700 dark:border-rose-400 dark:bg-rose-950/30 dark:text-rose-300',
+    activeTabIcon: 'bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400',
   },
 };
+
+const ENTRY_TABS = [
+  {
+    type: 'meal',
+    label: 'Meal Entry',
+    icon: Utensils,
+    description: 'Daily meal counts',
+  },
+  {
+    type: 'deposit',
+    label: 'Deposit',
+    icon: DollarSign,
+    description: 'Member payment',
+  },
+  {
+    type: 'expense',
+    label: 'Expense',
+    icon: Receipt,
+    description: 'Mess expense',
+  },
+] satisfies ReadonlyArray<{
+  type: EntryType;
+  label: string;
+  icon: typeof Utensils;
+  description: string;
+}>;
 
 export default function DataEntryPage() {
   const workspaceId = useWorkspace().member?.workspaceId || '';
@@ -42,9 +70,7 @@ export default function DataEntryPage() {
   const typeParam = searchParams.get('type');
   const selectedMemberId = searchParams.get('member') || undefined;
   const initialType: EntryType =
-    typeParam === 'meal' || typeParam === 'deposit' || typeParam === 'expense'
-      ? typeParam
-      : 'meal';
+    typeParam === 'meal' || typeParam === 'deposit' || typeParam === 'expense' ? typeParam : 'meal';
 
   const [entryType, setEntryType] = useState<EntryType>(initialType);
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -54,6 +80,27 @@ export default function DataEntryPage() {
       setEntryType(typeParam);
     }
   }, [typeParam]);
+
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    let nextIndex: number | undefined;
+
+    if (event.key === 'ArrowRight') {
+      nextIndex = (currentIndex + 1) % ENTRY_TABS.length;
+    } else if (event.key === 'ArrowLeft') {
+      nextIndex = (currentIndex - 1 + ENTRY_TABS.length) % ENTRY_TABS.length;
+    } else if (event.key === 'Home') {
+      nextIndex = 0;
+    } else if (event.key === 'End') {
+      nextIndex = ENTRY_TABS.length - 1;
+    }
+
+    if (nextIndex === undefined) return;
+
+    event.preventDefault();
+    const nextType = ENTRY_TABS[nextIndex].type;
+    setEntryType(nextType);
+    requestAnimationFrame(() => document.getElementById(`${nextType}-tab`)?.focus());
+  };
 
   if (isLoading) {
     return (
@@ -72,18 +119,7 @@ export default function DataEntryPage() {
     );
   }
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'meal':
-        return Utensils;
-      case 'deposit':
-        return DollarSign;
-      case 'expense':
-        return Receipt;
-      default:
-        return Utensils;
-    }
-  };
+  const ActiveIcon = ENTRY_TABS.find((tab) => tab.type === entryType)?.icon ?? Utensils;
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
@@ -91,10 +127,7 @@ export default function DataEntryPage() {
         <div
           className={`flex h-10 w-10 items-center justify-center rounded-lg ${ENTRY_STYLES[entryType].headerIcon}`}
         >
-          {(() => {
-            const Icon = getIcon(entryType);
-            return <Icon className="h-6 w-6" />;
-          })()}
+          <ActiveIcon className="h-6 w-6" />
         </div>
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Add Data</h1>
@@ -106,54 +139,53 @@ export default function DataEntryPage() {
 
       <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div className="space-y-6">
-          {/* Entry Type Selection */}
+          {/* Entry type tabs */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
               What do you want to add? *
-            </label>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                {
-                  type: 'meal',
-                  label: 'Meal Entry',
-                  icon: Utensils,
-                  description: 'Daily meal counts',
-                },
-                {
-                  type: 'deposit',
-                  label: 'Deposit',
-                  icon: DollarSign,
-                  description: 'Member payment',
-                },
-                { type: 'expense', label: 'Expense', icon: Receipt, description: 'Mess expense' },
-              ].map(({ type, label, icon: Icon, description }) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => setEntryType(type as EntryType)}
-                  className={`rounded-lg border p-4 text-left transition-all ${
-                    entryType === type
-                      ? ENTRY_STYLES[type as EntryType].selectedCard
-                      : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                        entryType === type
-                          ? ENTRY_STYLES[type as EntryType].selectedCardIcon
-                          : 'bg-gray-100 text-gray-600 dark:bg-gray-600 dark:text-gray-300'
-                      }`}
+            </p>
+            <div
+              role="tablist"
+              aria-label="Data entry type"
+              className="grid grid-cols-3 border-b border-gray-200 dark:border-gray-700"
+            >
+              {ENTRY_TABS.map(({ type, label, icon: Icon, description }, index) => {
+                const isActive = entryType === type;
+
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    id={`${type}-tab`}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`${type}-panel`}
+                    tabIndex={isActive ? 0 : -1}
+                    onClick={() => setEntryType(type)}
+                    onKeyDown={(event) => handleTabKeyDown(event, index)}
+                    className={cn(
+                      '-mb-px flex min-w-0 items-center justify-center gap-2 border-b-2 border-transparent px-2 py-3 text-left text-gray-600 transition-colors sm:gap-3 sm:px-4 sm:py-4 dark:text-gray-400',
+                      'hover:bg-gray-50 hover:text-gray-900 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-orange-500 dark:hover:bg-gray-700/40 dark:hover:text-white',
+                      isActive && ENTRY_STYLES[type].activeTab,
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300',
+                        isActive && ENTRY_STYLES[type].activeTabIcon,
+                      )}
                     >
                       <Icon className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{label}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">{description}</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold sm:text-base">
+                        {label}
+                      </span>
+                      <span className="hidden text-xs opacity-75 sm:block">{description}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -174,10 +206,18 @@ export default function DataEntryPage() {
             />
           </div>
 
-          {/* Form Components */}
-          {entryType === 'meal' && <MealEntryForm date={date} />}
-          {entryType === 'deposit' && <DepositEntryForm selectedMemberId={selectedMemberId} />}
-          {entryType === 'expense' && <ExpenseEntryForm />}
+          {/* Active tab panel */}
+          <div
+            id={`${entryType}-panel`}
+            role="tabpanel"
+            aria-labelledby={`${entryType}-tab`}
+            tabIndex={0}
+            className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-500"
+          >
+            {entryType === 'meal' && <MealEntryForm date={date} />}
+            {entryType === 'deposit' && <DepositEntryForm selectedMemberId={selectedMemberId} />}
+            {entryType === 'expense' && <ExpenseEntryForm />}
+          </div>
         </div>
       </div>
     </div>

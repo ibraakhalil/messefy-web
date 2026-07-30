@@ -1,19 +1,17 @@
 'use client';
 
 import Button from '@/components/ui/button';
+import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
+import { useUpdatePeriod } from '@/hooks/use-periods';
 import { usePeriodSummary } from '@/hooks/use-summary';
 import { useWorkspace } from '@/providers/workspace-provider';
-import type { RecentDeposit, RecentExpense } from '@/types/summary';
 import { formatCurrency } from '@/utils/format-currency';
-import { endOfMonth, format, formatDistanceToNow, startOfMonth } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 import {
   AlertCircle,
-  ArrowLeft,
-  CheckCircle,
-  Clock,
   DollarSign,
   Download,
-  Eye,
+  LockKeyhole,
   Receipt,
   TrendingUp,
   Users,
@@ -31,44 +29,27 @@ function getDaysRemaining(year: number, month: number) {
   return Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)));
 }
 
-type ActivityRow = {
-  id: string;
-  description: string;
-  amount: number;
-  date: string;
-  category: string;
-  type: 'deposit' | 'expense';
-};
-
-function mapDepositToActivity(deposit: RecentDeposit): ActivityRow {
-  return {
-    id: `deposit-${deposit.id}`,
-    description: deposit.memberName,
-    amount: deposit.amount,
-    date: deposit.createdAt,
-    category: deposit.note?.trim() || 'Deposit',
-    type: 'deposit',
-  };
-}
-
-function mapExpenseToActivity(expense: RecentExpense): ActivityRow {
-  return {
-    id: `expense-${expense.id}`,
-    description: expense.title,
-    amount: expense.amount,
-    date: expense.createdAt,
-    category: expense.note?.trim() || expense.allocationType || 'Expense',
-    type: 'expense',
-  };
-}
-
 export default function PeriodDetailsPage() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'transactions'>('overview');
+  const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
   const params = useParams<{ periodId: string }>();
   const periodId = typeof params.periodId === 'string' ? params.periodId : '';
   const { member } = useWorkspace();
   const workspaceId = member?.workspaceId || '';
   const { data: summary, isLoading, error, refetch } = usePeriodSummary(periodId);
+  const updatePeriodMutation = useUpdatePeriod();
+
+  const handleCloseMonth = async () => {
+    try {
+      await updatePeriodMutation.mutateAsync({
+        periodId,
+        data: { status: 'closed' },
+      });
+      await refetch();
+      setIsCloseDialogOpen(false);
+    } catch {
+      // The mutation displays the API error in a toast.
+    }
+  };
 
   if (!workspaceId) {
     return (
@@ -128,25 +109,11 @@ export default function PeriodDetailsPage() {
     balance: summary.totals.netBalance,
     mealRate: summary.totals.mealRate,
     totalDue: summary.totals.totalDue,
-    totalAdjustments: summary.totals.totalAdjustments,
     mealExpenses: summary.totals.mealExpenses,
     status: summary.period.status,
   };
 
   const memberSummary = [...summary.members].sort((a, b) => a.name.localeCompare(b.name));
-  const outstandingMembers = memberSummary.filter((memberItem) => memberItem.balance < 0);
-  const recentTransactions = [
-    ...summary.recentDeposits.map(mapDepositToActivity),
-    ...summary.recentExpenses.map(mapExpenseToActivity),
-  ]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 10);
-
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: Eye },
-    { id: 'members', label: 'Member Summary', icon: Users },
-    { id: 'transactions', label: 'Recent Activity', icon: Receipt },
-  ] as const;
 
   return (
     <div className="space-y-6 p-6">
@@ -162,38 +129,50 @@ export default function PeriodDetailsPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Link href="/mess/dashboard/all-months">
-            <Button variant="secondary" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-          </Link>
+          {member?.role === 'owner' && periodData.status === 'open' ? (
+            <ResponsiveDialog open={isCloseDialogOpen} onOpenChange={setIsCloseDialogOpen}>
+              <ResponsiveDialog.Trigger asChild>
+                <Button variant="destructive" className="flex items-center gap-2">
+                  <LockKeyhole className="h-4 w-4" aria-hidden="true" />
+                  Close Month
+                </Button>
+              </ResponsiveDialog.Trigger>
+              <ResponsiveDialog.Content className="max-w-md">
+                <ResponsiveDialog.Header>
+                  <ResponsiveDialog.Title>Close {periodData.currentPeriod}?</ResponsiveDialog.Title>
+                  <ResponsiveDialog.Description>
+                    Closing this month will lock new meals, deposits, and expenses. Review the
+                    totals before continuing.
+                  </ResponsiveDialog.Description>
+                </ResponsiveDialog.Header>
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
+                  This action finalizes the current month. Only the workspace owner can reopen it
+                  later.
+                </div>
+                <ResponsiveDialog.Footer>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setIsCloseDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    isLoading={updatePeriodMutation.isPending}
+                    onClick={handleCloseMonth}
+                  >
+                    {updatePeriodMutation.isPending ? 'Closing…' : 'Yes, Close Month'}
+                  </Button>
+                </ResponsiveDialog.Footer>
+              </ResponsiveDialog.Content>
+            </ResponsiveDialog>
+          ) : null}
           <Button variant="secondary" disabled className="flex items-center gap-2">
             <Download className="h-4 w-4" />
             Export
           </Button>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <div
-          className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
-            periodData.status === 'open'
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-              : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
-          }`}
-        >
-          {periodData.status === 'open' ? (
-            <>
-              <CheckCircle className="h-3 w-3" />
-              Active
-            </>
-          ) : (
-            <>
-              <Clock className="h-3 w-3" />
-              Closed
-            </>
-          )}
         </div>
       </div>
 
@@ -302,269 +281,76 @@ export default function PeriodDetailsPage() {
                 {formatCurrency(periodData.mealExpenses)}
               </span>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Adjustments</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {formatCurrency(periodData.totalAdjustments)}
-              </span>
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="border-b border-gray-200 dark:border-gray-700">
-        <nav className="flex space-x-8">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-purple-500 text-purple-600 dark:border-purple-400 dark:text-purple-400'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-                }`}
+      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th
+                scope="col"
+                className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
               >
-                <Icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-
-      <div className="mt-6">
-        {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 gap-6">
-            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-              <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-                Period Information
-              </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                Member
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
+              >
+                Meals
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
+              >
+                Deposits
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
+              >
+                Due
+              </th>
+              <th
+                scope="col"
+                className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
+              >
+                Balance
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
+            {memberSummary.map((memberItem) => (
+              <tr key={memberItem.memberId}>
+                <td className="px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white">
+                  {memberItem.name}
+                </td>
+                <td className="px-4 py-2.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
+                  {memberItem.meals}
+                </td>
+                <td className="px-4 py-2.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
+                  {formatCurrency(memberItem.deposits)}
+                </td>
+                <td className="px-4 py-2.5 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
+                  {formatCurrency(memberItem.due)}
+                </td>
+                <td className="px-4 py-2.5 text-sm whitespace-nowrap">
                   <span
-                    className={`font-medium ${
-                      periodData.status === 'open'
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-gray-600 dark:text-gray-400'
+                    className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
+                      memberItem.balance >= 0
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                        : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                     }`}
                   >
-                    {periodData.status === 'open' ? 'Active' : 'Closed'}
+                    {formatCurrency(memberItem.balance)}
                   </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Start Date:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {periodData.startDate}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">End Date:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {periodData.endDate}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {periodData.status === 'open' ? 'Days Remaining:' : 'Closed On:'}
-                  </span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {periodData.status === 'open'
-                      ? periodData.daysRemaining
-                      : summary.period.closedAt
-                        ? format(new Date(summary.period.closedAt), 'yyyy-MM-dd')
-                        : 'N/A'}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Outstanding Members:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {outstandingMembers.length}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'members' && (
-          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                  >
-                    Member
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                  >
-                    Meals
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                  >
-                    Deposits
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                  >
-                    Adjustments
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                  >
-                    Due
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                  >
-                    Balance
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-                {memberSummary.map((memberItem) => (
-                  <tr key={memberItem.memberId}>
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {memberItem.name}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {memberItem.email ||
-                            (memberItem.isOffline ? 'Offline member' : memberItem.role)}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                      {memberItem.meals}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                      {formatCurrency(memberItem.deposits)}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                      {formatCurrency(memberItem.adjustments)}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                      {formatCurrency(memberItem.due)}
-                    </td>
-                    <td className="px-6 py-4 text-sm whitespace-nowrap">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                          memberItem.balance >= 0
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                        }`}
-                      >
-                        {formatCurrency(memberItem.balance)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {activeTab === 'transactions' && (
-          <div className="space-y-4">
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900 dark:border-blue-900/40 dark:bg-blue-900/20 dark:text-blue-100">
-              Recent activity is built from real deposits and expenses. Meal-entry history is not
-              available from the current summary API yet.
-            </div>
-
-            <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Description
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Amount
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Date
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Category
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      Type
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-                  {recentTransactions.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
-                      >
-                        No deposit or expense activity recorded yet.
-                      </td>
-                    </tr>
-                  ) : (
-                    recentTransactions.map((transaction) => (
-                      <tr key={transaction.id}>
-                        <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900 dark:text-white">
-                          {transaction.description}
-                        </td>
-                        <td
-                          className={`px-6 py-4 text-sm whitespace-nowrap ${
-                            transaction.type === 'expense'
-                              ? 'text-red-600 dark:text-red-400'
-                              : 'text-green-600 dark:text-green-400'
-                          }`}
-                        >
-                          {transaction.type === 'expense' ? '-' : '+'}
-                          {formatCurrency(transaction.amount)}
-                        </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                          <div>{format(new Date(transaction.date), 'yyyy-MM-dd')}</div>
-                          <div className="text-xs">
-                            {formatDistanceToNow(new Date(transaction.date), { addSuffix: true })}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
-                          {transaction.category}
-                        </td>
-                        <td className="px-6 py-4 text-sm whitespace-nowrap capitalize text-gray-500 dark:text-gray-400">
-                          {transaction.type}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

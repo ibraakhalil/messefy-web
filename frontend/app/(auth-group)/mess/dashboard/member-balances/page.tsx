@@ -167,9 +167,6 @@ export default function MemberBalancesPage() {
             <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
               Due: {formatCurrency(summary.totals.totalDue)}
             </span>
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-              Adjustments: {formatCurrency(summary.totals.totalAdjustments)}
-            </span>
           </div>
         </div>
       </div>
@@ -201,25 +198,22 @@ export default function MemberBalancesPage() {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                <th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   Member
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                <th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   Meals
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                <th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   Deposits
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                  Adjustments
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                <th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   Due
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                <th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   Balance
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                <th className="px-4 py-2.5 text-right text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   Action
                 </th>
               </tr>
@@ -227,27 +221,19 @@ export default function MemberBalancesPage() {
             <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
               {summary.members.map((member) => (
                 <tr key={member.memberId} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {member.email || (member.isOffline ? 'Offline member' : member.role)}
-                      </p>
-                    </div>
+                  <td className="px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white">
+                    {member.name}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                  <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300">
                     {member.meals}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                  <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300">
                     {formatCurrency(member.deposits)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                    {formatCurrency(member.adjustments)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                  <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300">
                     {formatCurrency(member.due)}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-2.5">
                     <span
                       className={`font-semibold ${
                         member.balance < 0
@@ -258,7 +244,7 @@ export default function MemberBalancesPage() {
                       {formatCurrency(member.balance)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-2.5 text-right">
                     {member.balance < 0 ? (
                       <Link
                         href={`/mess/dashboard/data-entry?type=deposit&member=${member.memberId}`}

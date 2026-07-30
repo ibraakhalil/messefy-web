@@ -347,12 +347,6 @@ export default function MessOverview() {
                 {formatCurrency(summary.totals.totalDue)}
               </span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{t('adjustments')}</span>
-              <span className="font-medium text-gray-900 dark:text-white">
-                {formatCurrency(summary.totals.totalAdjustments)}
-              </span>
-            </div>
           </div>
         </section>
 

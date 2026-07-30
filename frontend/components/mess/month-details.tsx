@@ -278,7 +278,7 @@ export default function MonthDetails({ monthId }: { monthId: string }) {
             <table className="divide-border-color min-w-full divide-y">
               <thead className="bg-secondary-bg">
                 <tr>
-                  {['Member', 'Meals', 'Deposits', 'Adjustments', 'Due', 'Balance'].map((label) => (
+                  {['Member', 'Meals', 'Deposits', 'Due', 'Balance'].map((label) => (
                     <th
                       key={label}
                       scope="col"
@@ -317,9 +317,6 @@ export default function MonthDetails({ monthId }: { monthId: string }) {
                       {formatCurrency(memberItem.deposits)}
                     </td>
                     <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
-                      {formatCurrency(memberItem.adjustments)}
-                    </td>
-                    <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
                       {formatCurrency(memberItem.due)}
                     </td>
                     <td className="px-5 py-4">
@@ -346,7 +343,6 @@ export default function MonthDetails({ monthId }: { monthId: string }) {
             {[
               ['Meal Expenses', summary.totals.mealExpenses],
               ['Other Expenses', summary.totals.totalExpenses - summary.totals.mealExpenses],
-              ['Adjustments', summary.totals.totalAdjustments],
               ['Member Due', summary.totals.totalDue],
             ].map(([label, value]) => (
               <div key={String(label)} className="flex items-center justify-between gap-4">
