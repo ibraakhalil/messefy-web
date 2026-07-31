@@ -247,7 +247,7 @@ export default function MemberBalancesPage() {
                   <td className="px-4 py-2.5 text-right">
                     {member.balance < 0 ? (
                       <Link
-                        href={`/mess/dashboard/data-entry?type=deposit&member=${member.memberId}`}
+                        href={`/mess/dashboard?type=deposit&member=${member.memberId}`}
                       >
                         <Button className="text-xs">Add Deposit</Button>
                       </Link>

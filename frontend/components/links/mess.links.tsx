@@ -33,14 +33,6 @@ export function MessDashboard({ children, ...props }: LinkProps) {
   );
 }
 
-export function DataEntryLink({ children, ...props }: LinkProps) {
-  return (
-    <Link href="/mess/dashboard/data-entry" {...props}>
-      {children}
-    </Link>
-  );
-}
-
 export function InvitationsLink({ children, ...props }: LinkProps) {
   return (
     <Link href="/mess/dashboard/invitations" {...props}>

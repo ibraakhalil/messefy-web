@@ -1,7 +1,6 @@
 import { HomeLink } from './common';
 import { SignInLink, SignUpLink } from './auth-links';
 import {
-  DataEntryLink,
   CurrentMonthLink,
   MemberBalancesLink,
   MembersLink,
@@ -26,7 +25,6 @@ export const Links = {
   CreateMess: MessCreate,
   Dashboard: MessDashboard,
   Invitations: InvitationsLink,
-  DataEntry: DataEntryLink,
   CurrentMonth: CurrentMonthLink,
   AllMonths: AllMonthsLink,
   MemberBalances: MemberBalancesLink,

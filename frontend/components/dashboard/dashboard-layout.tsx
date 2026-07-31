@@ -9,7 +9,6 @@ import {
   LayoutGrid,
   Menu,
   PieChart,
-  PlusCircle,
   Send,
   Settings,
   Users,
@@ -98,12 +97,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {t('dashboardNav.invitations')}
             </NavItem>
           </Links.Invitations>
-
-          <Links.DataEntry>
-            <NavItem icon={PlusCircle} isActive={path.includes('/data-entry')}>
-              {t('dashboardNav.dataEntry')}
-            </NavItem>
-          </Links.DataEntry>
 
           <Links.CurrentMonth>
             <NavItem icon={Calendar} isActive={isCurrentMonthActive}>

@@ -3,14 +3,27 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Receipt } from 'lucide-react';
+import {
+  Calculator,
+  CheckCircle2,
+  Info,
+  Loader2,
+  MessageSquareText,
+  Receipt,
+  ReceiptText,
+  Utensils,
+} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Button from '@/components/ui/button';
 import FormInput from '@/components/ui/form-input';
-import FormSelect from '@/components/ui/form-select';
 import { useWorkspace } from '@/providers/workspace-provider';
 import { useCurrentPeriod } from '@/hooks/use-periods';
 import { useCreateExpense } from '@/hooks/use-expenses';
+import { cn } from '@/utils/cn';
+import { formatCurrency } from '@/utils/format-currency';
+
+const QUICK_AMOUNTS = [500, 1000, 2000, 5000] as const;
+const TITLE_SUGGESTIONS = ['Weekly bazar', 'Gas bill', 'Utilities', 'Cleaning'] as const;
 
 const expenseSchema = z.object({
   title: z.string().min(1, 'Expense title is required').max(120, 'Title is too long'),
@@ -30,6 +43,8 @@ export default function ExpenseEntryForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
@@ -40,6 +55,17 @@ export default function ExpenseEntryForm() {
       note: '',
     },
   });
+  const title = watch('title');
+  const enteredAmount = watch('amount');
+  const note = watch('note') ?? '';
+
+  const setQuickAmount = (amount: number) => {
+    setValue('amount', amount, { shouldDirty: true, shouldValidate: true });
+  };
+
+  const setSuggestedTitle = (suggestedTitle: string) => {
+    setValue('title', suggestedTitle, { shouldDirty: true, shouldValidate: true });
+  };
 
   const onSubmit = async (data: ExpenseFormValues) => {
     if (!currentPeriod) {
@@ -65,66 +91,177 @@ export default function ExpenseEntryForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="rounded-xl border border-rose-100 bg-rose-50 p-4 text-sm text-rose-800">
-        This phase supports shared meal expenses only. The entered amount contributes directly to
-        the current meal rate calculation.
+    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-5xl space-y-5">
+      <div className="flex gap-3 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-sm text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200">
+        <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+        <p>Shared expenses are divided by meal count and included in the current meal rate.</p>
       </div>
 
-      <FormInput
-        id="expense-title"
-        label="Expense Title"
-        placeholder="Weekly bazar"
-        icon={<Receipt className="h-4 w-4 text-gray-400" />}
-        error={errors.title?.message}
-        disabled={isPending}
-        {...register('title')}
-      />
+      <div className="laptop:grid-cols-[minmax(0,1fr)_280px] grid gap-5">
+        <section className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
+          <div className="border-border-color tablet:px-6 flex items-center gap-3 border-b bg-rose-50/60 px-4 py-4 dark:bg-rose-950/20">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300">
+              <ReceiptText className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="text-pure-color font-semibold">Expense details</h2>
+              <p className="text-subtitle-secondary text-xs">
+                Describe what was purchased and its cost
+              </p>
+            </div>
+          </div>
 
-      <FormInput
-        id="expense-amount"
-        label="Amount"
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="0.00"
-        error={errors.amount?.message}
-        disabled={isPending}
-        {...register('amount', { valueAsNumber: true })}
-      />
+          <div className="tablet:p-6 space-y-5 p-4">
+            <div className="space-y-2.5">
+              <FormInput
+                id="expense-title"
+                label="What was this expense for?"
+                placeholder="e.g. Weekly bazar"
+                autoComplete="off"
+                icon={<Receipt className="h-4 w-4 text-rose-600" />}
+                error={errors.title?.message}
+                disabled={isPending}
+                {...register('title')}
+              />
+              <div className="flex flex-wrap gap-2" aria-label="Common expense titles">
+                {TITLE_SUGGESTIONS.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => setSuggestedTitle(suggestion)}
+                    disabled={isPending}
+                    className={cn(
+                      'border-border-color bg-card-bg text-subtitle-color h-9 rounded-lg border px-3 text-sm transition-colors hover:border-rose-400 hover:bg-rose-50 hover:text-rose-700 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none disabled:opacity-50 dark:hover:bg-rose-950/30 dark:hover:text-rose-300',
+                      title === suggestion &&
+                        'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300',
+                    )}
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      <FormSelect
-        id="expense-allocation"
-        label="Allocation"
-        options={[{ value: 'by_meals', label: 'By meals (shared)' }]}
-        error={errors.allocationType?.message}
-        {...register('allocationType')}
-      />
+            <div className="space-y-2.5">
+              <FormInput
+                id="expense-amount"
+                label="How much was spent?"
+                type="number"
+                min="0"
+                step="0.01"
+                inputMode="decimal"
+                placeholder="0.00"
+                icon={<Calculator className="h-4 w-4 text-rose-600" />}
+                error={errors.amount?.message}
+                disabled={isPending}
+                {...register('amount', { valueAsNumber: true })}
+              />
+              <div className="flex flex-wrap gap-2" aria-label="Quick expense amounts">
+                {QUICK_AMOUNTS.map((amount) => (
+                  <button
+                    key={amount}
+                    type="button"
+                    onClick={() => setQuickAmount(amount)}
+                    disabled={isPending}
+                    className={cn(
+                      'border-border-color bg-card-bg text-subtitle-color h-9 rounded-lg border px-3 text-sm font-medium transition-colors hover:border-rose-400 hover:bg-rose-50 hover:text-rose-700 focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none disabled:opacity-50 dark:hover:bg-rose-950/30 dark:hover:text-rose-300',
+                      enteredAmount === amount &&
+                        'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300',
+                    )}
+                  >
+                    {formatCurrency(amount, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 0,
+                    })}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      <div className="space-y-2">
-        <label htmlFor="expense-note" className="text-subtitle-color block text-sm font-medium">
-          Note
-        </label>
-        <textarea
-          id="expense-note"
-          rows={3}
-          className="border-border-color block w-full rounded-lg border px-4 py-2.5 text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
-          placeholder="Optional expense details"
+            <div className="border-border-color bg-secondary-bg/70 rounded-xl border p-3.5">
+              <input type="hidden" {...register('allocationType')} />
+              <div className="flex gap-3">
+                <span className="bg-card-bg flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rose-600">
+                  <Utensils className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-pure-color text-sm font-medium">Shared by meal count</p>
+                  <p className="text-subtitle-secondary mt-0.5 text-xs leading-5">
+                    This expense is automatically shared among members based on their meals.
+                  </p>
+                </div>
+              </div>
+              {errors.allocationType && (
+                <p className="mt-2 text-sm text-red-600">{errors.allocationType.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <label
+                  htmlFor="expense-note"
+                  className="text-subtitle-color flex items-center gap-2 text-sm font-medium dark:text-gray-300"
+                >
+                  <MessageSquareText className="h-4 w-4 text-rose-600" aria-hidden="true" />
+                  Note <span className="text-subtitle-secondary font-normal">(optional)</span>
+                </label>
+                <span className="text-subtitle-secondary text-xs">{note.length}/250</span>
+              </div>
+              <textarea
+                id="expense-note"
+                rows={3}
+                maxLength={250}
+                className="border-border-color bg-card-bg text-pure-color block w-full resize-y rounded-lg border px-4 py-3 placeholder:text-sm placeholder:text-gray-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none disabled:opacity-60"
+                placeholder="Add a vendor, receipt number, or other details"
+                disabled={isPending}
+                {...register('note')}
+              />
+              {errors.note && <p className="text-sm text-red-600">{errors.note.message}</p>}
+            </div>
+          </div>
+        </section>
+
+        <aside className="laptop:self-start laptop:sticky laptop:top-5 border-border-color bg-card-bg rounded-2xl border p-4 shadow-sm">
+          <h3 className="text-pure-color flex items-center gap-2 font-semibold">
+            <CheckCircle2 className="h-5 w-5 text-rose-600" aria-hidden="true" />
+            Expense summary
+          </h3>
+          <dl className="mt-4 space-y-3 text-sm">
+            <div>
+              <dt className="text-subtitle-secondary text-xs">Expense</dt>
+              <dd className="text-pure-color mt-0.5 truncate font-medium">
+                {title?.trim() || 'Not described yet'}
+              </dd>
+            </div>
+            <div className="border-border-color border-t pt-3">
+              <dt className="text-subtitle-secondary text-xs">Total amount</dt>
+              <dd className="mt-1 text-2xl font-bold text-rose-700 dark:text-rose-400">
+                {formatCurrency(Number.isFinite(enteredAmount) ? enteredAmount : 0)}
+              </dd>
+            </div>
+          </dl>
+          <p className="bg-secondary-bg text-subtitle-color mt-4 rounded-lg p-3 text-xs leading-5">
+            This amount will affect the current meal rate after saving.
+          </p>
+        </aside>
+      </div>
+
+      <div className="tablet:static tablet:mx-0 tablet:border-0 tablet:bg-transparent tablet:p-0 tablet:shadow-none tablet:backdrop-blur-none border-border-color bg-card-bg/95 sticky bottom-0 z-10 -mx-4 flex justify-end border-t p-4 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur">
+        <Button
+          type="submit"
           disabled={isPending}
-          {...register('note')}
-        />
-        {errors.note && <p className="text-sm text-red-600">{errors.note.message}</p>}
-      </div>
-
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isPending}>
+          className="tablet:w-auto w-full min-w-[170px] bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700"
+        >
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              Saving...
+              Saving expense...
             </>
           ) : (
-            'Save Expense'
+            <>
+              <ReceiptText className="h-4 w-4" />
+              Save Expense
+            </>
           )}
         </Button>
       </div>

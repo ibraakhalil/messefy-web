@@ -273,7 +273,7 @@ export default function MessOverview() {
               </Link>
               {canManage && isOpenPeriod ? (
                 <Link
-                  href="/mess/dashboard/data-entry"
+                  href="/mess/dashboard"
                   className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-emerald-800 shadow-sm transition-colors hover:bg-emerald-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-700"
                 >
                   {t('addData')}
