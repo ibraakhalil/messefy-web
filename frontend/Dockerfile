@@ -34,7 +34,7 @@ COPY --from=builder /app/.env ./.env
 COPY --from=builder /app/public ./public
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3333
 
 # Set the command to run the application
 CMD ["npm", "start"]

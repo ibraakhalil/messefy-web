@@ -29,6 +29,6 @@ COPY --from=builder /app ./
 RUN chown -R bun:bun /app
 USER bun
 
-EXPOSE 5000
+EXPOSE 5555
 # Run the main file directly
 CMD ["bun", "run", "index.ts"]
