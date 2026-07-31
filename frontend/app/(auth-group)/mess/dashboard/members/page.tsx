@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AddMemberForm from '@/components/dashboard/add-member-from';
+import { DeleteModal } from '@/components/modals/delete-modal';
 import Button from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/drop-down';
 import FormInput from '@/components/ui/form-input';
@@ -111,12 +112,10 @@ export default function MembersPage() {
   const offlineMembers = totalMembers - onlineMembers;
   const managerCount = members.filter((memberItem) => memberItem.role === 'manager').length;
 
-  const handleRemoveMember = (memberToRemove: Member) => {
-    const confirmed = window.confirm(
-      `Remove ${getMemberName(memberToRemove)} from ${workspace?.name || 'this workspace'}?`,
-    );
+  const [memberToDelete, setMemberToDelete] = useState<Member | null>(null);
 
-    if (confirmed) removeMemberMutation.mutate(memberToRemove);
+  const handleRemoveMember = (memberToRemove: Member) => {
+    setMemberToDelete(memberToRemove);
   };
 
   return (
@@ -146,7 +145,7 @@ export default function MembersPage() {
                 Add member
               </Button>
             </ResponsiveDialog.Trigger>
-            <ResponsiveDialog.Content>
+            <ResponsiveDialog.Content className="max-w-xl overscroll-contain md:p-6">
               <AddMemberForm onSuccess={() => void refetch()} />
             </ResponsiveDialog.Content>
           </ResponsiveDialog>
@@ -352,6 +351,25 @@ export default function MembersPage() {
           </>
         )}
       </section>
+
+      <ResponsiveDialog
+        open={Boolean(memberToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setMemberToDelete(null);
+        }}
+      >
+        <ResponsiveDialog.Content className="max-w-md">
+          {memberToDelete ? (
+            <DeleteModal
+              title="Remove Member"
+              subtitle={`Are you sure you want to remove ${getMemberName(memberToDelete)} from ${workspace?.name || 'this workspace'}?`}
+              onDelete={() => {
+                removeMemberMutation.mutate(memberToDelete);
+              }}
+            />
+          ) : null}
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog>
     </div>
   );
 }

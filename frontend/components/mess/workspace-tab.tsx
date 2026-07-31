@@ -79,7 +79,7 @@ export default function WorkspaceTab() {
                     Leave Workspace
                   </Button>
                 </ResponsiveDialog.Trigger>
-                <ResponsiveDialog.Content>
+                <ResponsiveDialog.Content className="max-w-md">
                   <DeleteModal
                     title="Leave Workspace"
                     subtitle="Are you sure you want to leave this workspace? All your data will be preserved but you won't have access anymore."
