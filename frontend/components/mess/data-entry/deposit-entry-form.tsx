@@ -4,15 +4,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Banknote,
-  CheckCircle2,
-  Info,
-  Loader2,
-  MessageSquareText,
-  UserRound,
-  Wallet,
-} from 'lucide-react';
+import { Banknote, Loader2, MessageSquareText, UserRound, Wallet } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import Button from '@/components/ui/button';
 import FormInput from '@/components/ui/form-input';
@@ -73,11 +65,8 @@ export default function DepositEntryForm({ selectedMemberId }: DepositEntryFormP
       label: member.user?.name || member.name || 'Offline member',
     })),
   ];
-  const selectedMember = watch('memberId');
   const enteredAmount = watch('amount');
   const note = watch('note') ?? '';
-  const selectedMemberName =
-    memberOptions.find((option) => option.value === selectedMember)?.label ?? 'Not selected';
 
   const setQuickAmount = (amount: number) => {
     setValue('amount', amount, { shouldDirty: true, shouldValidate: true });
@@ -106,15 +95,7 @@ export default function DepositEntryForm({ selectedMemberId }: DepositEntryFormP
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-5xl space-y-5">
-      <div className="flex gap-3 rounded-xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-sm text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
-        <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-        <p>
-          Add a member&apos;s payment to the current month. Their balance updates as soon as you
-          save.
-        </p>
-      </div>
-
-      <div className="laptop:grid-cols-[minmax(0,1fr)_280px] grid gap-5">
+      <div>
         <section className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
           <div className="border-border-color tablet:px-6 flex items-center gap-3 border-b bg-emerald-50/60 px-4 py-4 dark:bg-emerald-950/20">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300">
@@ -209,28 +190,6 @@ export default function DepositEntryForm({ selectedMemberId }: DepositEntryFormP
             </div>
           </div>
         </section>
-
-        <aside className="laptop:self-start laptop:sticky laptop:top-5 border-border-color bg-card-bg rounded-2xl border p-4 shadow-sm">
-          <h3 className="text-pure-color flex items-center gap-2 font-semibold">
-            <CheckCircle2 className="h-5 w-5 text-emerald-600" aria-hidden="true" />
-            Ready to record
-          </h3>
-          <dl className="mt-4 space-y-3 text-sm">
-            <div>
-              <dt className="text-subtitle-secondary text-xs">Member</dt>
-              <dd className="text-pure-color mt-0.5 truncate font-medium">{selectedMemberName}</dd>
-            </div>
-            <div className="border-border-color border-t pt-3">
-              <dt className="text-subtitle-secondary text-xs">Deposit amount</dt>
-              <dd className="mt-1 text-2xl font-bold text-emerald-700 dark:text-emerald-400">
-                {formatCurrency(Number.isFinite(enteredAmount) ? enteredAmount : 0)}
-              </dd>
-            </div>
-          </dl>
-          <p className="bg-secondary-bg text-subtitle-color mt-4 rounded-lg p-3 text-xs leading-5">
-            Please check the member and amount once before saving.
-          </p>
-        </aside>
       </div>
 
       <div className="tablet:static tablet:mx-0 tablet:border-0 tablet:bg-transparent tablet:p-0 tablet:shadow-none tablet:backdrop-blur-none border-border-color bg-card-bg/95 sticky bottom-0 z-10 -mx-4 flex justify-end border-t p-4 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur">

@@ -1,2 +1,3 @@
 - RESPONSE IN BANGLA WITH HUMORE PLUS ISLAMIC VIBE
 - Use Bun as Package Manager
+- Dont build the frontend if not strictly needed

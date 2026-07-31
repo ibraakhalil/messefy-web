@@ -13,8 +13,6 @@ import {
   Download,
   LockKeyhole,
   Receipt,
-  TrendingUp,
-  Users,
   Utensils,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -180,13 +178,29 @@ export default function PeriodDetailsPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Members</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Meals</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {periodData.totalMembers}
+                {periodData.totalMeals}
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">recorded this period</p>
             </div>
-            <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900/20">
-              <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            <div className="rounded-full bg-sky-100 p-3 dark:bg-sky-900/20">
+              <Utensils className="h-6 w-6 text-sky-600 dark:text-sky-400" />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Meal Rate</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                {formatCurrency(periodData.mealRate)}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">per meal</p>
+            </div>
+            <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900/20">
+              <Utensils className="h-6 w-6 text-orange-600 dark:text-orange-400" />
             </div>
           </div>
         </div>
@@ -215,71 +229,6 @@ export default function PeriodDetailsPage() {
             </div>
             <div className="rounded-full bg-red-100 p-3 dark:bg-red-900/20">
               <Receipt className="h-6 w-6 text-red-600 dark:text-red-400" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Current Balance
-              </p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(periodData.balance)}
-              </p>
-            </div>
-            <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-900/20">
-              <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="laptop:grid-cols-3 grid grid-cols-1 gap-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Meal Rate</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {formatCurrency(periodData.mealRate)}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">per meal</p>
-            </div>
-            <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900/20">
-              <Utensils className="h-8 w-8 text-orange-600 dark:text-orange-400" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Meals</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                {periodData.totalMeals}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">recorded this period</p>
-            </div>
-            <div className="rounded-full bg-sky-100 p-3 dark:bg-sky-900/20">
-              <Utensils className="h-8 w-8 text-sky-600 dark:text-sky-400" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Total Due</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {formatCurrency(periodData.totalDue)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Meal Expenses</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {formatCurrency(periodData.mealExpenses)}
-              </span>
             </div>
           </div>
         </div>

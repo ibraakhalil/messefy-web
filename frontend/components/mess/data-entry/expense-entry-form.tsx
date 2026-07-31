@@ -5,8 +5,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Calculator,
-  CheckCircle2,
-  Info,
   Loader2,
   MessageSquareText,
   Receipt,
@@ -92,12 +90,7 @@ export default function ExpenseEntryForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-5xl space-y-5">
-      <div className="flex gap-3 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-sm text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/30 dark:text-rose-200">
-        <Info className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-        <p>Shared expenses are divided by meal count and included in the current meal rate.</p>
-      </div>
-
-      <div className="laptop:grid-cols-[minmax(0,1fr)_280px] grid gap-5">
+      <div>
         <section className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
           <div className="border-border-color tablet:px-6 flex items-center gap-3 border-b bg-rose-50/60 px-4 py-4 dark:bg-rose-950/20">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300">
@@ -220,30 +213,6 @@ export default function ExpenseEntryForm() {
             </div>
           </div>
         </section>
-
-        <aside className="laptop:self-start laptop:sticky laptop:top-5 border-border-color bg-card-bg rounded-2xl border p-4 shadow-sm">
-          <h3 className="text-pure-color flex items-center gap-2 font-semibold">
-            <CheckCircle2 className="h-5 w-5 text-rose-600" aria-hidden="true" />
-            Expense summary
-          </h3>
-          <dl className="mt-4 space-y-3 text-sm">
-            <div>
-              <dt className="text-subtitle-secondary text-xs">Expense</dt>
-              <dd className="text-pure-color mt-0.5 truncate font-medium">
-                {title?.trim() || 'Not described yet'}
-              </dd>
-            </div>
-            <div className="border-border-color border-t pt-3">
-              <dt className="text-subtitle-secondary text-xs">Total amount</dt>
-              <dd className="mt-1 text-2xl font-bold text-rose-700 dark:text-rose-400">
-                {formatCurrency(Number.isFinite(enteredAmount) ? enteredAmount : 0)}
-              </dd>
-            </div>
-          </dl>
-          <p className="bg-secondary-bg text-subtitle-color mt-4 rounded-lg p-3 text-xs leading-5">
-            This amount will affect the current meal rate after saving.
-          </p>
-        </aside>
       </div>
 
       <div className="tablet:static tablet:mx-0 tablet:border-0 tablet:bg-transparent tablet:p-0 tablet:shadow-none tablet:backdrop-blur-none border-border-color bg-card-bg/95 sticky bottom-0 z-10 -mx-4 flex justify-end border-t p-4 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur">
