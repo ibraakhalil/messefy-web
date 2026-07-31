@@ -1,21 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { MoreHorizontal, Search, Shield, UserCheck, UserMinus, Users } from 'lucide-react';
+import {
+  AlertCircle,
+  Ellipsis,
+  LoaderCircle,
+  Plus,
+  Search,
+  ShieldCheck,
+  UserCheck,
+  UserMinus,
+  Users,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import AddMemberForm from '@/components/dashboard/add-member-from';
 import Button from '@/components/ui/button';
 import { DropdownMenu } from '@/components/ui/drop-down';
 import FormInput from '@/components/ui/form-input';
 import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
-import {
-  getAllWorkspaceMembers,
-  removeWorkspaceMember as removeMemberFromWorkspace,
-} from '@/lib/member-request';
+import { memberKeys, useMembers } from '@/hooks/use-members';
+import { removeWorkspaceMember as removeMemberFromWorkspace } from '@/lib/member-request';
 import { useWorkspace } from '@/providers/workspace-provider';
-import { Member } from '@/types/workspace';
+import type { Member } from '@/types/workspace';
+import { cn } from '@/utils/cn';
 
 const roleFilterOptions = [
   { value: 'All', label: 'All roles' },
@@ -24,27 +33,17 @@ const roleFilterOptions = [
   { value: 'member', label: 'Member' },
 ] as const;
 
+type RoleFilter = (typeof roleFilterOptions)[number]['value'];
+
 function getRoleBadgeColor(role: string) {
   switch (role) {
     case 'owner':
-      return 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200';
+      return 'bg-amber-100 text-amber-700 ring-1 ring-amber-500/20 ring-inset dark:bg-amber-950 dark:text-amber-300';
     case 'manager':
-      return 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-200';
-    case 'member':
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/60 dark:text-slate-200';
+      return 'bg-sky-100 text-sky-700 ring-1 ring-sky-500/20 ring-inset dark:bg-sky-950 dark:text-sky-300';
     default:
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-700/60 dark:text-slate-200';
+      return 'bg-secondary-bg text-subtitle-color';
   }
-}
-
-function getMemberTypeBadgeColor(isOffline: boolean) {
-  return isOffline
-    ? 'bg-orange-100 text-orange-800 dark:bg-orange-500/15 dark:text-orange-200'
-    : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-200';
-}
-
-function formatRole(role: string) {
-  return role.charAt(0).toUpperCase() + role.slice(1);
 }
 
 function getMemberName(member: Member) {
@@ -52,7 +51,7 @@ function getMemberName(member: Member) {
 }
 
 function getMemberEmail(member: Member) {
-  return member.user?.email || 'No email';
+  return member.user?.email || 'No email address';
 }
 
 function getInitials(name: string) {
@@ -64,37 +63,28 @@ function getInitials(name: string) {
     .join('');
 }
 
+function formatRole(role: string) {
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
 export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'All' | 'owner' | 'manager' | 'member'>('All');
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>('All');
   const queryClient = useQueryClient();
   const currentMember = useWorkspace((state) => state.member);
   const workspace = currentMember?.workspace;
-  const workspaceId = workspace?.id || '';
+  const workspaceId = workspace?.id ?? '';
   const isOwner = currentMember?.role === 'owner';
-
-  const {
-    data: members = [],
-    isLoading,
-    error,
-    refetch,
-  } = useQuery<Member[]>({
-    queryKey: ['members', workspaceId],
-    queryFn: () => getAllWorkspaceMembers(workspaceId),
-    enabled: Boolean(workspaceId),
-  });
+  const { data: members = [], isLoading, error, refetch } = useMembers(workspaceId);
 
   const removeMemberMutation = useMutation({
     mutationFn: async (memberToRemove: Member) => {
-      if (!workspaceId) {
-        throw new Error('Workspace not found');
-      }
-
+      if (!workspaceId) throw new Error('Workspace not found');
       return removeMemberFromWorkspace(workspaceId, memberToRemove.id);
     },
     onSuccess: async (_, memberToRemove) => {
       toast.success(`${getMemberName(memberToRemove)} removed from workspace`);
-      await queryClient.invalidateQueries({ queryKey: ['members', workspaceId] });
+      await queryClient.invalidateQueries({ queryKey: memberKeys.list(workspaceId) });
     },
     onError: (mutationError: unknown) => {
       const message =
@@ -106,13 +96,11 @@ export default function MembersPage() {
     },
   });
 
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
   const filteredMembers = members.filter((memberItem) => {
-    const memberName = getMemberName(memberItem);
-    const memberEmail = getMemberEmail(memberItem);
-    const searchValue = searchTerm.toLowerCase();
     const matchesSearch =
-      memberName.toLowerCase().includes(searchValue) ||
-      memberEmail.toLowerCase().includes(searchValue);
+      getMemberName(memberItem).toLowerCase().includes(normalizedSearchTerm) ||
+      getMemberEmail(memberItem).toLowerCase().includes(normalizedSearchTerm);
     const matchesRole = roleFilter === 'All' || memberItem.role === roleFilter;
 
     return matchesSearch && matchesRole;
@@ -124,240 +112,246 @@ export default function MembersPage() {
   const managerCount = members.filter((memberItem) => memberItem.role === 'manager').length;
 
   const handleRemoveMember = (memberToRemove: Member) => {
-    const memberName = getMemberName(memberToRemove);
     const confirmed = window.confirm(
-      `Remove ${memberName} from ${workspace?.name || 'this workspace'}?`,
+      `Remove ${getMemberName(memberToRemove)} from ${workspace?.name || 'this workspace'}?`,
     );
 
-    if (!confirmed) {
-      return;
-    }
-
-    removeMemberMutation.mutate(memberToRemove);
+    if (confirmed) removeMemberMutation.mutate(memberToRemove);
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-4 p-4 tablet:p-6">
-      <div className="flex flex-col gap-4 laptop:flex-row laptop:items-center laptop:justify-between">
-        <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200">
-            <Users className="h-5 w-5" />
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Members</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              A simple view of everyone in your workspace.
-            </p>
-            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                {totalMembers} total
-              </span>
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                {onlineMembers} online
-              </span>
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                {offlineMembers} offline
-              </span>
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                {managerCount} managers
-              </span>
-            </div>
-          </div>
+    <div className="tablet:px-6 tablet:py-8 mx-auto w-full max-w-7xl space-y-6 px-4 py-6">
+      <header className="tablet:flex-row tablet:items-end tablet:justify-between flex flex-col gap-4">
+        <div>
+          <p className="mb-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+            Workspace access
+          </p>
+          <h1 className="text-pure-color tablet:text-3xl text-2xl font-bold tracking-tight">
+            Members
+          </h1>
+          <p className="text-subtitle-color mt-1 text-sm">
+            Manage everyone who can access {workspace?.name || 'this workspace'}.
+          </p>
+          <p className="text-subtitle-secondary mt-2 text-xs">
+            {totalMembers} total · {onlineMembers} online · {offlineMembers} offline ·{' '}
+            {managerCount} {managerCount === 1 ? 'manager' : 'managers'}
+          </p>
         </div>
 
-        {isOwner && (
+        {isOwner ? (
           <ResponsiveDialog>
-            <ResponsiveDialog.Trigger>
-              <Button className="w-full tablet:w-auto">Add Member</Button>
+            <ResponsiveDialog.Trigger asChild>
+              <Button type="button" className="tablet:w-auto w-full">
+                <Plus className="size-4" aria-hidden="true" />
+                Add member
+              </Button>
             </ResponsiveDialog.Trigger>
             <ResponsiveDialog.Content>
-              <AddMemberForm onSuccess={() => refetch()} />
+              <AddMemberForm onSuccess={() => void refetch()} />
             </ResponsiveDialog.Content>
           </ResponsiveDialog>
-        )}
-      </div>
+        ) : null}
+      </header>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm laptop:flex-row laptop:items-center laptop:justify-between dark:border-gray-700 dark:bg-gray-800">
-        <div className="w-full laptop:max-w-md">
-          <FormInput
-            type="text"
-            placeholder="Search by name or email"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            icon={<Search className="h-4 w-4 text-gray-400" />}
-          />
-        </div>
-
-        <div className="flex flex-col gap-3 tablet:flex-row tablet:items-center">
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value as typeof roleFilter)}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-emerald-500 focus:outline-none dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200"
-          >
-            {roleFilterOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600 dark:bg-gray-900 dark:text-gray-300">
-            <Shield className="h-4 w-4" />
-            {isOwner ? 'Owner controls enabled' : 'Only owners can remove members'}
+      {error ? (
+        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+          <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+          <div>
+            <p className="text-sm font-semibold">Could not load members</p>
+            <p className="mt-0.5 text-xs opacity-80">Please refresh the page and try again.</p>
           </div>
         </div>
-      </div>
+      ) : null}
 
-      {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-500/30 dark:bg-red-500/10">
-          <p className="text-sm text-red-700 dark:text-red-200">
-            Failed to load members. Please try again.
-          </p>
-        </div>
-      )}
+      <section className="border-border-color bg-card-bg overflow-hidden rounded-xl border shadow-sm">
+        <div className="border-border-color tablet:flex-row tablet:items-center tablet:justify-between flex flex-col gap-3 border-b p-4">
+          <div className="tablet:max-w-md w-full">
+            <FormInput
+              id="member-search"
+              type="search"
+              aria-label="Search members by name or email"
+              placeholder="Search by name or email"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              icon={<Search className="text-subtitle-secondary size-4" aria-hidden="true" />}
+            />
+          </div>
 
-      {isLoading ? (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 py-12 text-center text-sm text-gray-500 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400">
-          Loading members...
-        </div>
-      ) : filteredMembers.length === 0 ? (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 py-12 text-center shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {searchTerm || roleFilter !== 'All'
-              ? 'No members found for the current filters.'
-              : 'No members available yet.'}
-          </p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-            <div className="flex flex-col gap-1 tablet:flex-row tablet:items-center tablet:justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Workspace members
-                </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Showing {filteredMembers.length} of {totalMembers} members
-                </p>
-              </div>
+          <div className="tablet:w-auto flex w-full items-center gap-2">
+            <label htmlFor="member-role-filter" className="sr-only">
+              Filter members by role
+            </label>
+            <select
+              id="member-role-filter"
+              value={roleFilter}
+              onChange={(event) => setRoleFilter(event.target.value as RoleFilter)}
+              className="border-border-color bg-card-bg text-pure-color focus:border-primary tablet:flex-none min-h-10 flex-1 rounded-lg border px-3 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:outline-none"
+            >
+              {roleFilterOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <div
+              className="bg-secondary-bg text-subtitle-color laptop:flex hidden min-h-10 items-center gap-2 rounded-lg px-3 text-sm"
+              title={
+                isOwner ? 'You can manage workspace members' : 'Only owners can remove members'
+              }
+            >
+              <ShieldCheck className="size-4" aria-hidden="true" />
+              {isOwner ? 'Owner controls' : 'View only'}
             </div>
           </div>
+        </div>
 
-          <div className="hidden grid-cols-[minmax(0,2fr)_auto_auto_auto] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 text-[11px] font-semibold tracking-[0.18em] text-gray-500 uppercase tablet:grid dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
-            <span>Member</span>
-            <span>Role</span>
-            <span>Type</span>
-            <span className="text-right">More</span>
+        {isLoading ? (
+          <div
+            className="text-subtitle-color flex min-h-64 items-center justify-center px-6 py-12 text-center"
+            role="status"
+          >
+            <div>
+              <LoaderCircle
+                className="mx-auto mb-3 size-8 animate-spin text-emerald-600"
+                aria-hidden="true"
+              />
+              <p className="text-sm font-medium">Loading members…</p>
+            </div>
           </div>
+        ) : filteredMembers.length === 0 ? (
+          <div className="flex min-h-64 items-center justify-center px-6 py-12 text-center">
+            <div className="max-w-sm">
+              <div className="bg-secondary-bg mx-auto mb-4 flex size-12 items-center justify-center rounded-xl text-emerald-600">
+                <Users className="size-6" aria-hidden="true" />
+              </div>
+              <h2 className="text-pure-color font-semibold">
+                {searchTerm || roleFilter !== 'All' ? 'No matching members' : 'No members yet'}
+              </h2>
+              <p className="text-subtitle-color mt-1 text-sm">
+                {searchTerm || roleFilter !== 'All'
+                  ? 'Try a different search term or role filter.'
+                  : 'Add someone to start building your workspace.'}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="border-border-color bg-secondary-bg/70 text-subtitle-color laptop:grid hidden grid-cols-[minmax(220px,1.6fr)_minmax(90px,0.45fr)_minmax(90px,0.45fr)_48px] gap-4 border-b px-5 py-2.5 text-xs font-semibold tracking-wide uppercase">
+              <span>Member</span>
+              <span>Role</span>
+              <span>Status</span>
+              <span className="text-right">Actions</span>
+            </div>
 
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {filteredMembers.map((workspaceMember) => {
-              const memberName = getMemberName(workspaceMember);
-              const memberEmail = getMemberEmail(workspaceMember);
-              const initials = getInitials(memberName);
-              const isCurrentMember = workspaceMember.id === currentMember?.id;
-              const canRemove =
-                isOwner &&
-                workspaceMember.role !== 'owner' &&
-                workspaceMember.id !== currentMember?.id;
-              const isRemoving =
-                removeMemberMutation.isPending &&
-                removeMemberMutation.variables?.id === workspaceMember.id;
+            <div className="divide-border-color divide-y">
+              {filteredMembers.map((workspaceMember) => {
+                const memberName = getMemberName(workspaceMember);
+                const memberEmail = getMemberEmail(workspaceMember);
+                const isCurrentMember = workspaceMember.id === currentMember?.id;
+                const canRemove = isOwner && workspaceMember.role !== 'owner' && !isCurrentMember;
+                const isRemoving =
+                  removeMemberMutation.isPending &&
+                  removeMemberMutation.variables?.id === workspaceMember.id;
 
-              return (
-                <div
-                  key={workspaceMember.id}
-                  className="grid gap-3 px-4 py-3 tablet:grid-cols-[minmax(0,2fr)_auto_auto_auto] tablet:items-center"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-                      {initials || 'M'}
+                return (
+                  <article
+                    key={workspaceMember.id}
+                    className="hover:bg-secondary-bg/35 laptop:grid-cols-[minmax(220px,1.6fr)_minmax(90px,0.45fr)_minmax(90px,0.45fr)_48px] laptop:items-center tablet:px-5 laptop:gap-4 grid gap-3 px-4 py-4 transition-colors"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="bg-secondary-bg text-pure-color flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
+                        {getInitials(memberName) || 'M'}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-pure-color truncate text-sm font-semibold">
+                            {memberName}
+                          </h2>
+                          {isCurrentMember ? (
+                            <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                              You
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="text-subtitle-color mt-0.5 truncate text-sm">{memberEmail}</p>
+                      </div>
                     </div>
 
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                          {memberName}
-                        </p>
-                        {isCurrentMember && (
-                          <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200">
-                            You
+                    <div className="laptop:contents flex items-center justify-between gap-3 pl-[3.25rem]">
+                      <span
+                        className={cn(
+                          'inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold',
+                          getRoleBadgeColor(workspaceMember.role),
+                        )}
+                      >
+                        {formatRole(workspaceMember.role)}
+                      </span>
+
+                      <span
+                        className={cn(
+                          'inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
+                          workspaceMember.isOffline
+                            ? 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300'
+                            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+                        )}
+                      >
+                        <UserCheck className="size-3.5" aria-hidden="true" />
+                        {workspaceMember.isOffline ? 'Offline' : 'Online'}
+                      </span>
+
+                      <div className="laptop:justify-self-end">
+                        {canRemove ? (
+                          <DropdownMenu>
+                            <DropdownMenu.Trigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                className="size-9 px-0"
+                                aria-label={`More actions for ${memberName}`}
+                                disabled={isRemoving}
+                              >
+                                {isRemoving ? (
+                                  <LoaderCircle
+                                    className="size-4 animate-spin"
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <Ellipsis className="size-4" aria-hidden="true" />
+                                )}
+                              </Button>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content align="end" className="w-44">
+                              <DropdownMenu.Item
+                                variant="destructive"
+                                onSelect={() => handleRemoveMember(workspaceMember)}
+                                disabled={isRemoving}
+                              >
+                                <UserMinus className="size-4" aria-hidden="true" />
+                                Remove member
+                              </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                          </DropdownMenu>
+                        ) : (
+                          <span
+                            className="text-subtitle-secondary block size-9 text-center text-xs leading-9"
+                            title={
+                              workspaceMember.role === 'owner'
+                                ? 'Owner access'
+                                : 'No actions available'
+                            }
+                          >
+                            —
                           </span>
                         )}
                       </div>
-                      <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                        {memberEmail}
-                      </p>
                     </div>
-                  </div>
-
-                  <div className="tablet:justify-self-start">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getRoleBadgeColor(
-                        workspaceMember.role,
-                      )}`}
-                    >
-                      {formatRole(workspaceMember.role)}
-                    </span>
-                  </div>
-
-                  <div className="tablet:justify-self-start">
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${getMemberTypeBadgeColor(
-                        workspaceMember.isOffline,
-                      )}`}
-                    >
-                      <UserCheck className="h-3.5 w-3.5" />
-                      {workspaceMember.isOffline ? 'Offline' : 'Online'}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-start tablet:justify-end">
-                    {canRemove ? (
-                      <DropdownMenu>
-                        <DropdownMenu.Trigger asChild>
-                          <button
-                            type="button"
-                            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-                            disabled={isRemoving}
-                          >
-                            {isRemoving ? (
-                              <>
-                                <UserMinus className="h-4 w-4" />
-                                Removing...
-                              </>
-                            ) : (
-                              <>
-                                <MoreHorizontal className="h-4 w-4" />
-                                More
-                              </>
-                            )}
-                          </button>
-                        </DropdownMenu.Trigger>
-
-                        <DropdownMenu.Content align="end" className="w-44">
-                          <DropdownMenu.Item
-                            variant="destructive"
-                            onSelect={() => handleRemoveMember(workspaceMember)}
-                            disabled={isRemoving}
-                          >
-                            <UserMinus className="h-4 w-4" />
-                            Remove
-                          </DropdownMenu.Item>
-                        </DropdownMenu.Content>
-                      </DropdownMenu>
-                    ) : (
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {workspaceMember.role === 'owner' ? 'Owner access' : 'No actions'}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                  </article>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </section>
     </div>
   );
 }
