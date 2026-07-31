@@ -1,19 +1,15 @@
 'use client';
 
-import { WorkspaceMember } from '@/lib/workspace-requests';
-import React, { createContext, useContext, ReactNode } from 'react';
+import type { WorkspaceMember } from '@/lib/workspace-requests';
+import {
+  createWorkspaceStore,
+  type WorkspaceStore,
+  type WorkspaceStoreApi,
+} from '@/stores/workspace-store';
+import { createContext, type ReactNode, useContext, useEffect, useRef } from 'react';
+import { useStore } from 'zustand';
 
-export interface Workspace {
-  id: string;
-  name: string;
-  ownerId: string;
-}
-
-interface WorkspaceContextType {
-  member: WorkspaceMember | null;
-}
-
-const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
+const WorkspaceStoreContext = createContext<WorkspaceStoreApi | null>(null);
 
 export function WorkspaceProvider({
   children,
@@ -22,13 +18,29 @@ export function WorkspaceProvider({
   children: ReactNode;
   member: WorkspaceMember | null;
 }) {
-  return <WorkspaceContext.Provider value={{ member }}>{children}</WorkspaceContext.Provider>;
+  const storeRef = useRef<WorkspaceStoreApi | null>(null);
+
+  if (storeRef.current === null) {
+    storeRef.current = createWorkspaceStore(member);
+  }
+
+  useEffect(() => {
+    storeRef.current?.getState().setMember(member);
+  }, [member]);
+
+  return (
+    <WorkspaceStoreContext.Provider value={storeRef.current}>
+      {children}
+    </WorkspaceStoreContext.Provider>
+  );
 }
 
-export const useWorkspace = (): WorkspaceContextType => {
-  const context = useContext(WorkspaceContext);
-  if (!context) {
+export function useWorkspace<T>(selector: (state: WorkspaceStore) => T): T {
+  const store = useContext(WorkspaceStoreContext);
+
+  if (store === null) {
     throw new Error('useWorkspace must be used within a WorkspaceProvider');
   }
-  return context;
-};
+
+  return useStore(store, selector);
+}

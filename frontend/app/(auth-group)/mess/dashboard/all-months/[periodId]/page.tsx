@@ -33,7 +33,7 @@ export default function PeriodDetailsPage() {
   const [isCloseDialogOpen, setIsCloseDialogOpen] = useState(false);
   const params = useParams<{ periodId: string }>();
   const periodId = typeof params.periodId === 'string' ? params.periodId : '';
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
   const workspaceId = member?.workspaceId || '';
   const { data: summary, isLoading, error, refetch } = usePeriodSummary(periodId);
   const updatePeriodMutation = useUpdatePeriod();

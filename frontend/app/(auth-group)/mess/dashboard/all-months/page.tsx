@@ -201,7 +201,7 @@ export default function AllMonthsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [periodToDelete, setPeriodToDelete] = useState<DashboardPeriod | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
   const workspaceId = member?.workspaceId ?? '';
   const { data: periods = [], isLoading: isLoadingPeriods } = usePeriodsByWorkspace(workspaceId);
   const hasActivePeriod = periods.some((period) => period.status === 'open');

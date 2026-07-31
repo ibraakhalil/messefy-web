@@ -64,7 +64,7 @@ const ENTRY_TABS = [
 }>;
 
 export default function DashboardPage() {
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const workspaceId = useWorkspace((state) => state.member?.workspaceId ?? '');
   const { data: currentPeriod, isLoading } = useCurrentPeriod(workspaceId);
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');

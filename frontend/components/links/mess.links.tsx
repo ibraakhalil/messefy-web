@@ -42,7 +42,7 @@ export function InvitationsLink({ children, ...props }: LinkProps) {
 }
 
 export function CurrentMonthLink({ children, ...props }: LinkProps) {
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const workspaceId = useWorkspace((state) => state.member?.workspaceId ?? '');
   const { data: currentPeriod } = useCurrentPeriod(workspaceId);
   const href = currentPeriod
     ? `/mess/dashboard/all-months/${currentPeriod.id}`

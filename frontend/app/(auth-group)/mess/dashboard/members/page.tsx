@@ -68,7 +68,7 @@ export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'All' | 'owner' | 'manager' | 'member'>('All');
   const queryClient = useQueryClient();
-  const { member: currentMember } = useWorkspace();
+  const currentMember = useWorkspace((state) => state.member);
   const workspace = currentMember?.workspace;
   const workspaceId = workspace?.id || '';
   const isOwner = currentMember?.role === 'owner';

@@ -31,7 +31,7 @@ interface DepositEntryFormProps {
 }
 
 export default function DepositEntryForm({ selectedMemberId }: DepositEntryFormProps) {
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const workspaceId = useWorkspace((state) => state.member?.workspaceId ?? '');
   const { data: members = [], isLoading: isLoadingMembers } = useMembers(workspaceId);
   const { data: currentPeriod } = useCurrentPeriod(workspaceId);
   const { mutateAsync: saveDeposit, isPending } = useCreateDeposit();

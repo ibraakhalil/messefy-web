@@ -101,7 +101,7 @@ function NoWorkspaceState() {
 }
 
 export default function MonthDetails({ monthId }: { monthId: string }) {
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
   const workspaceId = member?.workspaceId || '';
   const { data: summary, isLoading, error, refetch } = usePeriodSummary(monthId);
 

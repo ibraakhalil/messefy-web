@@ -1,9 +1,17 @@
 import { usePeriods } from '@/hooks/use-periods';
-import { useMemo, useState } from 'react';
+import { usePeriodSelectionStore } from '@/stores/period-selection-store';
+import { useCallback, useMemo } from 'react';
 
 export function usePeriodSelection(workspaceId: string) {
   const periodsQuery = usePeriods(workspaceId);
-  const [requestedPeriodId, setRequestedPeriodId] = useState('');
+  const requestedPeriodId = usePeriodSelectionStore(
+    (state) => state.selectedPeriodIds[workspaceId] ?? '',
+  );
+  const selectPeriodForWorkspace = usePeriodSelectionStore((state) => state.selectPeriod);
+  const selectPeriod = useCallback(
+    (periodId: string) => selectPeriodForWorkspace(workspaceId, periodId),
+    [selectPeriodForWorkspace, workspaceId],
+  );
   const periods = useMemo(
     () =>
       [...(periodsQuery.data || [])].sort(
@@ -20,7 +28,7 @@ export function usePeriodSelection(workspaceId: string) {
     periods,
     selectedPeriod,
     selectedPeriodId: selectedPeriod?.id || '',
-    selectPeriod: setRequestedPeriodId,
+    selectPeriod,
     isLoading: periodsQuery.isLoading,
     error: periodsQuery.error,
     refetch: periodsQuery.refetch,

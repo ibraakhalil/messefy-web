@@ -33,7 +33,7 @@ const expenseSchema = z.object({
 type ExpenseFormValues = z.infer<typeof expenseSchema>;
 
 export default function ExpenseEntryForm() {
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const workspaceId = useWorkspace((state) => state.member?.workspaceId ?? '');
   const { data: currentPeriod } = useCurrentPeriod(workspaceId);
   const { mutateAsync: saveExpense, isPending } = useCreateExpense();
 

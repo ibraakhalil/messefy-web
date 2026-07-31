@@ -33,7 +33,7 @@ interface InvitationWithUser extends Invitation {
 export default function InvitationsPage() {
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
   const workspace = member?.workspace;
 
   const {

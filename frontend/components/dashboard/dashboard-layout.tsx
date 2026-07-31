@@ -47,7 +47,7 @@ function NavItem({ children, icon: Icon, isActive = false }: NavItemProps) {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const t = useTranslations('Common');
   const path = usePathname();
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const workspaceId = useWorkspace((state) => state.member?.workspaceId ?? '');
   const { data: currentPeriod } = useCurrentPeriod(workspaceId);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const currentMonthPath = currentPeriod

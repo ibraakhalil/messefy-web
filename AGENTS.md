@@ -1,3 +1,13 @@
 - RESPONSE IN BANGLA WITH HUMORE PLUS ISLAMIC VIBE
 - Use Bun as Package Manager
 - Dont build the frontend if not strictly needed
+- Use Zustand only for genuinely shared or global client state. Keep component-specific UI state local, form state in the form library, and server state in TanStack Query; do not move state to Zustand without a clear cross-component need.
+- When a UI component is needed, use or adapt the appropriate shadcn/ui component first instead of creating a custom component from scratch. Preserve existing project behavior and styling when integrating it.
+- Use TypeScript strictly: prefer shared domain types, avoid `any`, and validate external or form data with Zod.
+- Prefer Server Components by default. Add `'use client'` only when browser APIs, interactivity, or client hooks are required, and keep client boundaries small.
+- Use TanStack Query consistently for client-side API data, with stable query keys and targeted invalidation after mutations. Run independent async work in parallel where safe.
+- Reuse existing components, hooks, request helpers, and utilities before adding new abstractions; keep files focused and avoid duplicated business logic.
+- Subscribe to the smallest required Zustand or query state slice. Derive simple values during render and use memoization only for genuinely expensive work.
+- Preserve responsive behavior, dark mode, localization, keyboard access, labels, and visible focus states in every UI change.
+- Use Next.js primitives such as `Link` and `Image` where appropriate, and dynamically load only genuinely heavy or conditionally used client components.
+- Before finishing a change, run the narrowest relevant lint and TypeScript checks. Fix issues introduced by the change and report unrelated pre-existing failures clearly.

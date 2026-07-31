@@ -26,7 +26,7 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => ({
 
 export function CreateMonthForm() {
   const { mutateAsync, isPending } = useCreatePeriod();
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
 
   const { data: members } = useQuery({
     queryKey: ['workspace-members'],

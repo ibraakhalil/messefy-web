@@ -93,7 +93,7 @@ export default function MessOverview() {
   const localeCode = locale === 'bn' ? 'bn-BD' : 'en-US';
   const dateFnsLocale = locale === 'bn' ? bn : enUS;
 
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
   const workspaceId = member?.workspaceId || '';
   const canManage = Boolean(member && ['owner', 'manager'].includes(member.role));
   const {

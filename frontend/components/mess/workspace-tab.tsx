@@ -10,12 +10,14 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 
 export default function WorkspaceTab() {
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
+  const clearWorkspace = useWorkspace((state) => state.clearWorkspace);
   const canLeaveWorkspace = Boolean(member && member.role !== 'owner' && !member.isOffline);
 
   const handleLeaveWorkspace = async () => {
     try {
       await leaveWorkspace(member?.workspaceId || '');
+      clearWorkspace();
       toast.success('Successfully left the workspace');
       window.location.reload();
     } catch (error) {

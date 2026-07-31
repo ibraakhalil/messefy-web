@@ -20,7 +20,7 @@ export default function AddMemberForm({ onSuccess }: { onSuccess: () => void }) 
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generatedCredentials, setGeneratedCredentials] = useState<GeneratedCredentials | null>(null);
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
   const workspace = member?.workspace;
   const { close } = useResponsiveDialog();
 

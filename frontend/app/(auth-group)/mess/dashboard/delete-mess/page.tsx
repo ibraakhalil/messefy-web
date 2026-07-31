@@ -29,7 +29,8 @@ type DeleteMessFormValues = z.infer<typeof deleteMessSchema>;
 export default function DeleteMessPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
+  const clearWorkspace = useWorkspace((state) => state.clearWorkspace);
   const workspace = member?.workspace;
   const workspaceId = workspace?.id || '';
   const { data: members = [] } = useMembers(workspaceId);
@@ -70,6 +71,7 @@ export default function DeleteMessPage() {
     setIsSubmitting(true);
     try {
       await deleteWorkspace(workspaceId, data.password);
+      clearWorkspace();
       toast.success('Mess deleted successfully');
       router.push('/mess');
     } catch (error) {

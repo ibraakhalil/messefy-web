@@ -64,7 +64,7 @@ function MemberListSkeleton() {
 
 export default function TotalMessMembers() {
   const t = useTranslations('Mess.membersTab');
-  const { member: currentMember } = useWorkspace();
+  const currentMember = useWorkspace((state) => state.member);
   const workspaceId = currentMember?.workspaceId || '';
   const canManage = Boolean(currentMember && ['owner', 'manager'].includes(currentMember.role));
   const [query, setQuery] = useState('');

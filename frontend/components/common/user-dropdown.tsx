@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl';
 
 export default function UserDropdown() {
   const session = useSession();
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
   const user = session.data?.user;
   const t = useTranslations('Common');
 

@@ -92,7 +92,7 @@ export default function MealChartTab() {
     [localeCode],
   );
 
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const workspaceId = useWorkspace((state) => state.member?.workspaceId ?? '');
   const {
     periods,
     selectedPeriod,

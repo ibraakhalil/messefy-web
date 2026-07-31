@@ -9,12 +9,14 @@ import { leaveWorkspace } from '@/lib/workspace-requests';
 import toast from 'react-hot-toast';
 
 export default function MessSection() {
-  const { member } = useWorkspace();
+  const member = useWorkspace((state) => state.member);
+  const clearWorkspace = useWorkspace((state) => state.clearWorkspace);
   const canLeaveWorkspace = Boolean(member && member.role !== 'owner' && !member.isOffline);
 
   const handleLeaveWorkspace = async () => {
     try {
       await leaveWorkspace(member?.workspaceId || '');
+      clearWorkspace();
       toast.success('Successfully left the workspace');
     } catch (error) {
       toast.error('Failed to leave workspace');

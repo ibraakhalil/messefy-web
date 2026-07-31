@@ -33,7 +33,7 @@ interface MealEntryFormProps {
 }
 
 export default function MealEntryForm({ date, onDateChange }: MealEntryFormProps) {
-  const workspaceId = useWorkspace().member?.workspaceId || '';
+  const workspaceId = useWorkspace((state) => state.member?.workspaceId ?? '');
 
   const { data: members, isLoading: isLoadingMembers } = useMembers(workspaceId);
   const { data: currentPeriod } = useCurrentPeriod(workspaceId);
