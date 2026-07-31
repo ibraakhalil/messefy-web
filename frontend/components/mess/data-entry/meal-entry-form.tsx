@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import Button from '@/components/ui/button';
+import DatePicker from '@/components/ui/date-picker';
 import { Loader2, Minus, Plus, Save, Trash2 } from 'lucide-react';
 import { useMembers } from '@/hooks/use-members';
 import { useBatchCreateMeals } from '@/hooks/use-meals';
@@ -28,9 +29,10 @@ type MealEntryFormValues = z.infer<typeof mealEntrySchema>;
 
 interface MealEntryFormProps {
   date: string;
+  onDateChange?: (date: string) => void;
 }
 
-export default function MealEntryForm({ date }: MealEntryFormProps) {
+export default function MealEntryForm({ date, onDateChange }: MealEntryFormProps) {
   const workspaceId = useWorkspace().member?.workspaceId || '';
 
   const { data: members, isLoading: isLoadingMembers } = useMembers(workspaceId);
@@ -141,28 +143,116 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-800/50">
-          <div>
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">Meal Sheet</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex items-center justify-between gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4 dark:border-gray-700 dark:bg-gray-800/50">
+          <div className="shrink-0">
+            <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white">Meal Sheet</h3>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
               Total Count:{' '}
               <span className="font-medium text-orange-600 dark:text-orange-400">{totalMeals}</span>
             </p>
           </div>
-          {totalMeals > 0 && (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={clearAll}
-              className="h-8 text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-            >
-              <Trash2 className="mr-2 h-3 w-3" />
-              Clear All
-            </Button>
-          )}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {totalMeals > 0 && (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={clearAll}
+                className="h-8 px-2 sm:px-3 text-xs text-red-600 dark:text-red-400 dark:hover:text-red-300"
+              >
+                <Trash2 className="mr-1 h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Clear All</span>
+              </Button>
+            )}
+            <DatePicker
+              id="meal-sheet-date"
+              aria-label="Date"
+              value={date}
+              onChange={(e) => onDateChange?.(typeof e === 'string' ? e : e.target.value)}
+              containerClassName="w-auto"
+            />
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="tablet:hidden divide-y divide-gray-200 dark:divide-gray-700">
+          {members?.map((member, index) => {
+            const memberName = member.user?.name || 'Unknown';
+            const memberTotal =
+              (watchedMeals?.[index]?.breakfast || 0) +
+              (watchedMeals?.[index]?.lunch || 0) +
+              (watchedMeals?.[index]?.dinner || 0);
+
+            return (
+              <article key={member.id} className="p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <h4 className="min-w-0 truncate font-semibold text-gray-900 dark:text-white">
+                    {memberName}
+                  </h4>
+                  <span
+                    className={cn(
+                      'inline-flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full px-2 text-xs font-medium',
+                      memberTotal > 0
+                        ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                        : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400',
+                    )}
+                    aria-label={`${memberTotal} meals total`}
+                  >
+                    {memberTotal}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {(['breakfast', 'lunch', 'dinner'] as const).map((type) => {
+                    const count = watchedMeals?.[index]?.[type] || 0;
+                    const mealLabel = type[0].toUpperCase() + type.slice(1);
+
+                    return (
+                      <div
+                        key={type}
+                        className="min-w-0 rounded-lg bg-gray-50 p-1.5 dark:bg-gray-700/40"
+                      >
+                        <span className="mb-1 block truncate text-center text-[11px] font-medium text-gray-600 dark:text-gray-300">
+                          {mealLabel}
+                        </span>
+                        <div className="flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => updateMemberCount(index, type, -1)}
+                            disabled={count === 0}
+                            aria-label={`Decrease ${mealLabel.toLowerCase()} for ${memberName}`}
+                            className="flex h-8 w-8 shrink-0 touch-manipulation items-center justify-center rounded-md border border-gray-200 text-gray-500 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600"
+                          >
+                            <Minus className="h-3.5 w-3.5" />
+                          </button>
+                          <span
+                            className={cn(
+                              'min-w-5 flex-1 text-center text-sm font-semibold',
+                              count > 0
+                                ? 'text-gray-900 dark:text-white'
+                                : 'text-gray-400 dark:text-gray-500',
+                            )}
+                            aria-live="polite"
+                          >
+                            {count}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateMemberCount(index, type, 1)}
+                            aria-label={`Increase ${mealLabel.toLowerCase()} for ${memberName}`}
+                            className="flex h-8 w-8 shrink-0 touch-manipulation items-center justify-center rounded-md border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                          >
+                            <Plus className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="tablet:block hidden overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50 text-xs text-gray-500 uppercase dark:bg-gray-700/50 dark:text-gray-400">
               <tr>
@@ -192,6 +282,7 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
                             type="button"
                             onClick={() => updateMemberCount(index, type, -1)}
                             disabled={watchedMeals?.[index]?.[type] === 0}
+                            aria-label={`Decrease ${type} for ${member.user?.name || 'Unknown'}`}
                             className={cn(
                               'flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-400 transition-colors hover:border-gray-300 hover:text-gray-600 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:text-gray-300',
                               watchedMeals?.[index]?.[type] === 0 &&
@@ -213,6 +304,7 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
                           <button
                             type="button"
                             onClick={() => updateMemberCount(index, type, 1)}
+                            aria-label={`Increase ${type} for ${member.user?.name || 'Unknown'}`}
                             className="flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 bg-gray-50 text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:text-white"
                           >
                             <Plus className="h-3 w-3" />
@@ -240,14 +332,19 @@ export default function MealEntryForm({ date }: MealEntryFormProps) {
         </div>
       </div>
 
-      <div className="flex justify-end gap-4">
-        <Button type="button" variant="secondary" onClick={() => reset()}>
+      <div className="tablet:static tablet:mx-0 tablet:justify-end tablet:border-0 tablet:bg-transparent tablet:p-0 tablet:shadow-none tablet:dark:bg-transparent sticky bottom-0 z-10 -mx-4 flex gap-3 border-t border-gray-200 bg-white/95 p-4 shadow-[0_-8px_24px_rgba(0,0,0,0.06)] backdrop-blur dark:border-gray-700 dark:bg-gray-900/95">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => reset()}
+          className="tablet:flex-none min-w-0 flex-1"
+        >
           Reset
         </Button>
         <Button
           type="submit"
           disabled={isSaving || totalMeals === 0}
-          className="min-w-[140px] bg-orange-600 hover:bg-orange-700"
+          className="tablet:min-w-[140px] tablet:flex-none min-w-0 flex-[1.4] bg-orange-600 hover:bg-orange-700"
         >
           {isSaving ? (
             <span className="flex items-center gap-2">

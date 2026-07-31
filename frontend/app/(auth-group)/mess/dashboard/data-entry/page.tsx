@@ -122,102 +122,82 @@ export default function DataEntryPage() {
   const ActiveIcon = ENTRY_TABS.find((tab) => tab.type === entryType)?.icon ?? Utensils;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-6">
-      <div className="flex items-center gap-3">
+    <div className="tablet:space-y-6 tablet:p-6 mx-auto w-full max-w-6xl space-y-5 px-4 py-5">
+      <div className="tablet:items-center flex items-start gap-3">
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-lg ${ENTRY_STYLES[entryType].headerIcon}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${ENTRY_STYLES[entryType].headerIcon}`}
         >
           <ActiveIcon className="h-6 w-6" />
         </div>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Add Data</h1>
-          <p className="text-gray-600 dark:text-gray-400">
+        <div className="min-w-0">
+          <h1 className="tablet:text-3xl text-2xl leading-tight font-bold text-gray-900 dark:text-white">
+            Add Data
+          </h1>
+          <p className="tablet:text-base mt-1 text-sm leading-5 text-gray-600 dark:text-gray-400">
             Record meals, deposits, and expenses in one place
           </p>
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <div className="space-y-6">
-          {/* Entry type tabs */}
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              What do you want to add? *
-            </p>
-            <div
-              role="tablist"
-              aria-label="Data entry type"
-              className="grid grid-cols-3 border-b border-gray-200 dark:border-gray-700"
-            >
-              {ENTRY_TABS.map(({ type, label, icon: Icon, description }, index) => {
-                const isActive = entryType === type;
+      <div className="space-y-6">
+        {/* Entry type tabs */}
+        <div>
+          <div
+            role="tablist"
+            aria-label="Data entry type"
+            className="grid grid-cols-3 border-b border-gray-200 dark:border-gray-700"
+          >
+            {ENTRY_TABS.map(({ type, label, icon: Icon, description }, index) => {
+              const isActive = entryType === type;
 
-                return (
-                  <button
-                    key={type}
-                    type="button"
-                    id={`${type}-tab`}
-                    role="tab"
-                    aria-selected={isActive}
-                    aria-controls={`${type}-panel`}
-                    tabIndex={isActive ? 0 : -1}
-                    onClick={() => setEntryType(type)}
-                    onKeyDown={(event) => handleTabKeyDown(event, index)}
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  id={`${type}-tab`}
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`${type}-panel`}
+                  tabIndex={isActive ? 0 : -1}
+                  onClick={() => setEntryType(type)}
+                  onKeyDown={(event) => handleTabKeyDown(event, index)}
+                  className={cn(
+                    'tablet:flex-row tablet:gap-3 tablet:px-4 tablet:py-4 tablet:text-left -mb-px flex min-w-0 flex-col items-center justify-center gap-1.5 border-b-2 border-transparent px-1 py-2.5 text-center text-gray-600 transition-colors dark:text-gray-400',
+                    'hover:bg-gray-50 hover:text-gray-900 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-orange-500 dark:hover:bg-gray-700/40 dark:hover:text-white',
+                    isActive && ENTRY_STYLES[type].activeTab,
+                  )}
+                >
+                  <span
                     className={cn(
-                      '-mb-px flex min-w-0 items-center justify-center gap-2 border-b-2 border-transparent px-2 py-3 text-left text-gray-600 transition-colors sm:gap-3 sm:px-4 sm:py-4 dark:text-gray-400',
-                      'hover:bg-gray-50 hover:text-gray-900 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-orange-500 dark:hover:bg-gray-700/40 dark:hover:text-white',
-                      isActive && ENTRY_STYLES[type].activeTab,
+                      'flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300',
+                      isActive && ENTRY_STYLES[type].activeTabIcon,
                     )}
                   >
-                    <span
-                      className={cn(
-                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-300',
-                        isActive && ENTRY_STYLES[type].activeTabIcon,
-                      )}
-                    >
-                      <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="tablet:text-base block text-xs leading-tight font-semibold">
+                      {label}
                     </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold sm:text-base">
-                        {label}
-                      </span>
-                      <span className="hidden text-xs opacity-75 sm:block">{description}</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+                    <span className="tablet:block hidden text-xs opacity-75">{description}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Common Date Field */}
-          <div className="space-y-2">
-            <label
-              htmlFor="date"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Date *
-            </label>
-            <input
-              id="date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-orange-500 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-
-          {/* Active tab panel */}
-          <div
-            id={`${entryType}-panel`}
-            role="tabpanel"
-            aria-labelledby={`${entryType}-tab`}
-            tabIndex={0}
-            className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-500"
-          >
-            {entryType === 'meal' && <MealEntryForm date={date} />}
-            {entryType === 'deposit' && <DepositEntryForm selectedMemberId={selectedMemberId} />}
-            {entryType === 'expense' && <ExpenseEntryForm />}
-          </div>
+        {/* Active tab panel */}
+        <div
+          id={`${entryType}-panel`}
+          role="tabpanel"
+          aria-labelledby={`${entryType}-tab`}
+          tabIndex={0}
+          className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-500"
+        >
+          {entryType === 'meal' && <MealEntryForm date={date} onDateChange={setDate} />}
+          {entryType === 'deposit' && <DepositEntryForm selectedMemberId={selectedMemberId} />}
+          {entryType === 'expense' && <ExpenseEntryForm />}
         </div>
       </div>
     </div>

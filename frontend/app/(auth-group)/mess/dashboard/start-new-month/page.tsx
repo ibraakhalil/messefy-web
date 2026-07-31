@@ -1,6 +1,7 @@
 'use client'
 
 import Button from '@/components/ui/button'
+import DatePicker from '@/components/ui/date-picker'
 import FormInput from '@/components/ui/form-input'
 import { formatCurrency } from '@/utils/format-currency'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -138,75 +139,28 @@ export default function StartNewMonthPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="tablet:grid-cols-3 grid grid-cols-1 gap-6">
-            <div className="space-y-2">
-              <label
-                htmlFor="monthName"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Month Name *
-              </label>
-              <FormInput
-                id="monthName"
-                type="text"
-                placeholder="e.g., January 2025"
-                {...register('monthName')}
-                className={
-                  errors.monthName ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                }
-              />
-              {errors.monthName && (
-                <p className="flex items-center gap-1 text-sm text-red-500">
-                  <AlertCircle className="h-4 w-4" />
-                  {errors.monthName.message}
-                </p>
-              )}
-            </div>
+            <FormInput
+              id="monthName"
+              label="Month Name *"
+              type="text"
+              placeholder="e.g., January 2025"
+              error={errors.monthName?.message}
+              {...register('monthName')}
+            />
 
-            <div className="space-y-2">
-              <label
-                htmlFor="startDate"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Start Date *
-              </label>
-              <FormInput
-                id="startDate"
-                type="date"
-                {...register('startDate')}
-                className={
-                  errors.startDate ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                }
-              />
-              {errors.startDate && (
-                <p className="flex items-center gap-1 text-sm text-red-500">
-                  <AlertCircle className="h-4 w-4" />
-                  {errors.startDate.message}
-                </p>
-              )}
-            </div>
+            <DatePicker
+              id="startDate"
+              label="Start Date *"
+              error={errors.startDate?.message}
+              {...register('startDate')}
+            />
 
-            <div className="space-y-2">
-              <label
-                htmlFor="endDate"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                End Date *
-              </label>
-              <FormInput
-                id="endDate"
-                type="date"
-                {...register('endDate')}
-                className={
-                  errors.endDate ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                }
-              />
-              {errors.endDate && (
-                <p className="flex items-center gap-1 text-sm text-red-500">
-                  <AlertCircle className="h-4 w-4" />
-                  {errors.endDate.message}
-                </p>
-              )}
-            </div>
+            <DatePicker
+              id="endDate"
+              label="End Date *"
+              error={errors.endDate?.message}
+              {...register('endDate')}
+            />
           </div>
 
           {/* Options */}
@@ -233,7 +187,6 @@ export default function StartNewMonthPage() {
                   </p>
                 </div>
               </div>
-
               <div className="flex items-start gap-3">
                 <input
                   id="resetMealCounts"
