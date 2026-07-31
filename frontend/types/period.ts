@@ -7,6 +7,10 @@ export interface Period {
   createdAt: string;
   closedAt: string | null;
   updatedAt: string;
+  totalDeposits?: number;
+  totalExpenses?: number;
+  totalMeals?: number;
+  mealRate?: number;
   workspace?: {
     id: string;
     name: string;

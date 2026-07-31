@@ -72,7 +72,7 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
           className={cn(
             'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
             isOpen
-              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+              ? 'motion-safe:animate-pulse bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
               : 'bg-secondary-bg text-subtitle-color',
           )}
         >
@@ -93,7 +93,7 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
               className={cn(
                 'inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold',
                 isOpen
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                  ? 'motion-safe:animate-pulse bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
                   : 'bg-secondary-bg text-subtitle-color',
               )}
             >

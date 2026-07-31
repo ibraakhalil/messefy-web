@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import { db } from '../db';
-import { members, periods } from '../db/schemas';
-import { and, desc, eq, ne } from 'drizzle-orm';
+import { deposits, expenses, mealEntries, members, periods } from '../db/schemas';
+import { and, desc, eq, getTableColumns, ne, sql } from 'drizzle-orm';
 import { isValidUUID, isValidYear, isValidMonth, isValidPeriodStatus } from '../utils/validators';
 
 export async function createPeriod(c: Context) {
@@ -118,10 +118,59 @@ export async function getPeriodsByWorkspace(c: Context) {
       return c.json({ error: 'You are not a member of this workspace' }, 403);
     }
 
-    const periodsList = await db.query.periods.findMany({
-      where: (p, { eq }) => eq(p.workspaceId, workspaceId),
-      orderBy: [desc(periods.year), desc(periods.month)],
-    });
+    const depositTotals = db
+      .select({
+        periodId: deposits.periodId,
+        total: sql<number>`sum(${deposits.amount})`.mapWith(Number).as('total_deposits'),
+      })
+      .from(deposits)
+      .where(eq(deposits.workspaceId, workspaceId))
+      .groupBy(deposits.periodId)
+      .as('deposit_totals');
+
+    const expenseTotals = db
+      .select({
+        periodId: expenses.periodId,
+        total: sql<number>`sum(${expenses.amount})`.mapWith(Number).as('total_expenses'),
+        mealTotal: sql<number>`sum(${expenses.amount}) filter (where ${expenses.allocationType} = 'by_meals')`
+          .mapWith(Number)
+          .as('meal_expenses'),
+      })
+      .from(expenses)
+      .where(eq(expenses.workspaceId, workspaceId))
+      .groupBy(expenses.periodId)
+      .as('expense_totals');
+
+    const mealTotals = db
+      .select({
+        periodId: mealEntries.periodId,
+        total:
+          sql<number>`sum(${mealEntries.breakfast} + ${mealEntries.lunch} + ${mealEntries.dinner})`
+            .mapWith(Number)
+            .as('total_meals'),
+      })
+      .from(mealEntries)
+      .where(eq(mealEntries.workspaceId, workspaceId))
+      .groupBy(mealEntries.periodId)
+      .as('meal_totals');
+
+    const periodsList = await db
+      .select({
+        ...getTableColumns(periods),
+        totalDeposits: sql<number>`coalesce(${depositTotals.total}, 0)`.mapWith(Number),
+        totalExpenses: sql<number>`coalesce(${expenseTotals.total}, 0)`.mapWith(Number),
+        totalMeals: sql<number>`coalesce(${mealTotals.total}, 0)`.mapWith(Number),
+        mealRate:
+          sql<number>`case when coalesce(${mealTotals.total}, 0) > 0 then round(coalesce(${expenseTotals.mealTotal}, 0) / ${mealTotals.total}, 2) else 0 end`.mapWith(
+            Number,
+          ),
+      })
+      .from(periods)
+      .leftJoin(depositTotals, eq(depositTotals.periodId, periods.id))
+      .leftJoin(expenseTotals, eq(expenseTotals.periodId, periods.id))
+      .leftJoin(mealTotals, eq(mealTotals.periodId, periods.id))
+      .where(eq(periods.workspaceId, workspaceId))
+      .orderBy(desc(periods.year), desc(periods.month));
 
     return c.json({ periods: periodsList, count: periodsList.length });
   } catch (error) {
