@@ -41,42 +41,41 @@ export async function createPeriod(c: Context) {
       return c.json({ error: 'Workspace not found' }, 404);
     }
 
-    const existingPeriod = await db.query.periods.findFirst({
-      where: (p, { eq, and }) => and(eq(p.workspaceId, workspaceId), eq(p.year, year), eq(p.month, month)),
-    });
+    const [activePeriod, existingPeriod, latestPeriod] = await Promise.all([
+      db.query.periods.findFirst({
+        where: (p, { eq, and }) => and(eq(p.workspaceId, workspaceId), eq(p.status, 'open')),
+      }),
+      db.query.periods.findFirst({
+        where: (p, { eq, and }) => and(eq(p.workspaceId, workspaceId), eq(p.year, year), eq(p.month, month)),
+      }),
+      db.query.periods.findFirst({
+        where: (p, { eq }) => eq(p.workspaceId, workspaceId),
+        orderBy: [desc(periods.year), desc(periods.month)],
+      }),
+    ]);
+
+    if (activePeriod) {
+      return c.json({ error: 'Close the active period before creating a new one' }, 409);
+    }
 
     if (existingPeriod) {
       return c.json({ error: 'A period already exists for this workspace and month/year combination' }, 409);
     }
 
-    const latestPeriod = await db.query.periods.findFirst({
-      where: (p, { eq }) => eq(p.workspaceId, workspaceId),
-      orderBy: [desc(periods.year), desc(periods.month)],
-    });
-
     if (latestPeriod && year * 12 + month <= latestPeriod.year * 12 + latestPeriod.month) {
       return c.json({ error: 'A new period must be later than the latest existing period' }, 409);
     }
 
-    const period = await db.transaction(async (tx) => {
-      await tx
-        .update(periods)
-        .set({ status: 'closed', closedAt: new Date() })
-        .where(and(eq(periods.workspaceId, workspaceId), eq(periods.status, 'open')));
-
-      const [createdPeriod] = await tx
-        .insert(periods)
-        .values({
-          workspaceId,
-          year,
-          month,
-          status: 'open',
-          managerId,
-        })
-        .returning();
-
-      return createdPeriod;
-    });
+    const [period] = await db
+      .insert(periods)
+      .values({
+        workspaceId,
+        year,
+        month,
+        status: 'open',
+        managerId,
+      })
+      .returning();
 
     if (!period) {
       return c.json({ error: 'Unable to create period. Please try again later' }, 500);

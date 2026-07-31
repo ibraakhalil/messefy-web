@@ -2,6 +2,8 @@
 
 import { CreateMonthForm } from '@/components/dashboard/new-month-form';
 import Button from '@/components/ui/button';
+import { DropdownMenu } from '@/components/ui/drop-down';
+import FormInput from '@/components/ui/form-input';
 import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
 import { useDeletePeriod, usePeriodsByWorkspace, useUpdatePeriod } from '@/hooks/use-periods';
 import { useWorkspace } from '@/providers/workspace-provider';
@@ -11,11 +13,11 @@ import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import {
   AlertCircle,
-  ArrowRight,
   CalendarDays,
-  CheckCircle2,
   Clock3,
   Download,
+  Ellipsis,
+  Eye,
   LoaderCircle,
   Plus,
   RefreshCw,
@@ -24,6 +26,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 type DashboardPeriod = Period & {
   totalDeposits?: number;
@@ -38,6 +41,15 @@ interface PeriodCardProps {
   isUpdating: boolean;
   onStatusChange: (period: DashboardPeriod) => void;
   onDelete: (period: DashboardPeriod) => void;
+}
+
+function ActiveStatusDot() {
+  return (
+    <span className="relative flex size-2.5" aria-hidden="true">
+      <span className="absolute inline-flex size-full rounded-full bg-emerald-400 opacity-75 motion-safe:animate-ping" />
+      <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
+    </span>
+  );
 }
 
 function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }: PeriodCardProps) {
@@ -72,12 +84,12 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
           className={cn(
             'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
             isOpen
-              ? 'motion-safe:animate-pulse bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-              : 'bg-secondary-bg text-subtitle-color',
+              ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/20 ring-inset dark:bg-emerald-950 dark:text-emerald-300'
+              : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
           )}
         >
           {isOpen ? (
-            <CheckCircle2 className="size-3.5" aria-hidden="true" />
+            <ActiveStatusDot />
           ) : (
             <Clock3 className="size-3.5" aria-hidden="true" />
           )}
@@ -85,7 +97,7 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
         </span>
       </div>
 
-      <div className="laptop:mt-0 laptop:grid-cols-[minmax(180px,1.5fr)_repeat(3,minmax(80px,1fr))_minmax(220px,auto)] laptop:items-center laptop:gap-4 mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+      <div className="laptop:mt-0 laptop:grid-cols-[minmax(180px,1.5fr)_repeat(3,minmax(80px,1fr))_minmax(72px,auto)] laptop:items-center laptop:gap-4 mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
         <div className="laptop:block hidden min-w-0">
           <div className="flex items-center gap-2">
             <h2 className="text-pure-color truncate font-semibold">{periodName}</h2>
@@ -93,12 +105,12 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
               className={cn(
                 'inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold',
                 isOpen
-                  ? 'motion-safe:animate-pulse bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                  : 'bg-secondary-bg text-subtitle-color',
+                  ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-500/20 ring-inset dark:bg-emerald-950 dark:text-emerald-300'
+                  : 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
               )}
             >
               {isOpen ? (
-                <CheckCircle2 className="size-3" aria-hidden="true" />
+                <ActiveStatusDot />
               ) : (
                 <Clock3 className="size-3" aria-hidden="true" />
               )}
@@ -140,43 +152,45 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
         </dl>
 
         <div className="border-border-color laptop:col-span-1 laptop:mt-0 laptop:justify-end laptop:border-0 laptop:pt-0 col-span-2 mt-1 flex items-center gap-2 border-t pt-3">
-          <Link
-            href={`/mess/dashboard/all-months/${period.id}`}
-            className="laptop:flex-none inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none"
-            aria-label={`View details for ${periodName}`}
-          >
-            View
-            <ArrowRight className="size-3.5" aria-hidden="true" />
-          </Link>
-          {isOpen || canReopen ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onStatusChange(period)}
-              disabled={isUpdating}
-              className="h-9 shrink-0 px-3 text-sm"
-              aria-label={`${isOpen ? 'Close' : 'Reopen'} ${periodName}`}
-            >
-              {isUpdating ? (
-                <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-              ) : isOpen ? (
-                <Clock3 className="size-4" aria-hidden="true" />
-              ) : (
-                <RefreshCw className="size-4" aria-hidden="true" />
-              )}
-              <span>{isOpen ? 'Close' : 'Reopen'}</span>
-            </Button>
-          ) : null}
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => onDelete(period)}
-            className="h-9 shrink-0 px-2.5 text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/40"
-            aria-label={`Delete ${periodName}`}
-          >
-            <Trash2 className="size-4" aria-hidden="true" />
-            <span className="sr-only">Delete</span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenu.Trigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                className="size-9 shrink-0 px-0"
+                aria-label={`More actions for ${periodName}`}
+              >
+                <Ellipsis className="size-4" aria-hidden="true" />
+              </Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end" className="w-48">
+              <DropdownMenu.Item asChild>
+                <Link href={`/mess/dashboard/all-months/${period.id}`}>
+                  <Eye className="size-4" aria-hidden="true" />
+                  View period
+                </Link>
+              </DropdownMenu.Item>
+              {isOpen || canReopen ? (
+                <DropdownMenu.Item
+                  disabled={isUpdating}
+                  onSelect={() => onStatusChange(period)}
+                >
+                  {isUpdating ? (
+                    <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+                  ) : isOpen ? (
+                    <Clock3 className="size-4" aria-hidden="true" />
+                  ) : (
+                    <RefreshCw className="size-4" aria-hidden="true" />
+                  )}
+                  {isOpen ? 'Close period' : 'Reopen period'}
+                </DropdownMenu.Item>
+              ) : null}
+              <DropdownMenu.Item variant="destructive" onSelect={() => onDelete(period)}>
+                <Trash2 className="size-4" aria-hidden="true" />
+                Delete period
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
         </div>
       </div>
     </article>
@@ -186,9 +200,11 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
 export default function AllMonthsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [periodToDelete, setPeriodToDelete] = useState<DashboardPeriod | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const { member } = useWorkspace();
   const workspaceId = member?.workspaceId ?? '';
   const { data: periods = [], isLoading: isLoadingPeriods } = usePeriodsByWorkspace(workspaceId);
+  const hasActivePeriod = periods.some((period) => period.status === 'open');
   const updatePeriodMutation = useUpdatePeriod();
   const deletePeriodMutation = useDeletePeriod();
   const latestPeriod = periods.reduce<DashboardPeriod | null>((latest, candidate) => {
@@ -198,6 +214,7 @@ export default function AllMonthsPage() {
       : latest;
   }, null);
   const latestPeriodId = latestPeriod?.id ?? null;
+  const isDeleteConfirmed = deleteConfirmation === 'DELETE';
 
   const handleStatusChange = async (period: DashboardPeriod) => {
     if (period.status === 'closed' && period.id !== latestPeriodId) return;
@@ -213,11 +230,12 @@ export default function AllMonthsPage() {
   };
 
   const handleDeletePeriod = async () => {
-    if (!periodToDelete) return;
+    if (!periodToDelete || !isDeleteConfirmed) return;
 
     try {
       await deletePeriodMutation.mutateAsync(periodToDelete.id);
       setPeriodToDelete(null);
+      setDeleteConfirmation('');
     } catch {
       // Mutation feedback is handled by the shared hook.
     }
@@ -309,9 +327,26 @@ export default function AllMonthsPage() {
             <Download className="size-4" aria-hidden="true" />
             Export CSV
           </Button>
-          <ResponsiveDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <ResponsiveDialog
+            open={isCreateDialogOpen}
+            onOpenChange={(open) => setIsCreateDialogOpen(open && !hasActivePeriod)}
+          >
             <ResponsiveDialog.Trigger asChild>
-              <Button type="button" className="tablet:flex-none flex-1">
+              <Button
+                type="button"
+                aria-disabled={hasActivePeriod}
+                onClick={(event) => {
+                  if (!hasActivePeriod) return;
+
+                  event.preventDefault();
+                  toast('Close the active period first', { icon: '⚠️' });
+                }}
+                title={hasActivePeriod ? 'Close the active period first' : undefined}
+                className={cn(
+                  'tablet:flex-none flex-1',
+                  hasActivePeriod && 'cursor-not-allowed opacity-50 hover:shadow-none',
+                )}
+              >
                 <Plus className="size-4" aria-hidden="true" />
                 New period
               </Button>
@@ -325,7 +360,7 @@ export default function AllMonthsPage() {
 
       {periods.length > 0 ? (
         <section className="border-border-color bg-card-bg overflow-hidden rounded-xl border shadow-sm">
-          <div className="border-border-color bg-secondary-bg/70 text-subtitle-color laptop:grid hidden grid-cols-[minmax(180px,1.5fr)_repeat(3,minmax(80px,1fr))_minmax(220px,auto)] gap-4 border-b px-5 py-2.5 text-xs font-semibold tracking-wide uppercase">
+          <div className="border-border-color bg-secondary-bg/70 text-subtitle-color laptop:grid hidden grid-cols-[minmax(180px,1.5fr)_repeat(3,minmax(80px,1fr))_minmax(72px,auto)] gap-4 border-b px-5 py-2.5 text-xs font-semibold tracking-wide uppercase">
             <span>Period</span>
             <span>Deposits</span>
             <span>Expenses</span>
@@ -343,7 +378,10 @@ export default function AllMonthsPage() {
                   updatePeriodMutation.variables?.periodId === period.id
                 }
                 onStatusChange={handleStatusChange}
-                onDelete={setPeriodToDelete}
+                onDelete={(period) => {
+                  setDeleteConfirmation('');
+                  setPeriodToDelete(period);
+                }}
               />
             ))}
           </div>
@@ -373,7 +411,10 @@ export default function AllMonthsPage() {
       <ResponsiveDialog
         open={periodToDelete !== null}
         onOpenChange={(open) => {
-          if (!open && !deletePeriodMutation.isPending) setPeriodToDelete(null);
+          if (!open && !deletePeriodMutation.isPending) {
+            setPeriodToDelete(null);
+            setDeleteConfirmation('');
+          }
         }}
       >
         <ResponsiveDialog.Content className="bg-card-bg tablet:max-w-md p-6">
@@ -385,9 +426,24 @@ export default function AllMonthsPage() {
                 : 'This action cannot be undone.'}
             </ResponsiveDialog.Description>
           </ResponsiveDialog.Header>
-          <ResponsiveDialog.Footer>
-            <ResponsiveDialog.Close>
-              <Button type="button" variant="outline" disabled={deletePeriodMutation.isPending}>
+          <FormInput
+            id="delete-period-confirmation"
+            label="Type DELETE to confirm"
+            placeholder="DELETE"
+            value={deleteConfirmation}
+            onChange={(event) => setDeleteConfirmation(event.target.value)}
+            autoComplete="off"
+            spellCheck={false}
+            disabled={deletePeriodMutation.isPending}
+          />
+          <ResponsiveDialog.Footer className="grid grid-cols-2 gap-3">
+            <ResponsiveDialog.Close asChild>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={deletePeriodMutation.isPending}
+                className="w-full"
+              >
                 Cancel
               </Button>
             </ResponsiveDialog.Close>
@@ -395,7 +451,9 @@ export default function AllMonthsPage() {
               type="button"
               variant="destructive"
               onClick={handleDeletePeriod}
+              disabled={!isDeleteConfirmed}
               isLoading={deletePeriodMutation.isPending}
+              className="w-full"
             >
               {deletePeriodMutation.isPending ? (
                 <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />

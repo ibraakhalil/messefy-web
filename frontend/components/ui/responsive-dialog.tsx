@@ -127,17 +127,29 @@ const ResponsiveDialogDescription = ({ children }: { children: React.ReactNode }
 };
 
 // Footer Component
-const ResponsiveDialogFooter = ({ children }: { children: React.ReactNode }) => {
+const ResponsiveDialogFooter = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const { isDesktop } = useResponsiveDialog();
   const Component = isDesktop ? DialogFooter : DrawerFooter;
-  return <Component>{children}</Component>;
+  return <Component className={className}>{children}</Component>;
 };
 
 // Close Component
-const ResponsiveDialogClose = ({ children }: { children: React.ReactNode }) => {
+const ResponsiveDialogClose = ({
+  children,
+  asChild = false,
+}: {
+  children: React.ReactNode;
+  asChild?: boolean;
+}) => {
   const { isDesktop } = useResponsiveDialog();
   const Component = isDesktop ? DialogClose : DrawerClose;
-  return <Component>{children}</Component>;
+  return <Component asChild={asChild}>{children}</Component>;
 };
 
 // Export compound components
