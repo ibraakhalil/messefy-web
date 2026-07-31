@@ -55,14 +55,6 @@ export function CurrentMonthLink({ children, ...props }: LinkProps) {
   );
 }
 
-export function MemberBalancesLink({ children, ...props }: LinkProps) {
-  return (
-    <Link href="/mess/dashboard/member-balances" {...props}>
-      {children}
-    </Link>
-  );
-}
-
 export function MembersLink({ children, ...props }: LinkProps) {
   return (
     <Link href="/mess/dashboard/members" {...props}>

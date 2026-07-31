@@ -21,7 +21,6 @@ import {
   RefreshCw,
   Trash2,
   Utensils,
-  WalletCards,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -45,7 +44,6 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
   const periodDate = new Date(period.year, period.month - 1);
   const deposits = period.totalDeposits ?? 0;
   const expenses = period.totalExpenses ?? 0;
-  const balance = deposits - expenses;
   const isOpen = period.status === 'open';
   const periodName = format(periodDate, 'MMMM yyyy');
 
@@ -87,7 +85,7 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
         </span>
       </div>
 
-      <div className="laptop:mt-0 laptop:grid-cols-[minmax(180px,1.5fr)_repeat(4,minmax(80px,1fr))_minmax(220px,auto)] laptop:items-center laptop:gap-4 mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+      <div className="laptop:mt-0 laptop:grid-cols-[minmax(180px,1.5fr)_repeat(3,minmax(80px,1fr))_minmax(220px,auto)] laptop:items-center laptop:gap-4 mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
         <div className="laptop:block hidden min-w-0">
           <div className="flex items-center gap-2">
             <h2 className="text-pure-color truncate font-semibold">{periodName}</h2>
@@ -124,17 +122,6 @@ function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }:
             <dt className="text-subtitle-color laptop:sr-only text-xs font-medium">Expenses</dt>
             <dd className="laptop:mt-0 mt-1 font-semibold text-rose-600 dark:text-rose-400">
               {formatCurrency(expenses)}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-subtitle-color laptop:sr-only text-xs font-medium">Balance</dt>
-            <dd
-              className={cn(
-                'laptop:mt-0 mt-1 font-semibold',
-                balance < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-pure-color',
-              )}
-            >
-              {formatCurrency(balance)}
             </dd>
           </div>
           <div>
@@ -239,7 +226,7 @@ export default function AllMonthsPage() {
   const handleExport = () => {
     if (periods.length === 0) return;
 
-    const headings = ['Period', 'Status', 'Deposits', 'Expenses', 'Balance', 'Meals', 'Meal rate'];
+    const headings = ['Period', 'Status', 'Deposits', 'Expenses', 'Meals', 'Meal rate'];
     const rows = periods.map((period: DashboardPeriod) => {
       const deposits = period.totalDeposits ?? 0;
       const expenses = period.totalExpenses ?? 0;
@@ -248,7 +235,6 @@ export default function AllMonthsPage() {
         period.status,
         deposits,
         expenses,
-        deposits - expenses,
         period.totalMeals ?? 0,
         period.mealRate ?? 0,
       ];
@@ -297,8 +283,6 @@ export default function AllMonthsPage() {
     );
   }
 
-  const activePeriodCount = periods.filter((period) => period.status === 'open').length;
-
   return (
     <div className="tablet:px-6 tablet:py-8 mx-auto w-full max-w-7xl space-y-6 px-4 py-6">
       <header className="tablet:flex-row tablet:items-end tablet:justify-between flex flex-col gap-4">
@@ -340,54 +324,30 @@ export default function AllMonthsPage() {
       </header>
 
       {periods.length > 0 ? (
-        <>
-          <section
-            className="border-border-color bg-card-bg flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border px-4 py-3 text-sm shadow-sm"
-            aria-label="Period summary"
-          >
-            <span className="text-subtitle-color flex items-center gap-2">
-              <WalletCards className="size-4 text-emerald-600" aria-hidden="true" />
-              <strong className="text-pure-color">{periods.length}</strong> total periods
-            </span>
-            <span className="bg-border-color tablet:block hidden h-4 w-px" aria-hidden="true" />
-            <span className="text-subtitle-color">
-              <strong className="text-emerald-600 dark:text-emerald-400">
-                {activePeriodCount}
-              </strong>{' '}
-              active
-            </span>
-            <span className="text-subtitle-color">
-              <strong className="text-pure-color">{periods.length - activePeriodCount}</strong>{' '}
-              closed
-            </span>
-          </section>
-
-          <section className="border-border-color bg-card-bg overflow-hidden rounded-xl border shadow-sm">
-            <div className="border-border-color bg-secondary-bg/70 text-subtitle-color laptop:grid hidden grid-cols-[minmax(180px,1.5fr)_repeat(4,minmax(80px,1fr))_minmax(220px,auto)] gap-4 border-b px-5 py-2.5 text-xs font-semibold tracking-wide uppercase">
-              <span>Period</span>
-              <span>Deposits</span>
-              <span>Expenses</span>
-              <span>Balance</span>
-              <span>Meals</span>
-              <span className="text-right">Actions</span>
-            </div>
-            <div className="divide-border-color divide-y">
-              {periods.map((period: DashboardPeriod) => (
-                <PeriodCard
-                  key={period.id}
-                  period={period}
-                  canReopen={period.id === latestPeriodId}
-                  isUpdating={
-                    updatePeriodMutation.isPending &&
-                    updatePeriodMutation.variables?.periodId === period.id
-                  }
-                  onStatusChange={handleStatusChange}
-                  onDelete={setPeriodToDelete}
-                />
-              ))}
-            </div>
-          </section>
-        </>
+        <section className="border-border-color bg-card-bg overflow-hidden rounded-xl border shadow-sm">
+          <div className="border-border-color bg-secondary-bg/70 text-subtitle-color laptop:grid hidden grid-cols-[minmax(180px,1.5fr)_repeat(3,minmax(80px,1fr))_minmax(220px,auto)] gap-4 border-b px-5 py-2.5 text-xs font-semibold tracking-wide uppercase">
+            <span>Period</span>
+            <span>Deposits</span>
+            <span>Expenses</span>
+            <span>Meals</span>
+            <span className="text-right">Actions</span>
+          </div>
+          <div className="divide-border-color divide-y">
+            {periods.map((period: DashboardPeriod) => (
+              <PeriodCard
+                key={period.id}
+                period={period}
+                canReopen={period.id === latestPeriodId}
+                isUpdating={
+                  updatePeriodMutation.isPending &&
+                  updatePeriodMutation.variables?.periodId === period.id
+                }
+                onStatusChange={handleStatusChange}
+                onDelete={setPeriodToDelete}
+              />
+            ))}
+          </div>
+        </section>
       ) : (
         <section className="border-border-color bg-card-bg/60 flex min-h-[45vh] items-center justify-center rounded-2xl border border-dashed px-6 py-12">
           <div className="max-w-sm text-center">

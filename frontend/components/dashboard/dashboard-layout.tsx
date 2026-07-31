@@ -12,7 +12,6 @@ import {
   Send,
   Settings,
   Users,
-  Wallet,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { ComponentType, ReactNode, SVGProps, useState } from 'react';
@@ -109,12 +108,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {t('dashboardNav.allMonths')}
             </NavItem>
           </Links.AllMonths>
-
-          <Links.MemberBalances>
-            <NavItem icon={Wallet} isActive={path.includes('/member-balances')}>
-              {t('dashboardNav.memberBalances')}
-            </NavItem>
-          </Links.MemberBalances>
 
           <Links.Members>
             <NavItem icon={Users} isActive={path.includes('/members')}>

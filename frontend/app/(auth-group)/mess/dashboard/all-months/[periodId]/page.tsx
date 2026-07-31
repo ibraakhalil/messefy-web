@@ -9,11 +9,13 @@ import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import {
   AlertCircle,
+  Calculator,
   DollarSign,
   Download,
   LockKeyhole,
   Receipt,
   Utensils,
+  Wallet,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -300,6 +302,74 @@ export default function PeriodDetailsPage() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="laptop:grid-cols-2 grid grid-cols-1 gap-6">
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-4 flex items-center gap-2">
+            <Wallet className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Deposits</h2>
+          </div>
+          <div className="space-y-3">
+            {summary.recentDeposits.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No deposits recorded yet.
+              </p>
+            ) : (
+              summary.recentDeposits.map((deposit) => (
+                <div
+                  key={deposit.id}
+                  className="flex items-center justify-between gap-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-700/50"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-gray-900 dark:text-white">
+                      {deposit.memberName}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(deposit.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <span className="shrink-0 font-semibold text-emerald-600 dark:text-emerald-400">
+                    {formatCurrency(deposit.amount)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-4 flex items-center gap-2">
+            <Calculator className="h-5 w-5 text-rose-600" aria-hidden="true" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Expenses</h2>
+          </div>
+          <div className="space-y-3">
+            {summary.recentExpenses.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No expenses recorded yet.
+              </p>
+            ) : (
+              summary.recentExpenses.map((expense) => (
+                <div
+                  key={expense.id}
+                  className="flex items-center justify-between gap-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-700/50"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-gray-900 dark:text-white">
+                      {expense.title}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(expense.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <span className="shrink-0 font-semibold text-rose-600 dark:text-rose-400">
+                    {formatCurrency(expense.amount)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

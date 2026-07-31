@@ -320,7 +320,7 @@ export default function MessOverview() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('periodSnapshot')}</h2>
             {canManage ? (
               <Link
-                href="/mess/dashboard/member-balances"
+                href={`/mess/months/${selectedPeriod.id}`}
                 className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 {t('balances')}
@@ -423,7 +423,7 @@ export default function MessOverview() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('memberSnapshot')}</h2>
             {canManage ? (
               <Link
-                href="/mess/dashboard/member-balances"
+                href={`/mess/months/${selectedPeriod.id}`}
                 className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 {t('viewAll')}
@@ -449,7 +449,7 @@ export default function MessOverview() {
             </h2>
             {canManage ? (
               <Link
-                href="/mess/dashboard/member-balances"
+                href={`/mess/months/${selectedPeriod.id}`}
                 className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 {t('moreActivity')}
