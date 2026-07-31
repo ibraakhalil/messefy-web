@@ -6,18 +6,22 @@ import { ResponsiveDialog } from '@/components/ui/responsive-dialog';
 import { useDeletePeriod, usePeriodsByWorkspace, useUpdatePeriod } from '@/hooks/use-periods';
 import { useWorkspace } from '@/providers/workspace-provider';
 import type { Period } from '@/types/period';
+import { cn } from '@/utils/cn';
 import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
 import {
   AlertCircle,
-  Calendar,
-  CheckCircle,
-  Clock,
+  ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
   Download,
-  Eye,
+  LoaderCircle,
   Plus,
   RefreshCw,
   Trash2,
+  Utensils,
+  WalletCards,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -29,62 +33,243 @@ type DashboardPeriod = Period & {
   mealRate?: number;
 };
 
+interface PeriodCardProps {
+  period: DashboardPeriod;
+  canReopen: boolean;
+  isUpdating: boolean;
+  onStatusChange: (period: DashboardPeriod) => void;
+  onDelete: (period: DashboardPeriod) => void;
+}
+
+function PeriodCard({ period, canReopen, isUpdating, onStatusChange, onDelete }: PeriodCardProps) {
+  const periodDate = new Date(period.year, period.month - 1);
+  const deposits = period.totalDeposits ?? 0;
+  const expenses = period.totalExpenses ?? 0;
+  const balance = deposits - expenses;
+  const isOpen = period.status === 'open';
+  const periodName = format(periodDate, 'MMMM yyyy');
+
+  return (
+    <article
+      className={cn(
+        'bg-card-bg hover:bg-secondary-bg/35 tablet:px-5 px-4 py-4 transition-colors',
+        isOpen && 'border-l-2 border-l-emerald-500',
+      )}
+    >
+      <div className="laptop:hidden flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-pure-color truncate text-lg font-semibold tracking-tight">
+            {periodName}
+          </h2>
+          <p className="text-subtitle-color mt-1 flex items-center gap-1.5 text-xs">
+            <CalendarDays className="size-3.5" aria-hidden="true" />
+            <span>
+              {format(startOfMonth(periodDate), 'MMM dd')} –{' '}
+              {format(endOfMonth(periodDate), 'MMM dd, yyyy')}
+            </span>
+          </p>
+        </div>
+
+        <span
+          className={cn(
+            'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
+            isOpen
+              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+              : 'bg-secondary-bg text-subtitle-color',
+          )}
+        >
+          {isOpen ? (
+            <CheckCircle2 className="size-3.5" aria-hidden="true" />
+          ) : (
+            <Clock3 className="size-3.5" aria-hidden="true" />
+          )}
+          {isOpen ? 'Active' : 'Closed'}
+        </span>
+      </div>
+
+      <div className="laptop:mt-0 laptop:grid-cols-[minmax(180px,1.5fr)_repeat(4,minmax(80px,1fr))_minmax(220px,auto)] laptop:items-center laptop:gap-4 mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+        <div className="laptop:block hidden min-w-0">
+          <div className="flex items-center gap-2">
+            <h2 className="text-pure-color truncate font-semibold">{periodName}</h2>
+            <span
+              className={cn(
+                'inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold',
+                isOpen
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                  : 'bg-secondary-bg text-subtitle-color',
+              )}
+            >
+              {isOpen ? (
+                <CheckCircle2 className="size-3" aria-hidden="true" />
+              ) : (
+                <Clock3 className="size-3" aria-hidden="true" />
+              )}
+              {isOpen ? 'Active' : 'Closed'}
+            </span>
+          </div>
+          <p className="text-subtitle-color mt-1 truncate text-xs">
+            {format(startOfMonth(periodDate), 'MMM dd')} –{' '}
+            {format(endOfMonth(periodDate), 'MMM dd, yyyy')}
+          </p>
+        </div>
+
+        <dl className="contents">
+          <div>
+            <dt className="text-subtitle-color laptop:sr-only text-xs font-medium">Deposits</dt>
+            <dd className="laptop:mt-0 mt-1 font-semibold text-emerald-600 dark:text-emerald-400">
+              {formatCurrency(deposits)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-subtitle-color laptop:sr-only text-xs font-medium">Expenses</dt>
+            <dd className="laptop:mt-0 mt-1 font-semibold text-rose-600 dark:text-rose-400">
+              {formatCurrency(expenses)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-subtitle-color laptop:sr-only text-xs font-medium">Balance</dt>
+            <dd
+              className={cn(
+                'laptop:mt-0 mt-1 font-semibold',
+                balance < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-pure-color',
+              )}
+            >
+              {formatCurrency(balance)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-subtitle-color laptop:sr-only flex items-center gap-1.5 text-xs font-medium">
+              <Utensils className="size-3.5" aria-hidden="true" /> Meals
+            </dt>
+            <dd className="text-pure-color laptop:mt-0 mt-1 font-semibold">
+              {period.totalMeals ?? 0}
+              {typeof period.mealRate === 'number' && period.mealRate > 0 ? (
+                <span className="text-subtitle-color ml-1 text-xs font-normal">
+                  @ {formatCurrency(period.mealRate)}
+                </span>
+              ) : null}
+            </dd>
+          </div>
+        </dl>
+
+        <div className="border-border-color laptop:col-span-1 laptop:mt-0 laptop:justify-end laptop:border-0 laptop:pt-0 col-span-2 mt-1 flex items-center gap-2 border-t pt-3">
+          <Link
+            href={`/mess/dashboard/all-months/${period.id}`}
+            className="laptop:flex-none inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            aria-label={`View details for ${periodName}`}
+          >
+            View
+            <ArrowRight className="size-3.5" aria-hidden="true" />
+          </Link>
+          {isOpen || canReopen ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onStatusChange(period)}
+              disabled={isUpdating}
+              className="h-9 shrink-0 px-3 text-sm"
+              aria-label={`${isOpen ? 'Close' : 'Reopen'} ${periodName}`}
+            >
+              {isUpdating ? (
+                <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+              ) : isOpen ? (
+                <Clock3 className="size-4" aria-hidden="true" />
+              ) : (
+                <RefreshCw className="size-4" aria-hidden="true" />
+              )}
+              <span>{isOpen ? 'Close' : 'Reopen'}</span>
+            </Button>
+          ) : null}
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => onDelete(period)}
+            className="h-9 shrink-0 px-2.5 text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/40"
+            aria-label={`Delete ${periodName}`}
+          >
+            <Trash2 className="size-4" aria-hidden="true" />
+            <span className="sr-only">Delete</span>
+          </Button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function AllMonthsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [periodToDelete, setPeriodToDelete] = useState<DashboardPeriod | null>(null);
   const { member } = useWorkspace();
-  const workspaceId = member?.workspaceId;
-  const {
-    data: periods,
-    isLoading: isLoadingPeriods,
-    refetch: refetchPeriods,
-  } = usePeriodsByWorkspace(workspaceId || '');
-
+  const workspaceId = member?.workspaceId ?? '';
+  const { data: periods = [], isLoading: isLoadingPeriods } = usePeriodsByWorkspace(workspaceId);
   const updatePeriodMutation = useUpdatePeriod();
   const deletePeriodMutation = useDeletePeriod();
+  const latestPeriod = periods.reduce<DashboardPeriod | null>((latest, candidate) => {
+    if (!latest) return candidate;
+    return candidate.year * 12 + candidate.month > latest.year * 12 + latest.month
+      ? candidate
+      : latest;
+  }, null);
+  const latestPeriodId = latestPeriod?.id ?? null;
 
-  const handleClosePeriod = async (periodId: string) => {
+  const handleStatusChange = async (period: DashboardPeriod) => {
+    if (period.status === 'closed' && period.id !== latestPeriodId) return;
+
     try {
       await updatePeriodMutation.mutateAsync({
-        periodId,
-        data: { status: 'closed' },
+        periodId: period.id,
+        data: { status: period.status === 'open' ? 'closed' : 'open' },
       });
-      refetchPeriods();
     } catch {
-      // Error is handled by the mutation
+      // Mutation feedback is handled by the shared hook.
     }
   };
 
-  const handleReopenPeriod = async (periodId: string) => {
+  const handleDeletePeriod = async () => {
+    if (!periodToDelete) return;
+
     try {
-      await updatePeriodMutation.mutateAsync({
-        periodId,
-        data: { status: 'open' },
-      });
-      refetchPeriods();
+      await deletePeriodMutation.mutateAsync(periodToDelete.id);
+      setPeriodToDelete(null);
     } catch {
-      // Error is handled by the mutation
+      // Mutation feedback is handled by the shared hook.
     }
   };
 
-  const handleDeletePeriod = async (periodId: string) => {
-    if (!confirm('Are you sure you want to delete this period? This action cannot be undone.')) {
-      return;
-    }
+  const handleExport = () => {
+    if (periods.length === 0) return;
 
-    try {
-      await deletePeriodMutation.mutateAsync(periodId);
-      refetchPeriods();
-    } catch {
-      // Error is handled by the mutation
-    }
+    const headings = ['Period', 'Status', 'Deposits', 'Expenses', 'Balance', 'Meals', 'Meal rate'];
+    const rows = periods.map((period: DashboardPeriod) => {
+      const deposits = period.totalDeposits ?? 0;
+      const expenses = period.totalExpenses ?? 0;
+      return [
+        format(new Date(period.year, period.month - 1), 'MMMM yyyy'),
+        period.status,
+        deposits,
+        expenses,
+        deposits - expenses,
+        period.totalMeals ?? 0,
+        period.mealRate ?? 0,
+      ];
+    });
+    const csv = [headings, ...rows]
+      .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(','))
+      .join('\n');
+    const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }));
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `periods-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   if (isLoadingPeriods) {
     return (
-      <div className="flex min-h-[80vh] items-center justify-center p-6">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-purple-200 border-t-purple-600"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading periods...</p>
+      <div className="flex min-h-[60vh] items-center justify-center p-6" role="status">
+        <div className="text-subtitle-color text-center">
+          <LoaderCircle className="mx-auto mb-3 size-8 animate-spin text-emerald-600" />
+          <p className="text-sm font-medium">Loading periods…</p>
         </div>
       </div>
     );
@@ -92,194 +277,176 @@ export default function AllMonthsPage() {
 
   if (!member) {
     return (
-      <div className="flex min-h-[80vh] items-center justify-center p-6">
-        <div className="w-full max-w-md text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400">
-            <AlertCircle className="h-10 w-10" />
+      <div className="flex min-h-[60vh] items-center justify-center p-6">
+        <div className="border-border-color bg-card-bg w-full max-w-md rounded-2xl border p-8 text-center shadow-sm">
+          <div className="mx-auto mb-5 flex size-14 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
+            <AlertCircle className="size-7" aria-hidden="true" />
           </div>
-          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-            No Workspace Access
-          </h1>
-          <p className="mb-8 text-gray-600 dark:text-gray-400">
-            You need to be a member of a workspace to access period management.
+          <h1 className="text-pure-color text-2xl font-bold">No workspace access</h1>
+          <p className="text-subtitle-color mt-2 text-sm leading-6">
+            Join a workspace before managing its periods.
           </p>
           <Link
             href="/mess/dashboard"
-            className="text-purple-600 hover:text-purple-700 dark:text-purple-400"
+            className="mt-6 inline-flex font-semibold text-emerald-600 hover:text-emerald-700"
           >
-            Back to Dashboard
+            Back to dashboard
           </Link>
         </div>
       </div>
     );
   }
 
+  const activePeriodCount = periods.filter((period) => period.status === 'open').length;
+
   return (
-    <div className="space-y-6 p-6">
-      <div className="tablet:flex-row tablet:items-center tablet:justify-between flex flex-col gap-4">
+    <div className="tablet:px-6 tablet:py-8 mx-auto w-full max-w-7xl space-y-6 px-4 py-6">
+      <header className="tablet:flex-row tablet:items-end tablet:justify-between flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Period Management</h1>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage all periods for your workspace
+          <p className="mb-1 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+            Workspace periods
+          </p>
+          <h1 className="text-pure-color tablet:text-3xl text-2xl font-bold tracking-tight">
+            Period management
+          </h1>
+          <p className="text-subtitle-color mt-1 text-sm">
+            Review balances, update status, or start a new period.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="tablet:w-auto flex w-full gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleExport}
+            disabled={periods.length === 0}
+            className="tablet:flex-none flex-1"
+          >
+            <Download className="size-4" aria-hidden="true" />
+            Export CSV
+          </Button>
           <ResponsiveDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <ResponsiveDialog.Trigger>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                New Period
+            <ResponsiveDialog.Trigger asChild>
+              <Button type="button" className="tablet:flex-none flex-1">
+                <Plus className="size-4" aria-hidden="true" />
+                New period
               </Button>
             </ResponsiveDialog.Trigger>
-
             <ResponsiveDialog.Content>
               <CreateMonthForm />
             </ResponsiveDialog.Content>
           </ResponsiveDialog>
-
-          <Button className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            Export All
-          </Button>
         </div>
-      </div>
+      </header>
 
-      <div className="tablet:grid-cols-2 laptop:grid-cols-3 grid grid-cols-1 gap-4">
-        {periods?.map((period: DashboardPeriod) => (
-          <div
-            key={period.id}
-            className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+      {periods.length > 0 ? (
+        <>
+          <section
+            className="border-border-color bg-card-bg flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border px-4 py-3 text-sm shadow-sm"
+            aria-label="Period summary"
           >
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {format(new Date(period.year, period.month - 1), 'MMMM yyyy')}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {format(startOfMonth(new Date(period.year, period.month - 1)), 'MMM dd')} -{' '}
-                  {format(endOfMonth(new Date(period.year, period.month - 1)), 'MMM dd, yyyy')}
-                </p>
-              </div>
-              <div
-                className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
-                  period.status === 'open'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
-                }`}
-              >
-                {period.status === 'open' ? (
-                  <>
-                    <CheckCircle className="h-3 w-3" />
-                    Active
-                  </>
-                ) : (
-                  <>
-                    <Clock className="h-3 w-3" />
-                    Closed
-                  </>
-                )}
-              </div>
+            <span className="text-subtitle-color flex items-center gap-2">
+              <WalletCards className="size-4 text-emerald-600" aria-hidden="true" />
+              <strong className="text-pure-color">{periods.length}</strong> total periods
+            </span>
+            <span className="bg-border-color tablet:block hidden h-4 w-px" aria-hidden="true" />
+            <span className="text-subtitle-color">
+              <strong className="text-emerald-600 dark:text-emerald-400">
+                {activePeriodCount}
+              </strong>{' '}
+              active
+            </span>
+            <span className="text-subtitle-color">
+              <strong className="text-pure-color">{periods.length - activePeriodCount}</strong>{' '}
+              closed
+            </span>
+          </section>
+
+          <section className="border-border-color bg-card-bg overflow-hidden rounded-xl border shadow-sm">
+            <div className="border-border-color bg-secondary-bg/70 text-subtitle-color laptop:grid hidden grid-cols-[minmax(180px,1.5fr)_repeat(4,minmax(80px,1fr))_minmax(220px,auto)] gap-4 border-b px-5 py-2.5 text-xs font-semibold tracking-wide uppercase">
+              <span>Period</span>
+              <span>Deposits</span>
+              <span>Expenses</span>
+              <span>Balance</span>
+              <span>Meals</span>
+              <span className="text-right">Actions</span>
             </div>
-
-            <div className="mb-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Deposits:</span>
-                <span className="font-medium text-green-600 dark:text-green-400">
-                  {formatCurrency(period.totalDeposits || 0)}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Expenses:</span>
-                <span className="font-medium text-red-600 dark:text-red-400">
-                  {formatCurrency(period.totalExpenses || 0)}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Balance:</span>
-                <span className="font-medium text-purple-600 dark:text-purple-400">
-                  {formatCurrency((period.totalDeposits || 0) - (period.totalExpenses || 0))}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Meals:</span>
-                <span className="font-medium text-orange-600 dark:text-orange-400">
-                  {period.totalMeals || 0}
-                </span>
-              </div>
-              {period.mealRate && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">Meal Rate:</span>
-                  <span className="font-medium text-orange-600 dark:text-orange-400">
-                    {formatCurrency(period.mealRate)}
-                  </span>
-                </div>
-              )}
+            <div className="divide-border-color divide-y">
+              {periods.map((period: DashboardPeriod) => (
+                <PeriodCard
+                  key={period.id}
+                  period={period}
+                  canReopen={period.id === latestPeriodId}
+                  isUpdating={
+                    updatePeriodMutation.isPending &&
+                    updatePeriodMutation.variables?.periodId === period.id
+                  }
+                  onStatusChange={handleStatusChange}
+                  onDelete={setPeriodToDelete}
+                />
+              ))}
             </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Link href={`/mess/dashboard/all-months/${period.id}`}>
-                <Button className="flex items-center gap-1">
-                  <Eye className="h-3 w-3" />
-                  View
-                </Button>
-              </Link>
-
-              {period.status === 'open' ? (
-                <Button
-                  onClick={() => handleClosePeriod(period.id)}
-                  disabled={updatePeriodMutation.isPending}
-                  className="flex items-center gap-1"
-                >
-                  <Clock className="h-3 w-3" />
-                  Close
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleReopenPeriod(period.id)}
-                  disabled={updatePeriodMutation.isPending}
-                  className="flex items-center gap-1"
-                >
-                  <RefreshCw className="h-3 w-3" />
-                  Reopen
-                </Button>
-              )}
-
-              <Button
-                onClick={() => handleDeletePeriod(period.id)}
-                disabled={deletePeriodMutation.isPending}
-                className="flex items-center gap-1 text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="h-3 w-3" />
-                Delete
-              </Button>
+          </section>
+        </>
+      ) : (
+        <section className="border-border-color bg-card-bg/60 flex min-h-[45vh] items-center justify-center rounded-2xl border border-dashed px-6 py-12">
+          <div className="max-w-sm text-center">
+            <div className="bg-secondary-bg mx-auto mb-5 flex size-14 items-center justify-center rounded-2xl text-emerald-600">
+              <CalendarDays className="size-7" aria-hidden="true" />
             </div>
-          </div>
-        ))}
-      </div>
-
-      {periods?.length === 0 && (
-        <div className="flex min-h-[40vh] items-center justify-center">
-          <div className="w-full max-w-md text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600">
-              <Calendar className="h-10 w-10" />
-            </div>
-            <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-              No Periods Found
-            </h3>
-            <p className="mb-6 text-gray-600 dark:text-gray-400">
-              Get started by creating your first period.
+            <h2 className="text-pure-color text-xl font-semibold">Create your first period</h2>
+            <p className="text-subtitle-color mt-2 text-sm leading-6">
+              Start tracking deposits, expenses, and meals in one place.
             </p>
             <Button
+              type="button"
               onClick={() => setIsCreateDialogOpen(true)}
-              className="mx-auto flex items-center gap-2"
+              className="mx-auto mt-6"
             >
-              <Plus className="size-4" />
-              Create First Period
+              <Plus className="size-4" aria-hidden="true" />
+              Create period
             </Button>
           </div>
-        </div>
+        </section>
       )}
+
+      <ResponsiveDialog
+        open={periodToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open && !deletePeriodMutation.isPending) setPeriodToDelete(null);
+        }}
+      >
+        <ResponsiveDialog.Content className="bg-card-bg tablet:max-w-md p-6">
+          <ResponsiveDialog.Header>
+            <ResponsiveDialog.Title>Delete this period?</ResponsiveDialog.Title>
+            <ResponsiveDialog.Description>
+              {periodToDelete
+                ? `${format(new Date(periodToDelete.year, periodToDelete.month - 1), 'MMMM yyyy')} and all of its records will be permanently removed.`
+                : 'This action cannot be undone.'}
+            </ResponsiveDialog.Description>
+          </ResponsiveDialog.Header>
+          <ResponsiveDialog.Footer>
+            <ResponsiveDialog.Close>
+              <Button type="button" variant="outline" disabled={deletePeriodMutation.isPending}>
+                Cancel
+              </Button>
+            </ResponsiveDialog.Close>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleDeletePeriod}
+              isLoading={deletePeriodMutation.isPending}
+            >
+              {deletePeriodMutation.isPending ? (
+                <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <Trash2 className="size-4" aria-hidden="true" />
+              )}
+              {deletePeriodMutation.isPending ? 'Deleting…' : 'Delete period'}
+            </Button>
+          </ResponsiveDialog.Footer>
+        </ResponsiveDialog.Content>
+      </ResponsiveDialog>
     </div>
   );
 }

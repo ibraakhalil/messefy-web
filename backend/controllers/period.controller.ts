@@ -1,7 +1,7 @@
 import type { Context } from 'hono';
 import { db } from '../db';
 import { members, periods } from '../db/schemas';
-import { eq, desc } from 'drizzle-orm';
+import { and, desc, eq, ne } from 'drizzle-orm';
 import { isValidUUID, isValidYear, isValidMonth, isValidPeriodStatus } from '../utils/validators';
 
 export async function createPeriod(c: Context) {
@@ -49,16 +49,34 @@ export async function createPeriod(c: Context) {
       return c.json({ error: 'A period already exists for this workspace and month/year combination' }, 409);
     }
 
-    const [period] = await db
-      .insert(periods)
-      .values({
-        workspaceId,
-        year,
-        month,
-        status: 'open',
-        managerId,
-      })
-      .returning();
+    const latestPeriod = await db.query.periods.findFirst({
+      where: (p, { eq }) => eq(p.workspaceId, workspaceId),
+      orderBy: [desc(periods.year), desc(periods.month)],
+    });
+
+    if (latestPeriod && year * 12 + month <= latestPeriod.year * 12 + latestPeriod.month) {
+      return c.json({ error: 'A new period must be later than the latest existing period' }, 409);
+    }
+
+    const period = await db.transaction(async (tx) => {
+      await tx
+        .update(periods)
+        .set({ status: 'closed', closedAt: new Date() })
+        .where(and(eq(periods.workspaceId, workspaceId), eq(periods.status, 'open')));
+
+      const [createdPeriod] = await tx
+        .insert(periods)
+        .values({
+          workspaceId,
+          year,
+          month,
+          status: 'open',
+          managerId,
+        })
+        .returning();
+
+      return createdPeriod;
+    });
 
     if (!period) {
       return c.json({ error: 'Unable to create period. Please try again later' }, 500);
@@ -188,14 +206,38 @@ export async function updatePeriod(c: Context) {
       return c.json({ error: 'Only workspace owners can update periods' }, 403);
     }
 
-    const [updatedPeriod] = await db
-      .update(periods)
-      .set({
-        status,
-        closedAt: status === 'closed' ? new Date() : null,
-      })
-      .where(eq(periods.id, periodId))
-      .returning();
+    if (status === 'open') {
+      const latestPeriod = await db.query.periods.findFirst({
+        where: (p, { eq }) => eq(p.workspaceId, period.workspaceId),
+        orderBy: [desc(periods.year), desc(periods.month)],
+      });
+
+      if (latestPeriod?.id !== period.id) {
+        return c.json({ error: 'Only the latest period can be reopened' }, 409);
+      }
+    }
+
+    const updatedPeriod = await db.transaction(async (tx) => {
+      if (status === 'open') {
+        await tx
+          .update(periods)
+          .set({ status: 'closed', closedAt: new Date() })
+          .where(
+            and(eq(periods.workspaceId, period.workspaceId), eq(periods.status, 'open'), ne(periods.id, periodId)),
+          );
+      }
+
+      const [updated] = await tx
+        .update(periods)
+        .set({
+          status,
+          closedAt: status === 'closed' ? new Date() : null,
+        })
+        .where(eq(periods.id, periodId))
+        .returning();
+
+      return updated;
+    });
 
     if (!updatedPeriod) {
       return c.json({ error: 'Unable to update period. Please try again later' }, 500);
