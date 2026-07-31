@@ -1,6 +1,16 @@
 import type { Context } from 'hono';
 import { db } from '../db';
-import { adjustments, deposits, expenses, invitations, mealEntries, members, periods, users, workspaces } from '../db/schemas';
+import {
+  adjustments,
+  deposits,
+  expenses,
+  invitations,
+  mealEntries,
+  members,
+  periods,
+  users,
+  workspaces,
+} from '../db/schemas';
 import { requireWorkspaceMember } from '../utils/workspace-access';
 import { and, eq } from 'drizzle-orm';
 import { deleteDetachedOfflineUsers, getOfflineUserIdsByWorkspace } from '../utils/offline-user';
@@ -46,6 +56,49 @@ export async function createWorkspace(c: Context) {
   } catch (error) {
     console.error('Error creating workspace:', error);
     return c.json({ error: 'Unable to create workspace. Please try again later' }, 500);
+  }
+}
+
+export async function updateWorkspace(c: Context) {
+  const workspaceId = c.req.param('workspaceId');
+  const ownerId = c.get('ownerId');
+  const body: unknown = await c.req.json().catch(() => null);
+
+  if (!workspaceId || !ownerId) {
+    return c.json({ error: 'Workspace ID and owner ID are required' }, 400);
+  }
+
+  if (typeof body !== 'object' || body === null) {
+    return c.json({ error: 'Invalid request body' }, 400);
+  }
+
+  const { name, description } = body as Record<string, unknown>;
+  const normalizedName = typeof name === 'string' ? name.trim() : '';
+  const normalizedDescription = typeof description === 'string' ? description.trim() : '';
+
+  if (normalizedName.length < 2 || normalizedName.length > 100) {
+    return c.json({ error: 'Workspace name must be between 2 and 100 characters' }, 400);
+  }
+
+  if (normalizedDescription.length > 500) {
+    return c.json({ error: 'Workspace description cannot exceed 500 characters' }, 400);
+  }
+
+  try {
+    const [workspace] = await db
+      .update(workspaces)
+      .set({ name: normalizedName, description: normalizedDescription || null })
+      .where(and(eq(workspaces.id, workspaceId), eq(workspaces.ownerId, ownerId), eq(workspaces.isActive, true)))
+      .returning();
+
+    if (!workspace) {
+      return c.json({ error: 'Workspace not found' }, 404);
+    }
+
+    return c.json(workspace, 200);
+  } catch (error) {
+    console.error('Error updating workspace:', error);
+    return c.json({ error: 'Failed to update workspace' }, 500);
   }
 }
 

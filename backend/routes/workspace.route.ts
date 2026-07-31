@@ -8,6 +8,7 @@ import {
   getWorkspaceInvitations,
   getValidWorkspaceMember,
   getWorkspaceMembers,
+  updateWorkspace,
 } from '../controllers/workspace.controller';
 import { ownerCheck, userAuthValidation } from '../middlewares/auth.middleware';
 
@@ -21,5 +22,6 @@ workspaceRoute.get('/:workspaceId/invitations', ownerCheck, getWorkspaceInvitati
 workspaceRoute.post('/:workspaceId/invitations/:invitationId/accept', ownerCheck, acceptInvitationByOwner);
 workspaceRoute.delete('/:workspaceId/invitations/:invitationId/cancel', ownerCheck, cancelInvitationByOwner);
 workspaceRoute.delete('/:workspaceId', ownerCheck, deleteWorkspace);
+workspaceRoute.patch('/:workspaceId', ownerCheck, updateWorkspace);
 
 workspaceRoute.get('/:workspaceId', userAuthValidation, getWorkspaceById);

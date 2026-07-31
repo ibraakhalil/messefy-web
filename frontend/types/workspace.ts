@@ -2,7 +2,7 @@ export interface Workspace {
   id: string;
   name: string;
   slug: string;
-  description: string;
+  description: string | null;
   ownerId: string;
   isActive: boolean;
   createdAt: string;

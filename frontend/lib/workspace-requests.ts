@@ -41,3 +41,13 @@ export async function deleteWorkspace(workspaceId: string, password: string) {
     throw error;
   }
 }
+
+export interface UpdateWorkspacePayload {
+  name: string;
+  description: string;
+}
+
+export async function updateWorkspace(workspaceId: string, payload: UpdateWorkspacePayload) {
+  const { data } = await api.patch<Workspace>(`/workspaces/${workspaceId}`, payload);
+  return data;
+}
