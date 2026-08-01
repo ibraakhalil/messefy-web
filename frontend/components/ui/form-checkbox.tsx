@@ -18,7 +18,7 @@ const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
             className={cn('size-[18px]', className)}
             {...props}
           />
-          <label htmlFor={id} className="text-sm text-gray-700">
+          <label htmlFor={id} className="text-subtitle-color text-sm">
             {label}
           </label>
         </div>

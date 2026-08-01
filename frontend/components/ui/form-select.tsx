@@ -12,7 +12,7 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
     return (
       <div className={cn('w-full space-y-2', className)}>
         {label && (
-          <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+          <label htmlFor={id} className="text-subtitle-color block text-sm font-medium">
             {label}
           </label>
         )}
@@ -21,18 +21,18 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
             id={id}
             ref={ref}
             className={cn(
-              'block w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none',
+              'border-border-color bg-card-bg text-pure-color block w-full appearance-none rounded-lg border px-4 py-2.5 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:bg-muted-bg disabled:opacity-60',
               error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
             )}
             {...props}
           >
             {options.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.value} value={option.value} className="bg-card-bg text-pure-color">
                 {option.label}
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <div className="text-subtitle-secondary pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
             <svg
               className="h-4 w-4 fill-current"
               xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +42,7 @@ const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
             </svg>
           </div>
         </div>
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
     );
   },

@@ -110,59 +110,61 @@ export default function DepositEntryForm({ selectedMemberId }: DepositEntryFormP
           </div>
 
           <div className="tablet:p-6 space-y-5 p-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <UserRound className="h-4 w-4 text-emerald-600" aria-hidden="true" />
-                <span className="text-subtitle-color text-sm font-medium dark:text-gray-300">
-                  Who paid?
-                </span>
+            <div className="grid grid-cols-1 gap-5 tablet:grid-cols-2">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <UserRound className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                  <span className="text-subtitle-color text-sm font-medium">
+                    Who paid?
+                  </span>
+                </div>
+                <FormSelect
+                  id="deposit-member"
+                  aria-label="Member who made the deposit"
+                  options={memberOptions}
+                  disabled={isLoadingMembers || isPending}
+                  error={errors.memberId?.message}
+                  {...register('memberId')}
+                />
+                <p className="text-subtitle-secondary text-xs">
+                  Select the member whose balance should receive this deposit.
+                </p>
               </div>
-              <FormSelect
-                id="deposit-member"
-                aria-label="Member who made the deposit"
-                options={memberOptions}
-                disabled={isLoadingMembers || isPending}
-                error={errors.memberId?.message}
-                {...register('memberId')}
-              />
-              <p className="text-subtitle-secondary text-xs">
-                Select the member whose balance should receive this deposit.
-              </p>
-            </div>
 
-            <div className="space-y-2.5">
-              <FormInput
-                id="deposit-amount"
-                label="How much did they pay?"
-                type="number"
-                min="0"
-                step="0.01"
-                inputMode="decimal"
-                placeholder="0.00"
-                icon={<Wallet className="h-4 w-4 text-emerald-600" />}
-                error={errors.amount?.message}
-                disabled={isPending}
-                {...register('amount', { valueAsNumber: true })}
-              />
-              <div className="flex flex-wrap gap-2" aria-label="Quick deposit amounts">
-                {QUICK_AMOUNTS.map((amount) => (
-                  <button
-                    key={amount}
-                    type="button"
-                    onClick={() => setQuickAmount(amount)}
-                    disabled={isPending}
-                    className={cn(
-                      'border-border-color bg-card-bg text-subtitle-color h-9 rounded-lg border px-3 text-sm font-medium transition-colors hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none disabled:opacity-50 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300',
-                      enteredAmount === amount &&
-                        'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300',
-                    )}
-                  >
-                    {formatCurrency(amount, {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    })}
-                  </button>
-                ))}
+              <div className="space-y-2.5">
+                <FormInput
+                  id="deposit-amount"
+                  label="How much did they pay?"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  icon={<Wallet className="h-4 w-4 text-emerald-600" />}
+                  error={errors.amount?.message}
+                  disabled={isPending}
+                  {...register('amount', { valueAsNumber: true })}
+                />
+                <div className="flex flex-wrap gap-2" aria-label="Quick deposit amounts">
+                  {QUICK_AMOUNTS.map((amount) => (
+                    <button
+                      key={amount}
+                      type="button"
+                      onClick={() => setQuickAmount(amount)}
+                      disabled={isPending}
+                      className={cn(
+                        'border-border-color bg-card-bg text-subtitle-color h-9 rounded-lg border px-3 text-sm font-medium transition-colors hover:border-emerald-400 hover:bg-emerald-50 hover:text-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none disabled:opacity-50 dark:hover:bg-emerald-950/30 dark:hover:text-emerald-300',
+                        enteredAmount === amount &&
+                          'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300',
+                      )}
+                    >
+                      {formatCurrency(amount, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0,
+                      })}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -170,7 +172,7 @@ export default function DepositEntryForm({ selectedMemberId }: DepositEntryFormP
               <div className="flex items-center justify-between gap-3">
                 <label
                   htmlFor="deposit-note"
-                  className="text-subtitle-color flex items-center gap-2 text-sm font-medium dark:text-gray-300"
+                  className="text-subtitle-color flex items-center gap-2 text-sm font-medium"
                 >
                   <MessageSquareText className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                   Note <span className="text-subtitle-secondary font-normal">(optional)</span>
@@ -181,12 +183,12 @@ export default function DepositEntryForm({ selectedMemberId }: DepositEntryFormP
                 id="deposit-note"
                 rows={3}
                 maxLength={250}
-                className="border-border-color bg-card-bg text-pure-color block w-full resize-y rounded-lg border px-4 py-3 placeholder:text-sm placeholder:text-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:opacity-60"
+                className="border-border-color bg-card-bg text-pure-color placeholder:text-subtitle-secondary block w-full resize-y rounded-lg border px-4 py-3 placeholder:text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:opacity-60"
                 placeholder="e.g. Cash payment for July"
                 disabled={isPending}
                 {...register('note')}
               />
-              {errors.note && <p className="text-sm text-red-600">{errors.note.message}</p>}
+              {errors.note && <p className="text-sm text-red-600 dark:text-red-400">{errors.note.message}</p>}
             </div>
           </div>
         </section>

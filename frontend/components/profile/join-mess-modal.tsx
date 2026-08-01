@@ -64,17 +64,17 @@ export default function JoinMessModal() {
 
   return (
     <div>
-      <h3 className="mb-4 text-lg font-medium text-gray-900">Join a New Mess</h3>
+      <h3 className="text-pure-color mb-4 text-lg font-medium">Join a New Mess</h3>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {!workspace ? (
           <>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="text-subtitle-color block text-sm font-medium">
               Search by Slug or Mess Code
             </label>
             <div className="flex gap-2">
               <FormInput
                 placeholder="Enter mess code (e.g., OFF-2024-001)"
-                icon={<Search className="size-5 text-gray-400" />}
+                icon={<Search className="text-subtitle-secondary size-5" />}
                 error={errors.workspaceId?.message}
                 {...register('workspaceId')}
               />
@@ -88,19 +88,19 @@ export default function JoinMessModal() {
             </div>
           </>
         ) : (
-          <div className="space-y-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+          <div className="border-border-color bg-secondary-bg/50 space-y-4 rounded-lg border p-4">
             <div>
-              <h4 className="text-lg font-medium text-green-700">{workspace.name}</h4>
+              <h4 className="text-lg font-medium text-emerald-600 dark:text-emerald-400">{workspace.name}</h4>
               <p className="text-subtitle-color text-sm">{workspace.description}</p>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="text-subtitle-color mb-2 block text-sm font-medium">
                 Message (Optional)
               </label>
               <textarea
                 rows={3}
                 placeholder="Introduce yourself..."
-                className="border-border-color bg-card-bg block w-full rounded-md border p-2"
+                className="border-border-color bg-card-bg text-pure-color placeholder:text-subtitle-secondary block w-full rounded-md border p-2"
                 {...register('message')}
               />
               {errors.message && (
