@@ -9,7 +9,7 @@ import type { RecentDeposit, RecentExpense, SummaryMember } from '@/types/summar
 import { formatCurrency } from '@/utils/format-currency';
 import { endOfMonth, formatDistanceToNow } from 'date-fns';
 import { bn, enUS } from 'date-fns/locale';
-import { AlertCircle, Calendar, Receipt, TrendingUp, Users, Utensils, Wallet } from 'lucide-react';
+import { AlertCircle, Calendar, Receipt, Utensils } from 'lucide-react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { PeriodSelect } from './period-select';
@@ -203,27 +203,6 @@ export default function MessOverview() {
       icon: Receipt,
       iconClassName: 'bg-rose-100 text-rose-600 dark:bg-rose-950/80 dark:text-rose-400',
     },
-    {
-      label: t('stats.totalDeposits'),
-      value: formatCurrency(summary.totals.totalDeposits),
-      helper: t('stats.memberContributions'),
-      icon: Wallet,
-      iconClassName: 'bg-purple-100 text-purple-600 dark:bg-purple-950/80 dark:text-purple-400',
-    },
-    {
-      label: t('stats.netBalance'),
-      value: formatCurrency(summary.totals.netBalance),
-      helper: summary.totals.netBalance >= 0 ? t('stats.surplus') : t('stats.shortfall'),
-      icon: TrendingUp,
-      iconClassName: 'bg-amber-100 text-amber-600 dark:bg-amber-950/80 dark:text-amber-400',
-    },
-    {
-      label: t('stats.activeMembers'),
-      value: String(summary.totals.memberCount),
-      helper: t('stats.includedInSummary'),
-      icon: Users,
-      iconClassName: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-950/80 dark:text-cyan-400',
-    },
   ];
 
   return (
@@ -314,41 +293,7 @@ export default function MessOverview() {
         })}
       </section>
 
-      <div className="laptop:grid-cols-3 grid grid-cols-1 gap-6">
-        <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('periodSnapshot')}</h2>
-            {canManage ? (
-              <Link
-                href={`/mess/months/${selectedPeriod.id}`}
-                className="border-border-color bg-card-bg text-pure-color hover:bg-secondary-bg rounded-lg border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-              >
-                {t('balances')}
-              </Link>
-            ) : null}
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{t('status')}</span>
-              <span className="font-medium text-gray-900 capitalize dark:text-white">
-                {summary.period.status === 'open' ? t('active') : t('closed')}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{t('mealExpenses')}</span>
-              <span className="font-medium text-gray-900 dark:text-white">
-                {formatCurrency(summary.totals.mealExpenses)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{t('totalDue')}</span>
-              <span className="font-medium text-gray-900 dark:text-white">
-                {formatCurrency(summary.totals.totalDue)}
-              </span>
-            </div>
-          </div>
-        </section>
+      <div className="laptop:grid-cols-2 grid grid-cols-1 gap-6">
 
         <section className="border-border-color bg-card-bg tablet:p-6 rounded-2xl border p-5 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
