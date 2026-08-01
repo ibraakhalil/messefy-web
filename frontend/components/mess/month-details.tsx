@@ -155,10 +155,10 @@ export default function MonthDetails({ monthId }: { monthId: string }) {
 
   const stats = [
     {
-      label: 'Meal Rate',
-      value: formatCurrency(summary.totals.mealRate),
-      helper: 'Per meal',
-      icon: Utensils,
+      label: 'Total Due',
+      value: formatCurrency(summary.totals.totalDue),
+      helper: 'Overall member due',
+      icon: CircleDollarSign,
       color: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
     },
     {
@@ -223,14 +223,14 @@ export default function MonthDetails({ monthId }: { monthId: string }) {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 dark:bg-emerald-950/40">
-          <CircleDollarSign
+          <Utensils
             className="size-8 text-emerald-700 dark:text-emerald-400"
             aria-hidden="true"
           />
           <div>
-            <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">Total Due</p>
+            <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">Meal Rate</p>
             <p className="text-xl font-bold text-emerald-950 tabular-nums dark:text-emerald-100">
-              {formatCurrency(summary.totals.totalDue)}
+              {formatCurrency(summary.totals.mealRate)}
             </p>
           </div>
         </div>
@@ -266,109 +266,75 @@ export default function MonthDetails({ monthId }: { monthId: string }) {
         })}
       </section>
 
-      <div className="laptop:grid-cols-[minmax(0,1.5fr)_minmax(280px,0.5fr)] grid gap-6">
-        <section className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
-          <div className="border-border-color tablet:px-6 border-b px-5 py-4">
-            <h2 className="text-pure-color text-lg font-bold">Member Balance Summary</h2>
-            <p className="text-subtitle-color mt-1 text-sm">
-              Members with the largest outstanding balance appear first.
-            </p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="divide-border-color min-w-full divide-y">
-              <thead className="bg-secondary-bg">
-                <tr>
-                  {['Member', 'Meals', 'Deposits', 'Due', 'Balance'].map((label) => (
-                    <th
-                      key={label}
-                      scope="col"
-                      className="text-subtitle-color px-5 py-3 text-left text-xs font-semibold tracking-wide uppercase"
-                    >
-                      {label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-border-color divide-y">
-                {sortedMembers.map((memberItem) => (
-                  <tr
-                    key={memberItem.memberId}
-                    className="hover:bg-secondary-bg/70 transition-colors"
+      <section className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
+        <div className="border-border-color tablet:px-6 border-b px-5 py-4">
+          <h2 className="text-pure-color text-lg font-bold">Member Balance Summary</h2>
+          <p className="text-subtitle-color mt-1 text-sm">
+            Members with the largest outstanding balance appear first.
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="divide-border-color min-w-full divide-y">
+            <thead className="bg-secondary-bg">
+              <tr>
+                {['Member', 'Meals', 'Deposits', 'Due', 'Balance'].map((label) => (
+                  <th
+                    key={label}
+                    scope="col"
+                    className="text-subtitle-color px-5 py-3 text-left text-xs font-semibold tracking-wide uppercase"
                   >
-                    <td className="px-5 py-4">
-                      <div className="min-w-40">
-                        <p className="text-pure-color font-semibold">
-                          {memberItem.name}
-                          {memberItem.memberId === member?.id ? (
-                            <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                              You
-                            </span>
-                          ) : null}
-                        </p>
-                        <p className="text-subtitle-color mt-0.5 text-xs capitalize">
-                          {memberItem.isOffline ? 'Offline member' : memberItem.role}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
-                      {memberItem.meals}
-                    </td>
-                    <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
-                      {formatCurrency(memberItem.deposits)}
-                    </td>
-                    <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
-                      {formatCurrency(memberItem.due)}
-                    </td>
-                    <td className="px-5 py-4">
-                      <span
-                        className={`font-bold tabular-nums ${
-                          memberItem.balance < 0
-                            ? 'text-rose-600 dark:text-rose-400'
-                            : 'text-emerald-700 dark:text-emerald-400'
-                        }`}
-                      >
-                        {formatCurrency(memberItem.balance)}
-                      </span>
-                    </td>
-                  </tr>
+                    {label}
+                  </th>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <aside className="border-border-color bg-card-bg tablet:p-6 h-fit rounded-2xl border p-5 shadow-sm">
-          <h2 className="text-pure-color text-lg font-bold">Financial Breakdown</h2>
-          <dl className="mt-5 space-y-4">
-            {[
-              ['Meal Expenses', summary.totals.mealExpenses],
-              ['Other Expenses', summary.totals.totalExpenses - summary.totals.mealExpenses],
-              ['Member Due', summary.totals.totalDue],
-            ].map(([label, value]) => (
-              <div key={String(label)} className="flex items-center justify-between gap-4">
-                <dt className="text-subtitle-color text-sm">{label}</dt>
-                <dd className="text-pure-color font-semibold tabular-nums">
-                  {formatCurrency(Number(value))}
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <div className="border-border-color mt-5 border-t pt-5">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-pure-color font-semibold">Net Balance</span>
-              <span
-                className={`text-lg font-bold tabular-nums ${
-                  summary.totals.netBalance < 0
-                    ? 'text-rose-600 dark:text-rose-400'
-                    : 'text-emerald-700 dark:text-emerald-400'
-                }`}
-              >
-                {formatCurrency(summary.totals.netBalance)}
-              </span>
-            </div>
-          </div>
-        </aside>
-      </div>
+              </tr>
+            </thead>
+            <tbody className="divide-border-color divide-y">
+              {sortedMembers.map((memberItem) => (
+                <tr
+                  key={memberItem.memberId}
+                  className="hover:bg-secondary-bg/70 transition-colors"
+                >
+                  <td className="px-5 py-4">
+                    <div className="min-w-40">
+                      <p className="text-pure-color font-semibold">
+                        {memberItem.name}
+                        {memberItem.memberId === member?.id ? (
+                          <span className="ml-2 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                            You
+                          </span>
+                        ) : null}
+                      </p>
+                      <p className="text-subtitle-color mt-0.5 text-xs capitalize">
+                        {memberItem.isOffline ? 'Offline member' : memberItem.role}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
+                    {memberItem.meals}
+                  </td>
+                  <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
+                    {formatCurrency(memberItem.deposits)}
+                  </td>
+                  <td className="text-pure-color px-5 py-4 text-sm tabular-nums">
+                    {formatCurrency(memberItem.due)}
+                  </td>
+                  <td className="px-5 py-4">
+                    <span
+                      className={`font-bold tabular-nums ${
+                        memberItem.balance < 0
+                          ? 'text-rose-600 dark:text-rose-400'
+                          : 'text-emerald-700 dark:text-emerald-400'
+                      }`}
+                    >
+                      {formatCurrency(memberItem.balance)}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <section className="border-border-color bg-card-bg overflow-hidden rounded-2xl border shadow-sm">
         <div className="border-border-color tablet:px-6 border-b px-5 py-4">
