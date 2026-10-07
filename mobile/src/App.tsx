@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { useWorkspace } from '@/hooks/use-workspace';
+import { useWorkspace, useWorkspaceMembers } from '@/hooks/use-workspace';
 import { useCurrentWorkspaceSummary } from '@/hooks/use-dashboard-summary';
 import {
   getBanglaPeriodName,
@@ -22,6 +22,9 @@ import { QuickActions } from '@/components/home/QuickActions';
 import { RecentActivityList } from '@/components/home/RecentActivityList';
 import { MealsScreen } from '@/components/meals/MealsScreen';
 import { MealEntryModal } from '@/components/meals/MealEntryModal';
+import { ExpensesScreen } from '@/components/finances/ExpensesScreen';
+import { DepositEntryModal } from '@/components/finances/DepositEntryModal';
+import { ExpenseEntryModal } from '@/components/finances/ExpenseEntryModal';
 import { BottomNavbar, type NavTab } from '@/components/navigation/BottomNavbar';
 import type { TodayMeals, MessActivity } from '@/types/mess';
 
@@ -47,7 +50,12 @@ export function App() {
   });
   const [activeTab, setActiveTab] = useState<NavTab>('home');
   const [isMealEntryModalOpen, setIsMealEntryModalOpen] = useState(false);
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Workspace members query for deposits and meal assignments
+  const { data: workspaceMembers = [] } = useWorkspaceMembers(workspace?.id);
 
   // Meal Chart & Upsert hooks for active period
   const activePeriodId = summary?.period?.id || '';
@@ -219,10 +227,10 @@ export function App() {
         setIsMealEntryModalOpen(true);
         break;
       case 'deposit':
-        triggerToast('টাকা জমার এন্ট্রি ফর্ম পরবর্তী ফেজে যুক্ত হচ্ছে...');
+        setIsDepositModalOpen(true);
         break;
       case 'expense':
-        triggerToast('বাজার খরচের হিসাব পরবর্তী ফেজে যুক্ত হচ্ছে...');
+        setIsExpenseModalOpen(true);
         break;
       case 'members':
         setActiveTab('members');
@@ -358,6 +366,27 @@ export function App() {
                 isManager={isManager}
                 onSuccessToast={triggerToast}
               />
+
+              {/* Quick Deposit Modal triggered from Home Quick Actions */}
+              <DepositEntryModal
+                isOpen={isDepositModalOpen}
+                onClose={() => setIsDepositModalOpen(false)}
+                workspaceId={workspace.id}
+                periodId={activePeriodId}
+                members={workspaceMembers}
+                currentMemberId={member.id}
+                isManager={isManager}
+                onSuccessToast={triggerToast}
+              />
+
+              {/* Quick Expense Modal triggered from Home Quick Actions */}
+              <ExpenseEntryModal
+                isOpen={isExpenseModalOpen}
+                onClose={() => setIsExpenseModalOpen(false)}
+                workspaceId={workspace.id}
+                periodId={activePeriodId}
+                onSuccessToast={triggerToast}
+              />
             </>
           ) : activeTab === 'meals' ? (
             <MealsScreen
@@ -367,6 +396,18 @@ export function App() {
               periodMonth={summary?.period.month || 1}
               currentMemberId={member.id}
               isManager={isManager}
+              onSuccessToast={triggerToast}
+            />
+          ) : activeTab === 'expenses' ? (
+            <ExpensesScreen
+              workspaceId={workspace.id}
+              periodId={activePeriodId}
+              periodYear={summary?.period.year || 2026}
+              periodMonth={summary?.period.month || 1}
+              members={workspaceMembers}
+              currentMemberId={member.id}
+              isManager={isManager}
+              mealRate={summary?.totals.mealRate || 0}
               onSuccessToast={triggerToast}
             />
           ) : (

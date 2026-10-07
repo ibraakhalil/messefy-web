@@ -157,8 +157,8 @@ gantt
 | **৩** | **Workspace/Mess** | Join/Create Mess, Mess Switcher | এম্পটি স্টেট ও মাল্টি-মেস হ্যান্ডলিং | ✅ সম্পন্ন (Verified) |
 | **৪** | **Live Dashboard** | Period Summary, Real Meal Rate, Wallet | অপটিমিস্টিক রিফ্রেশ ও জিরো এরর | ✅ সম্পন্ন (Verified) |
 | **৫** | **Daily Meals** | Quick meal counter, Meal sheet matrix | অফলাইন রেজিলিয়েন্স ও দ্রুত টাচ রেসপন্স | ✅ সম্পন্ন (Verified) |
-| **৬** | **Deposits & Expenses** | Deposit modal, Expense ledger, Category | কারেন্সি ফরম্যাটিং ও রিয়েলটাইম আপডেট | ⏳ পরবর্তী ফেজ |
-| **৭** | **Members & Lifecycle** | Member balance list, Start new month | আরবিএসি (RBAC) রোল পারমিশন গার্ড | ⏳ প্রতীক্ষমাণ |
+| **৬** | **Deposits & Expenses** | Deposit modal, Expense ledger, Category | কারেন্সি ফরম্যাটিং ও রিয়েলটাইম আপডেট | ✅ সম্পন্ন (Verified) |
+| **৭** | **Members & Lifecycle** | Member balance list, Start new month | আরবিএসি (RBAC) রোল পারমিশন গার্ড | ⏳ পরবর্তী ফেজ |
 | **৮** | **Polish & Release** | Profile settings, Haptics, Release APK | Android 16-এ স্মুথ রান ও <৬ MB সাইজ | ⏳ প্রতীক্ষমাণ |
 
 ---
