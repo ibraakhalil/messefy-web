@@ -9,7 +9,19 @@ app.use('*', logger());
 app.use(
   '/*',
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3333',
+    origin: (origin) => {
+      if (
+        !origin ||
+        origin.includes('localhost') ||
+        origin.includes('127.0.0.1') ||
+        origin.includes('192.168.') ||
+        origin.includes('10.0.2.2') ||
+        origin.includes('tauri.localhost')
+      ) {
+        return origin || '*';
+      }
+      return process.env.FRONTEND_URL || 'http://localhost:3333';
+    },
     credentials: true,
   }),
 );
