@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Light Theme - Messefy Emerald Palette */
+  --primary: hsl(158 65% 27%);
+  --primary-light: hsl(158 65% 38%);
+  --primary-bg: hsl(48 33% 98%);
+  --primary-fg: hsl(0 0% 100%);
+  --secondary-bg: hsl(45 29% 95%);
+  --card-bg: hsl(0 0% 100%);
+  --card-shade: hsl(43 27% 93%);
+  --subtitle-color: hsl(160 10% 36%);
+  --subtitle-secondary: hsl(160 8% 48%);
+  --pure-color: hsl(164 35% 12%);
+  --icon-color: hsl(160 10% 36%);
+  --border-color: hsl(45 18% 86%);
+  --error: hsl(0 72% 51%);
+  --success: hsl(142 71% 36%);
+  --warning: hsl(38 92% 50%);
+}
+
+.dark {
+  /* Dark Theme */
+  --primary: hsl(158 64% 42%);
+  --primary-light: hsl(158 64% 52%);
+  --primary-bg: hsl(164 35% 7%);
+  --primary-fg: hsl(0 0% 100%);
+  --secondary-bg: hsl(162 25% 11%);
+  --card-bg: hsl(163 24% 10%);
+  --card-shade: hsl(162 20% 15%);
+  --subtitle-color: hsl(154 10% 67%);
+  --subtitle-secondary: hsl(154 8% 55%);
+  --pure-color: hsl(48 30% 96%);
+  --icon-color: hsl(154 10% 67%);
+  --border-color: hsl(162 15% 21%);
+  --error: hsl(0 72% 51%);
+  --success: hsl(142 71% 45%);
+  --warning: hsl(38 92% 50%);
+}
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-bg: var(--primary-bg);
+  --color-primary-fg: var(--primary-fg);
+  --color-secondary-bg: var(--secondary-bg);
+  --color-card-bg: var(--card-bg);
+  --color-card-shade: var(--card-shade);
+  --color-subtitle-color: var(--subtitle-color);
+  --color-subtitle-secondary: var(--subtitle-secondary);
+  --color-pure-color: var(--pure-color);
+  --color-icon-color: var(--icon-color);
+  --color-border-color: var(--border-color);
+  --color-error: var(--error);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+}
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background-color: var(--color-primary-bg);
+    color: var(--color-pure-color);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hind Siliguri', 'Kalpurush', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+    -webkit-user-select: none;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Mobile Safe Area Inset Helpers */
+  .safe-top {
+    padding-top: max(env(safe-area-inset-top), 1rem);
+  }
+
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+
+  /* Tap Highlight removal for mobile feel */
+  a, button, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}

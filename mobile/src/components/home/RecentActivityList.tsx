@@ -1,0 +1,85 @@
+import { ArrowDownLeft, Receipt, ChevronRight } from 'lucide-react';
+import type { MessActivity } from '@/types/mess';
+import { formatCurrency, cn } from '@/lib/utils';
+
+interface RecentActivityListProps {
+  activities: MessActivity[];
+  onViewAll: () => void;
+}
+
+export const RecentActivityList: React.FC<RecentActivityListProps> = ({
+  activities,
+  onViewAll,
+}) => {
+  return (
+    <div className="space-y-2.5">
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-xs font-semibold text-subtitle-color uppercase tracking-wider">
+          সাম্প্রতিক লেনদেন ও খরচ
+        </h2>
+        <button
+          onClick={onViewAll}
+          className="flex items-center text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:underline"
+        >
+          <span>সব দেখুন</span>
+          <ChevronRight className="size-3.5" />
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {activities.map((item) => {
+          const isDeposit = item.type === 'deposit';
+
+          return (
+            <div
+              key={item.id}
+              className="flex items-center justify-between rounded-xl border border-border-color bg-card-bg p-3 shadow-2xs transition active:bg-secondary-bg"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    'flex size-9 items-center justify-center rounded-xl',
+                    isDeposit
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                  )}
+                >
+                  {isDeposit ? (
+                    <ArrowDownLeft className="size-4.5" />
+                  ) : (
+                    <Receipt className="size-4.5" />
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold text-pure-color leading-tight">
+                    {item.title}
+                  </p>
+                  <p className="text-[11px] text-subtitle-color">
+                    {item.author} • {item.timeAgo}
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <p
+                  className={cn(
+                    'text-xs font-bold',
+                    isDeposit
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-rose-600 dark:text-rose-400'
+                  )}
+                >
+                  {isDeposit ? '+' : '-'} {formatCurrency(item.amount)}
+                </p>
+                <span className="text-[10px] text-subtitle-color capitalize">
+                  {isDeposit ? 'জমা' : 'খরচ'}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
