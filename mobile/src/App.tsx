@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useWorkspace } from '@/hooks/use-workspace';
+import { useCurrentWorkspaceSummary } from '@/hooks/use-dashboard-summary';
+import { getBanglaPeriodName, getDaysRemainingInPeriod, formatTimeAgo } from '@/lib/period-utils';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { NoWorkspaceView } from '@/components/workspace/NoWorkspaceView';
 import { MessHeader } from '@/components/home/MessHeader';
@@ -11,68 +13,7 @@ import { TodayMealCard } from '@/components/home/TodayMealCard';
 import { QuickActions } from '@/components/home/QuickActions';
 import { RecentActivityList } from '@/components/home/RecentActivityList';
 import { BottomNavbar, type NavTab } from '@/components/navigation/BottomNavbar';
-import type { PeriodSummary, UserMessStatus, TodayMeals, MessActivity } from '@/types/mess';
-
-const INITIAL_PERIOD_SUMMARY: PeriodSummary = {
-  periodId: 'period-2026-10',
-  periodName: 'মার্চ ২০২৬',
-  month: 3,
-  year: 2026,
-  status: 'open',
-  daysRemaining: 23,
-  totals: {
-    mealRate: 46.5,
-    totalMeals: 214,
-    totalExpenses: 9951,
-    totalDeposits: 14000,
-  },
-};
-
-const INITIAL_USER_STATUS: UserMessStatus = {
-  userId: 'user-01',
-  userName: 'ইব্রাহিম খলিল',
-  role: 'manager',
-  myMeals: 38,
-  myDeposit: 3500,
-  myCost: 1767, // 38 * 46.5
-  balance: 1733, // 3500 - 1767 = +1733 (surplus)
-  isManager: true,
-};
-
-const INITIAL_ACTIVITIES: MessActivity[] = [
-  {
-    id: 'act-1',
-    title: 'দৈনিক বাজার (মুরগি, ডিম ও সবজি)',
-    amount: 1450,
-    type: 'expense',
-    author: 'শাকিল আহমেদ',
-    timeAgo: '২ ঘণ্টা আগে',
-  },
-  {
-    id: 'act-2',
-    title: 'মাসের মিল ফি জমা',
-    amount: 3000,
-    type: 'deposit',
-    author: 'রাকিব হাসান',
-    timeAgo: '৫ ঘণ্টা আগে',
-  },
-  {
-    id: 'act-3',
-    title: 'মশলা ও রান্নার তেল',
-    amount: 620,
-    type: 'expense',
-    author: 'ইব্রাহিম খলিল',
-    timeAgo: 'গতকাল',
-  },
-  {
-    id: 'act-4',
-    title: 'খাবার পানির জার রিফিল (৪টি)',
-    amount: 320,
-    type: 'expense',
-    author: 'আরিফ হোসেন',
-    timeAgo: '২ দিন আগে',
-  },
-];
+import type { TodayMeals, MessActivity } from '@/types/mess';
 
 const DEFAULT_TODAY_MEALS: TodayMeals = {
   date: 'বুধবার, ২৫ মার্চ',
@@ -90,6 +31,13 @@ export function App() {
     isLoading: workspaceLoading,
     refetchWorkspace,
   } = useWorkspace();
+
+  const {
+    data: summary,
+    isLoading: isSummaryLoading,
+    isRefetching: isSummaryRefetching,
+    refetch: refetchSummary,
+  } = useCurrentWorkspaceSummary(workspace?.id);
 
   const [isDark, setIsDark] = useState<boolean>(() => {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -111,6 +59,54 @@ export function App() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
+
+  // Derive user's member stats from live backend summary
+  const myMemberSummary =
+    summary?.members && user ? summary.members.find((m) => m.userId === user.id) : null;
+
+  // Map live recent deposits and expenses into activity list
+  const liveActivities = useMemo<MessActivity[]>(() => {
+    if (!summary) return [];
+    const deposits = summary.recentDeposits.map((d) => ({
+      id: `dep-${d.id}`,
+      title: `${d.memberName} (টাকা জমা)`,
+      amount: d.amount,
+      type: 'deposit' as const,
+      author: d.memberName,
+      timeAgo: formatTimeAgo(d.createdAt),
+      rawTime: new Date(d.createdAt).getTime(),
+    }));
+
+    const expenses = summary.recentExpenses.map((e) => ({
+      id: `exp-${e.id}`,
+      title: e.title,
+      amount: e.amount,
+      type: 'expense' as const,
+      author: e.note || 'বাজার খরচ',
+      timeAgo: formatTimeAgo(e.createdAt),
+      rawTime: new Date(e.createdAt).getTime(),
+    }));
+
+    return [...deposits, ...expenses]
+      .sort((a, b) => b.rawTime - a.rawTime)
+      .slice(0, 6)
+      .map((item) => ({
+        id: item.id,
+        title: item.title,
+        amount: item.amount,
+        type: item.type,
+        author: item.author,
+        timeAgo: item.timeAgo,
+      }));
+  }, [summary]);
+
+  const periodName = summary?.period
+    ? getBanglaPeriodName(summary.period.year, summary.period.month)
+    : 'চলতি মাস';
+
+  const daysRemaining = summary?.period
+    ? getDaysRemainingInPeriod(summary.period.year, summary.period.month)
+    : 0;
 
   const handleUpdateLunch = (delta: number) => {
     setTodayMeals((prev) => ({
@@ -144,13 +140,13 @@ export function App() {
   const handleQuickAction = (actionId: string) => {
     switch (actionId) {
       case 'meal-entry':
-        triggerToast('মিল এন্ট্রি প্যানেল শীঘ্রই যুক্ত হচ্ছে...');
+        triggerToast('মিল এন্ট্রি প্যানেল পরবর্তী ফেজে যুক্ত হচ্ছে...');
         break;
       case 'deposit':
-        triggerToast('টাকা জমার এন্ট্রি ফর্ম ওপেন হচ্ছে...');
+        triggerToast('টাকা জমার এন্ট্রি ফর্ম পরবর্তী ফেজে যুক্ত হচ্ছে...');
         break;
       case 'expense':
-        triggerToast('বাজার খরচের হিসাব এন্ট্রি ফর্ম ওপেন হচ্ছে...');
+        triggerToast('বাজার খরচের হিসাব পরবর্তী ফেজে যুক্ত হচ্ছে...');
         break;
       case 'members':
         setActiveTab('members');
@@ -158,6 +154,11 @@ export function App() {
       default:
         break;
     }
+  };
+
+  const handleRefresh = async () => {
+    await Promise.all([refetchWorkspace(), refetchSummary()]);
+    triggerToast('ডাটা সফলভাবে রিফ্রেশ করা হয়েছে');
   };
 
   // 1. Loading Splash Screen
@@ -204,30 +205,52 @@ export function App() {
             id: workspace.id,
             name: workspace.name,
             address: workspace.description || undefined,
-            totalMembers: 8,
+            totalMembers: summary?.totals.memberCount || 1,
           }}
-          periodSummary={INITIAL_PERIOD_SUMMARY}
+          periodSummary={{
+            periodId: summary?.period.id || 'none',
+            periodName: periodName,
+            month: summary?.period.month || 1,
+            year: summary?.period.year || 2026,
+            status: summary?.period.status || 'open',
+            daysRemaining,
+            totals: {
+              mealRate: summary?.totals.mealRate || 0,
+              totalMeals: summary?.totals.totalMeals || 0,
+              totalExpenses: summary?.totals.totalExpenses || 0,
+              totalDeposits: summary?.totals.totalDeposits || 0,
+            },
+          }}
           isDark={isDark}
           onToggleTheme={() => setIsDark((prev) => !prev)}
           userName={user?.name || 'ব্যবহারকারী'}
           onLogout={logout}
+          onRefresh={handleRefresh}
+          isRefreshing={isSummaryRefetching}
         />
 
         {/* Main Body Content */}
         <main className="flex-1 space-y-4 px-4 pt-3.5 pb-24 overflow-y-auto">
           {activeTab === 'home' ? (
             <>
-              {/* 1. Month Hero Card (Meal rate, Total meals, Total costs) */}
-              <PeriodSummaryCard summary={INITIAL_PERIOD_SUMMARY} />
+              {/* 1. Live Period Hero Card (Meal rate, Total meals, Total costs) */}
+              <PeriodSummaryCard
+                mealRate={summary?.totals.mealRate || 0}
+                totalMeals={summary?.totals.totalMeals || 0}
+                totalExpenses={summary?.totals.totalExpenses || 0}
+                daysRemaining={daysRemaining}
+                periodName={periodName}
+                isOpen={Boolean(summary?.period.status === 'open')}
+                isLoading={isSummaryLoading}
+              />
 
-              {/* 2. Personal Status (Balance, Deposits, Meals) */}
+              {/* 2. Live Personal Status (Balance, Deposits, Meals) */}
               <MyStatusCard
-                userStatus={{
-                  ...INITIAL_USER_STATUS,
-                  userName: user?.name || INITIAL_USER_STATUS.userName,
-                  role: member?.role || 'member',
-                  isManager: member?.role === 'owner' || member?.role === 'manager',
-                }}
+                myMeals={myMemberSummary?.meals || 0}
+                myDeposit={myMemberSummary?.deposits || 0}
+                balance={myMemberSummary?.balance || 0}
+                role={member?.role || 'member'}
+                isLoading={isSummaryLoading}
               />
 
               {/* 3. Today's Meal Counter & Status */}
@@ -241,10 +264,11 @@ export function App() {
               {/* 4. Quick Action Tiles */}
               <QuickActions onActionClick={handleQuickAction} />
 
-              {/* 5. Recent Activity Feed */}
+              {/* 5. Live Recent Activity Feed */}
               <RecentActivityList
-                activities={INITIAL_ACTIVITIES}
+                activities={liveActivities}
                 onViewAll={() => setActiveTab('expenses')}
+                isLoading={isSummaryLoading}
               />
             </>
           ) : (

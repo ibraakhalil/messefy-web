@@ -1,13 +1,53 @@
 import React from 'react';
-import { Calendar, Receipt, Utensils, Sparkles, TrendingUp } from 'lucide-react';
-import type { PeriodSummary } from '@/types/mess';
+import { Calendar, Receipt, Utensils, Sparkles, TrendingUp, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 interface PeriodSummaryCardProps {
-  summary: PeriodSummary;
+  mealRate: number;
+  totalMeals: number;
+  totalExpenses: number;
+  daysRemaining: number;
+  periodName: string;
+  isOpen: boolean;
+  isLoading?: boolean;
 }
 
-export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({ summary }) => {
+export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({
+  mealRate,
+  totalMeals,
+  totalExpenses,
+  daysRemaining,
+  periodName,
+  isOpen,
+  isLoading = false,
+}) => {
+  if (isLoading) {
+    return (
+      <div className="relative overflow-hidden rounded-2xl bg-emerald-900/60 p-5 text-white shadow-lg animate-pulse">
+        <div className="h-4 w-32 bg-white/20 rounded-md mb-4" />
+        <div className="grid grid-cols-3 gap-2.5">
+          <div className="h-20 bg-white/10 rounded-xl" />
+          <div className="h-20 bg-white/10 rounded-xl" />
+          <div className="h-20 bg-white/10 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOpen) {
+    return (
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-700 to-orange-800 p-5 text-white shadow-lg">
+        <div className="flex items-center gap-2">
+          <AlertCircle className="size-5 text-amber-200" />
+          <h2 className="text-sm font-bold">চলতি মাসের কোনো পিরিয়ড ওপেন নেই</h2>
+        </div>
+        <p className="mt-1.5 text-xs text-amber-100/90 leading-relaxed">
+          ম্যানেজার নতুন মাস শুরু করলে মিল ও খরচের হিসাব এখানে স্বয়ংক্রিয়ভাবে দৃশ্যমান হবে।
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 p-5 text-white shadow-lg shadow-emerald-950/15">
       {/* Decorative background glows */}
@@ -26,13 +66,13 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({ summary })
           <span className="flex size-6 items-center justify-center rounded-lg bg-white/20 text-white shadow-xs">
             <Sparkles className="size-3.5" />
           </span>
-          <span className="text-xs font-semibold tracking-wide text-emerald-100 uppercase">
-            চলতি মাসের হিসাব
+          <span className="text-xs font-semibold tracking-wide text-emerald-100">
+            {periodName}
           </span>
         </div>
         <div className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-medium text-emerald-50 backdrop-blur-xs">
           <Calendar className="size-3" />
-          <span>বাকি {summary.daysRemaining} দিন</span>
+          <span>বাকি {daysRemaining} দিন</span>
         </div>
       </div>
 
@@ -44,7 +84,7 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({ summary })
             <TrendingUp className="size-4" />
           </div>
           <p className="mt-2 text-base font-bold tracking-tight text-white">
-            {formatCurrency(summary.totals.mealRate)}
+            {formatCurrency(mealRate)}
           </p>
           <p className="text-[11px] font-medium text-emerald-100/80">মিল রেট</p>
         </div>
@@ -55,7 +95,7 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({ summary })
             <Utensils className="size-4" />
           </div>
           <p className="mt-2 text-base font-bold tracking-tight text-white">
-            {summary.totals.totalMeals}
+            {totalMeals}
           </p>
           <p className="text-[11px] font-medium text-emerald-100/80">মোট মিল</p>
         </div>
@@ -66,7 +106,7 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({ summary })
             <Receipt className="size-4" />
           </div>
           <p className="mt-2 text-base font-bold tracking-tight text-white">
-            {formatCurrency(summary.totals.totalExpenses)}
+            {formatCurrency(totalExpenses)}
           </p>
           <p className="text-[11px] font-medium text-emerald-100/80">মোট খরচ</p>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Bell, Moon, Sun, Building2, LogOut } from 'lucide-react';
+import { Bell, Moon, Sun, Building2, LogOut, RotateCw } from 'lucide-react';
 import type { MessInfo, PeriodSummary } from '@/types/mess';
+import { cn } from '@/lib/utils';
 
 interface MessHeaderProps {
   messInfo: MessInfo;
@@ -9,6 +10,8 @@ interface MessHeaderProps {
   onToggleTheme: () => void;
   userName?: string;
   onLogout?: () => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
 export const MessHeader: React.FC<MessHeaderProps> = ({
@@ -18,6 +21,8 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
   onToggleTheme,
   userName = 'User',
   onLogout,
+  onRefresh,
+  isRefreshing = false,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -53,6 +58,18 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
 
         {/* Right Action Icons */}
         <div className="flex items-center gap-2 relative">
+          {/* Refresh Button */}
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              disabled={isRefreshing}
+              aria-label="Refresh data"
+              className="size-9 rounded-full bg-secondary-bg hover:bg-card-shade flex items-center justify-center text-icon-color transition-colors active:scale-95 disabled:opacity-50"
+            >
+              <RotateCw className={cn('size-4', isRefreshing && 'animate-spin text-emerald-600')} />
+            </button>
+          )}
+
           {/* Dark Mode Toggle */}
           <button
             onClick={onToggleTheme}

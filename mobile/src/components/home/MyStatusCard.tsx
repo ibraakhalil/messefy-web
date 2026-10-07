@@ -1,14 +1,36 @@
 import React from 'react';
 import { Wallet, ArrowUpRight, ArrowDownRight, UserCheck } from 'lucide-react';
-import type { UserMessStatus } from '@/types/mess';
 import { formatCurrency, cn } from '@/lib/utils';
 
 interface MyStatusCardProps {
-  userStatus: UserMessStatus;
+  myMeals: number;
+  myDeposit: number;
+  balance: number;
+  role: 'owner' | 'manager' | 'member';
+  isLoading?: boolean;
 }
 
-export const MyStatusCard: React.FC<MyStatusCardProps> = ({ userStatus }) => {
-  const isSurplus = userStatus.balance >= 0;
+export const MyStatusCard: React.FC<MyStatusCardProps> = ({
+  myMeals,
+  myDeposit,
+  balance,
+  role,
+  isLoading = false,
+}) => {
+  if (isLoading) {
+    return (
+      <div className="rounded-2xl border border-border-color bg-card-bg p-4.5 shadow-xs animate-pulse">
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-28 bg-secondary-bg rounded-md" />
+          <div className="h-5 w-16 bg-secondary-bg rounded-full" />
+        </div>
+        <div className="mt-3.5 h-16 rounded-xl bg-secondary-bg" />
+      </div>
+    );
+  }
+
+  const isSurplus = balance >= 0;
+  const roleName = role === 'owner' ? 'মালিক' : role === 'manager' ? 'ম্যানেজার' : 'সদস্য';
 
   return (
     <div className="rounded-2xl border border-border-color bg-card-bg p-4.5 shadow-xs transition-colors">
@@ -21,7 +43,7 @@ export const MyStatusCard: React.FC<MyStatusCardProps> = ({ userStatus }) => {
             <h2 className="text-sm font-semibold text-pure-color">আমার হিসাব</h2>
             <p className="text-[11px] text-subtitle-color flex items-center gap-1">
               <UserCheck className="size-3 text-emerald-600" />
-              <span>{userStatus.role === 'manager' ? 'ম্যানেজার' : 'সদস্য'}</span>
+              <span>{roleName}</span>
             </p>
           </div>
         </div>
@@ -59,15 +81,15 @@ export const MyStatusCard: React.FC<MyStatusCardProps> = ({ userStatus }) => {
               isSurplus ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
             )}
           >
-            {formatCurrency(Math.abs(userStatus.balance))}
+            {formatCurrency(Math.abs(balance))}
           </p>
         </div>
         <div className="text-right text-xs space-y-1">
           <p className="text-subtitle-color">
-            মোট জমা: <span className="font-semibold text-pure-color">{formatCurrency(userStatus.myDeposit)}</span>
+            মোট জমা: <span className="font-semibold text-pure-color">{formatCurrency(myDeposit)}</span>
           </p>
           <p className="text-subtitle-color">
-            আমার মিল: <span className="font-semibold text-pure-color">{userStatus.myMeals} টি</span>
+            আমার মিল: <span className="font-semibold text-pure-color">{myMeals} টি</span>
           </p>
         </div>
       </div>
