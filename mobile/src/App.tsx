@@ -25,6 +25,7 @@ import { MealEntryModal } from '@/components/meals/MealEntryModal';
 import { ExpensesScreen } from '@/components/finances/ExpensesScreen';
 import { DepositEntryModal } from '@/components/finances/DepositEntryModal';
 import { ExpenseEntryModal } from '@/components/finances/ExpenseEntryModal';
+import { MembersScreen } from '@/components/members/MembersScreen';
 import { BottomNavbar, type NavTab } from '@/components/navigation/BottomNavbar';
 import type { TodayMeals, MessActivity } from '@/types/mess';
 
@@ -63,6 +64,7 @@ export function App() {
   const { mutateAsync: upsertMeal, isPending: isUpdatingMeal } = useUpsertMeal();
 
   const isManager = member ? ['owner', 'admin', 'manager'].includes(member.role) : false;
+  const isOwner = member?.role === 'owner';
 
   // Sync dark class on document element
   useEffect(() => {
@@ -408,6 +410,22 @@ export function App() {
               currentMemberId={member.id}
               isManager={isManager}
               mealRate={summary?.totals.mealRate || 0}
+              onSuccessToast={triggerToast}
+            />
+          ) : activeTab === 'members' ? (
+            <MembersScreen
+              workspaceId={workspace.id}
+              workspaceName={workspace.name}
+              periodId={activePeriodId}
+              periodYear={summary?.period.year || 2026}
+              periodMonth={summary?.period.month || 1}
+              members={workspaceMembers}
+              summaryMembers={summary?.members || []}
+              currentMemberId={member.id}
+              isOwner={isOwner}
+              isManager={isManager}
+              isLoading={isSummaryLoading}
+              onRefresh={handleRefresh}
               onSuccessToast={triggerToast}
             />
           ) : (
