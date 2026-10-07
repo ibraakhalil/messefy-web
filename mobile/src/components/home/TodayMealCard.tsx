@@ -1,13 +1,15 @@
 import React from 'react';
-import { SunMedium, MoonStar, Plus, Minus, CheckCircle2, XCircle } from 'lucide-react';
+import { SunMedium, MoonStar, Plus, Minus, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import type { TodayMeals } from '@/types/mess';
 import { cn } from '@/lib/utils';
+import { toBanglaNumber } from '@/lib/period-utils';
 
 interface TodayMealCardProps {
   todayMeals: TodayMeals;
   onUpdateLunch: (delta: number) => void;
   onUpdateDinner: (delta: number) => void;
   onToggleStatus: () => void;
+  isUpdating?: boolean;
 }
 
 export const TodayMealCard: React.FC<TodayMealCardProps> = ({
@@ -15,6 +17,7 @@ export const TodayMealCard: React.FC<TodayMealCardProps> = ({
   onUpdateLunch,
   onUpdateDinner,
   onToggleStatus,
+  isUpdating = false,
 }) => {
   const isOff = todayMeals.status === 'off';
 
@@ -36,14 +39,20 @@ export const TodayMealCard: React.FC<TodayMealCardProps> = ({
         {/* Quick Toggle On / Off */}
         <button
           onClick={onToggleStatus}
+          disabled={isUpdating}
           className={cn(
-            'flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition active:scale-95',
+            'flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition active:scale-95 disabled:opacity-50',
             isOff
               ? 'bg-rose-50 text-rose-600 border border-rose-200 dark:bg-rose-950/40 dark:border-rose-900'
               : 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900'
           )}
         >
-          {isOff ? (
+          {isUpdating ? (
+            <>
+              <Loader2 className="size-3.5 animate-spin" />
+              <span>আপডেট হচ্ছে...</span>
+            </>
+          ) : isOff ? (
             <>
               <XCircle className="size-3.5" />
               <span>মিল অফ</span>
@@ -79,17 +88,17 @@ export const TodayMealCard: React.FC<TodayMealCardProps> = ({
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => onUpdateLunch(-1)}
-              disabled={isOff || todayMeals.lunch <= 0}
+              disabled={isOff || todayMeals.lunch <= 0 || isUpdating}
               className="flex size-6.5 items-center justify-center rounded-lg bg-card-bg border border-border-color text-icon-color disabled:opacity-30 active:scale-90"
             >
               <Minus className="size-3" />
             </button>
-            <span className="w-5 text-center text-sm font-bold text-pure-color">
-              {todayMeals.lunch}
+            <span className="w-5 text-center text-sm font-bold text-pure-color tabular-nums">
+              {toBanglaNumber(todayMeals.lunch)}
             </span>
             <button
               onClick={() => onUpdateLunch(1)}
-              disabled={isOff}
+              disabled={isOff || isUpdating}
               className="flex size-6.5 items-center justify-center rounded-lg bg-primary text-white shadow-xs disabled:opacity-30 active:scale-90"
             >
               <Plus className="size-3" />
@@ -117,17 +126,17 @@ export const TodayMealCard: React.FC<TodayMealCardProps> = ({
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => onUpdateDinner(-1)}
-              disabled={isOff || todayMeals.dinner <= 0}
+              disabled={isOff || todayMeals.dinner <= 0 || isUpdating}
               className="flex size-6.5 items-center justify-center rounded-lg bg-card-bg border border-border-color text-icon-color disabled:opacity-30 active:scale-90"
             >
               <Minus className="size-3" />
             </button>
-            <span className="w-5 text-center text-sm font-bold text-pure-color">
-              {todayMeals.dinner}
+            <span className="w-5 text-center text-sm font-bold text-pure-color tabular-nums">
+              {toBanglaNumber(todayMeals.dinner)}
             </span>
             <button
               onClick={() => onUpdateDinner(1)}
-              disabled={isOff}
+              disabled={isOff || isUpdating}
               className="flex size-6.5 items-center justify-center rounded-lg bg-primary text-white shadow-xs disabled:opacity-30 active:scale-90"
             >
               <Plus className="size-3" />

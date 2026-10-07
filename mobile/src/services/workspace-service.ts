@@ -55,4 +55,10 @@ export const workspaceService = {
     const response = await apiClient.get<Workspace>(`/workspaces/${workspaceId}`);
     return response.data;
   },
+
+  // Get all members of a workspace
+  async getWorkspaceMembers(workspaceId: string): Promise<WorkspaceMember[]> {
+    const response = await apiClient.get<WorkspaceMember[]>(`/workspaces/${workspaceId}/members`);
+    return response.data;
+  },
 };

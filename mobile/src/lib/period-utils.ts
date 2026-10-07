@@ -45,3 +45,39 @@ export function formatTimeAgo(dateString: string): string {
 
   return date.toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
 }
+
+export function toBanglaNumber(val: number | string): string {
+  const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return String(val).replace(/[0-9]/g, (digit) => banglaDigits[parseInt(digit, 10)] ?? digit);
+}
+
+export function toDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getTodayDateString(): string {
+  return toDateKey(new Date());
+}
+
+export function getYesterdayDateString(): string {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return toDateKey(yesterday);
+}
+
+const BANGLA_WEEKDAYS = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+
+export function formatBanglaWeekday(dateString: string): string {
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(year, (month || 1) - 1, day || 1);
+  return BANGLA_WEEKDAYS[date.getDay()] || '';
+}
+
+export function formatBanglaDate(dateString: string): string {
+  const [year, month, day] = dateString.split('-').map(Number);
+  const monthName = BANGLA_MONTHS[(month || 1) - 1] || '';
+  return `${toBanglaNumber(day || 1)} ${monthName}, ${toBanglaNumber(year || 2026)}`;
+}

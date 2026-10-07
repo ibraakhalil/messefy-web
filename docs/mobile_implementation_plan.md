@@ -153,11 +153,11 @@ gantt
 | ফেজ | মডিউলের নাম | মূল দায়িত্ব | সাব-এজেন্ট রিভিউ ক্রাইটেরিয়া | স্ট্যাটাস |
 | :--- | :--- | :--- | :--- | :--- |
 | **১** | **API & Storage** | Axios + TanStack Query + Auth Storage | টাইপ-সেফ API ক্লায়েন্ট ও টোকেন হ্যান্ডলিং | ✅ সম্পন্ন (Verified) |
-| **২** | **Auth Flow** | Login, Signup, Session Guard & Auto-login | Zod ফর্ম ভ্যালিডেশন ও সিকিউর সেশন | ⏳ প্রতীক্ষমাণ |
-| **৩** | **Workspace/Mess** | Join/Create Mess, Mess Switcher | এম্পটি স্টেট ও মাল্টি-মেস হ্যান্ডলিং | ⏳ প্রতীক্ষমাণ |
-| **৪** | **Live Dashboard** | Period Summary, Real Meal Rate, Wallet | অপটিমিস্টিক রিফ্রেশ ও জিরো এরর | ⏳ প্রতীক্ষমাণ |
-| **৫** | **Daily Meals** | Quick meal counter, Meal sheet matrix | অফলাইন রেজিলিয়েন্স ও দ্রুত টাচ রেসপন্স | ⏳ প্রতীক্ষমাণ |
-| **৬** | **Deposits & Expenses** | Deposit modal, Expense ledger, Category | কারেন্সি ফরম্যাটিং ও রিয়েলটাইম আপডেট | ⏳ প্রতীক্ষমাণ |
+| **২** | **Auth Flow** | Login, Signup, Session Guard & Auto-login | Zod ফর্ম ভ্যালিডেশন ও সিকিউর সেশন | ✅ সম্পন্ন (Verified) |
+| **৩** | **Workspace/Mess** | Join/Create Mess, Mess Switcher | এম্পটি স্টেট ও মাল্টি-মেস হ্যান্ডলিং | ✅ সম্পন্ন (Verified) |
+| **৪** | **Live Dashboard** | Period Summary, Real Meal Rate, Wallet | অপটিমিস্টিক রিফ্রেশ ও জিরো এরর | ✅ সম্পন্ন (Verified) |
+| **৫** | **Daily Meals** | Quick meal counter, Meal sheet matrix | অফলাইন রেজিলিয়েন্স ও দ্রুত টাচ রেসপন্স | ✅ সম্পন্ন (Verified) |
+| **৬** | **Deposits & Expenses** | Deposit modal, Expense ledger, Category | কারেন্সি ফরম্যাটিং ও রিয়েলটাইম আপডেট | ⏳ পরবর্তী ফেজ |
 | **৭** | **Members & Lifecycle** | Member balance list, Start new month | আরবিএসি (RBAC) রোল পারমিশন গার্ড | ⏳ প্রতীক্ষমাণ |
 | **৮** | **Polish & Release** | Profile settings, Haptics, Release APK | Android 16-এ স্মুথ রান ও <৬ MB সাইজ | ⏳ প্রতীক্ষমাণ |
 

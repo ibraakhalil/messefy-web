@@ -3,7 +3,15 @@ import { Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useWorkspace } from '@/hooks/use-workspace';
 import { useCurrentWorkspaceSummary } from '@/hooks/use-dashboard-summary';
-import { getBanglaPeriodName, getDaysRemainingInPeriod, formatTimeAgo } from '@/lib/period-utils';
+import {
+  getBanglaPeriodName,
+  getDaysRemainingInPeriod,
+  formatTimeAgo,
+  getTodayDateString,
+  formatBanglaDate,
+  formatBanglaWeekday,
+} from '@/lib/period-utils';
+import { useMealChart, useUpsertMeal } from '@/hooks/use-meals';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { NoWorkspaceView } from '@/components/workspace/NoWorkspaceView';
 import { MessHeader } from '@/components/home/MessHeader';
@@ -12,15 +20,10 @@ import { MyStatusCard } from '@/components/home/MyStatusCard';
 import { TodayMealCard } from '@/components/home/TodayMealCard';
 import { QuickActions } from '@/components/home/QuickActions';
 import { RecentActivityList } from '@/components/home/RecentActivityList';
+import { MealsScreen } from '@/components/meals/MealsScreen';
+import { MealEntryModal } from '@/components/meals/MealEntryModal';
 import { BottomNavbar, type NavTab } from '@/components/navigation/BottomNavbar';
 import type { TodayMeals, MessActivity } from '@/types/mess';
-
-const DEFAULT_TODAY_MEALS: TodayMeals = {
-  date: 'বুধবার, ২৫ মার্চ',
-  lunch: 1,
-  dinner: 1,
-  status: 'active',
-};
 
 export function App() {
   const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth();
@@ -43,8 +46,15 @@ export function App() {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [activeTab, setActiveTab] = useState<NavTab>('home');
-  const [todayMeals, setTodayMeals] = useState<TodayMeals>(DEFAULT_TODAY_MEALS);
+  const [isMealEntryModalOpen, setIsMealEntryModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Meal Chart & Upsert hooks for active period
+  const activePeriodId = summary?.period?.id || '';
+  const { data: mealChart } = useMealChart(activePeriodId);
+  const { mutateAsync: upsertMeal, isPending: isUpdatingMeal } = useUpsertMeal();
+
+  const isManager = member ? ['owner', 'admin', 'manager'].includes(member.role) : false;
 
   // Sync dark class on document element
   useEffect(() => {
@@ -59,6 +69,27 @@ export function App() {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 2500);
   };
+
+  // Compute today's meal entry from live backend chart
+  const todayDateStr = getTodayDateString();
+  const todayEntry = useMemo(() => {
+    if (!mealChart?.entries || !member?.id) return null;
+    return mealChart.entries.find(
+      (e) => e.memberId === member.id && e.date === todayDateStr
+    );
+  }, [mealChart, member, todayDateStr]);
+
+  const todayMeals: TodayMeals = useMemo(() => {
+    const lunch = todayEntry?.lunch ?? 0;
+    const dinner = todayEntry?.dinner ?? 0;
+    const status = lunch > 0 || dinner > 0 ? 'active' : 'off';
+    return {
+      date: `${formatBanglaWeekday(todayDateStr)}, ${formatBanglaDate(todayDateStr)}`,
+      lunch,
+      dinner,
+      status,
+    };
+  }, [todayEntry, todayDateStr]);
 
   // Derive user's member stats from live backend summary
   const myMemberSummary =
@@ -108,39 +139,84 @@ export function App() {
     ? getDaysRemainingInPeriod(summary.period.year, summary.period.month)
     : 0;
 
-  const handleUpdateLunch = (delta: number) => {
-    setTodayMeals((prev) => ({
-      ...prev,
-      lunch: Math.max(0, prev.lunch + delta),
-    }));
-    triggerToast(`দুপুরের মিল আপডেট করা হয়েছে (${delta > 0 ? '+1' : '-1'})`);
+  const handleUpdateLunch = async (delta: number) => {
+    if (!workspace || !summary?.period || !member) {
+      triggerToast('মেস বা পিরিয়ড পাওয়া যায়নি');
+      return;
+    }
+    const newLunch = Math.max(0, todayMeals.lunch + delta);
+    try {
+      await upsertMeal({
+        workspaceId: workspace.id,
+        periodId: summary.period.id,
+        memberId: member.id,
+        date: todayDateStr,
+        breakfast: todayEntry?.breakfast ?? 0,
+        lunch: newLunch,
+        dinner: todayMeals.dinner,
+        mealId: todayEntry?.id,
+      });
+      triggerToast(`দুপুরের মিল আপডেট করা হয়েছে (${delta > 0 ? '+১' : '-১'})`);
+    } catch (err: unknown) {
+      console.error('Failed to update lunch:', err);
+      triggerToast('মিল আপডেট করতে সমস্যা হয়েছে');
+    }
   };
 
-  const handleUpdateDinner = (delta: number) => {
-    setTodayMeals((prev) => ({
-      ...prev,
-      dinner: Math.max(0, prev.dinner + delta),
-    }));
-    triggerToast(`রাতের মিল আপডেট করা হয়েছে (${delta > 0 ? '+1' : '-1'})`);
+  const handleUpdateDinner = async (delta: number) => {
+    if (!workspace || !summary?.period || !member) {
+      triggerToast('মেস বা পিরিয়ড পাওয়া যায়নি');
+      return;
+    }
+    const newDinner = Math.max(0, todayMeals.dinner + delta);
+    try {
+      await upsertMeal({
+        workspaceId: workspace.id,
+        periodId: summary.period.id,
+        memberId: member.id,
+        date: todayDateStr,
+        breakfast: todayEntry?.breakfast ?? 0,
+        lunch: todayMeals.lunch,
+        dinner: newDinner,
+        mealId: todayEntry?.id,
+      });
+      triggerToast(`রাতের মিল আপডেট করা হয়েছে (${delta > 0 ? '+১' : '-১'})`);
+    } catch (err: unknown) {
+      console.error('Failed to update dinner:', err);
+      triggerToast('মিল আপডেট করতে সমস্যা হয়েছে');
+    }
   };
 
-  const handleToggleMealStatus = () => {
-    setTodayMeals((prev) => {
-      const nextStatus = prev.status === 'active' ? 'off' : 'active';
+  const handleToggleMealStatus = async () => {
+    if (!workspace || !summary?.period || !member) {
+      triggerToast('মেস বা পিরিয়ড পাওয়া যায়নি');
+      return;
+    }
+    const nextStatus = todayMeals.status === 'active' ? 'off' : 'active';
+    const nextLunch = nextStatus === 'off' ? 0 : 1;
+    const nextDinner = nextStatus === 'off' ? 0 : 1;
+    try {
+      await upsertMeal({
+        workspaceId: workspace.id,
+        periodId: summary.period.id,
+        memberId: member.id,
+        date: todayDateStr,
+        breakfast: nextStatus === 'off' ? 0 : (todayEntry?.breakfast ?? 0),
+        lunch: nextLunch,
+        dinner: nextDinner,
+        mealId: todayEntry?.id,
+      });
       triggerToast(nextStatus === 'off' ? 'আজকের মিল বন্ধ করা হলো' : 'আজকের মিল চালু করা হলো');
-      return {
-        ...prev,
-        status: nextStatus,
-        lunch: nextStatus === 'off' ? 0 : 1,
-        dinner: nextStatus === 'off' ? 0 : 1,
-      };
-    });
+    } catch (err: unknown) {
+      console.error('Failed to toggle meal status:', err);
+      triggerToast('মিল স্ট্যাটাস পরিবর্তন করা সম্ভব হয়নি');
+    }
   };
 
   const handleQuickAction = (actionId: string) => {
     switch (actionId) {
       case 'meal-entry':
-        triggerToast('মিল এন্ট্রি প্যানেল পরবর্তী ফেজে যুক্ত হচ্ছে...');
+        setIsMealEntryModalOpen(true);
         break;
       case 'deposit':
         triggerToast('টাকা জমার এন্ট্রি ফর্ম পরবর্তী ফেজে যুক্ত হচ্ছে...');
@@ -259,6 +335,7 @@ export function App() {
                 onUpdateLunch={handleUpdateLunch}
                 onUpdateDinner={handleUpdateDinner}
                 onToggleStatus={handleToggleMealStatus}
+                isUpdating={isUpdatingMeal}
               />
 
               {/* 4. Quick Action Tiles */}
@@ -270,7 +347,28 @@ export function App() {
                 onViewAll={() => setActiveTab('expenses')}
                 isLoading={isSummaryLoading}
               />
+
+              {/* Quick Meal Entry Modal triggered from Home Quick Actions */}
+              <MealEntryModal
+                isOpen={isMealEntryModalOpen}
+                onClose={() => setIsMealEntryModalOpen(false)}
+                workspaceId={workspace.id}
+                periodId={activePeriodId}
+                currentMemberId={member.id}
+                isManager={isManager}
+                onSuccessToast={triggerToast}
+              />
             </>
+          ) : activeTab === 'meals' ? (
+            <MealsScreen
+              workspaceId={workspace.id}
+              periodId={activePeriodId}
+              periodYear={summary?.period.year || 2026}
+              periodMonth={summary?.period.month || 1}
+              currentMemberId={member.id}
+              isManager={isManager}
+              onSuccessToast={triggerToast}
+            />
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="size-16 rounded-2xl bg-secondary-bg flex items-center justify-center text-subtitle-color text-2xl font-bold mb-3">
