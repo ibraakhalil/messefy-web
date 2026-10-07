@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Building2 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { AuthScreen } from '@/components/auth/AuthScreen';
 import { MessHeader } from '@/components/home/MessHeader';
 import { PeriodSummaryCard } from '@/components/home/PeriodSummaryCard';
 import { MyStatusCard } from '@/components/home/MyStatusCard';
@@ -85,6 +88,7 @@ const DEFAULT_TODAY_MEALS: TodayMeals = {
 };
 
 export function App() {
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const [isDark, setIsDark] = useState<boolean>(() => {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
@@ -154,6 +158,26 @@ export function App() {
     }
   };
 
+  // 1. Loading Splash Screen
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-primary-bg">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg animate-pulse">
+            <Building2 className="size-7" />
+          </div>
+          <p className="text-xs font-semibold text-subtitle-color">মেসিফাই চালু হচ্ছে...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Unauthenticated: Auth Screen (Login / Register)
+  if (!isAuthenticated) {
+    return <AuthScreen />;
+  }
+
+  // 3. Authenticated: Mobile Dashboard
   return (
     <div className="min-h-screen bg-primary-bg text-pure-color transition-colors">
       {/* Toast Notification */}
@@ -173,6 +197,8 @@ export function App() {
           periodSummary={INITIAL_PERIOD_SUMMARY}
           isDark={isDark}
           onToggleTheme={() => setIsDark((prev) => !prev)}
+          userName={user?.name || 'ব্যবহারকারী'}
+          onLogout={logout}
         />
 
         {/* Main Body Content */}
@@ -183,7 +209,12 @@ export function App() {
               <PeriodSummaryCard summary={INITIAL_PERIOD_SUMMARY} />
 
               {/* 2. Personal Status (Balance, Deposits, Meals) */}
-              <MyStatusCard userStatus={INITIAL_USER_STATUS} />
+              <MyStatusCard
+                userStatus={{
+                  ...INITIAL_USER_STATUS,
+                  userName: user?.name || INITIAL_USER_STATUS.userName,
+                }}
+              />
 
               {/* 3. Today's Meal Counter & Status */}
               <TodayMealCard

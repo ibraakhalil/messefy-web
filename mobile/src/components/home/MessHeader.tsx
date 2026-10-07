@@ -1,5 +1,5 @@
-import React from 'react';
-import { Bell, Moon, Sun, Building2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Bell, Moon, Sun, Building2, LogOut } from 'lucide-react';
 import type { MessInfo, PeriodSummary } from '@/types/mess';
 
 interface MessHeaderProps {
@@ -7,6 +7,8 @@ interface MessHeaderProps {
   periodSummary: PeriodSummary;
   isDark: boolean;
   onToggleTheme: () => void;
+  userName?: string;
+  onLogout?: () => void;
 }
 
 export const MessHeader: React.FC<MessHeaderProps> = ({
@@ -14,7 +16,20 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
   periodSummary,
   isDark,
   onToggleTheme,
+  userName = 'User',
+  onLogout,
 }) => {
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-card-bg/80 backdrop-blur-md border-b border-border-color px-4 py-3 transition-colors">
       <div className="flex items-center justify-between">
@@ -37,7 +52,7 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
         </div>
 
         {/* Right Action Icons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 relative">
           {/* Dark Mode Toggle */}
           <button
             onClick={onToggleTheme}
@@ -56,10 +71,37 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
             <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-rose-500 ring-2 ring-card-bg" />
           </button>
 
-          {/* User Avatar */}
-          <div className="size-9 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-600 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-card-bg">
-            IK
-          </div>
+          {/* User Avatar with Dropdown */}
+          <button
+            onClick={() => setShowProfileMenu((prev) => !prev)}
+            aria-label="Profile menu"
+            className="size-9 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-700 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-2 ring-emerald-500/30 active:scale-95 transition"
+          >
+            {getInitials(userName)}
+          </button>
+
+          {/* Profile Dropdown Menu */}
+          {showProfileMenu && (
+            <div className="absolute right-0 top-11 w-44 rounded-2xl border border-border-color bg-card-bg p-1.5 shadow-xl shadow-black/10 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="px-3 py-2 border-b border-border-color/60">
+                <p className="text-xs font-bold text-pure-color truncate">{userName}</p>
+                <p className="text-[10px] text-subtitle-color">লগইন করা আছে</p>
+              </div>
+
+              {onLogout && (
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    onLogout();
+                  }}
+                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left"
+                >
+                  <LogOut className="size-3.5" />
+                  <span>লগআউট করুন</span>
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>
