@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { useWorkspace } from '@/hooks/use-workspace';
 import { AuthScreen } from '@/components/auth/AuthScreen';
+import { NoWorkspaceView } from '@/components/workspace/NoWorkspaceView';
 import { MessHeader } from '@/components/home/MessHeader';
 import { PeriodSummaryCard } from '@/components/home/PeriodSummaryCard';
 import { MyStatusCard } from '@/components/home/MyStatusCard';
@@ -9,15 +11,7 @@ import { TodayMealCard } from '@/components/home/TodayMealCard';
 import { QuickActions } from '@/components/home/QuickActions';
 import { RecentActivityList } from '@/components/home/RecentActivityList';
 import { BottomNavbar, type NavTab } from '@/components/navigation/BottomNavbar';
-import type { MessInfo, PeriodSummary, UserMessStatus, TodayMeals, MessActivity } from '@/types/mess';
-
-// Initial Mock Data mirroring Messefy Web backend & DB structure
-const INITIAL_MESS_INFO: MessInfo = {
-  id: 'mess-01',
-  name: 'নূর মঞ্জিল মেস',
-  address: 'বাড়ি #১২, রোড #৪, ধানমন্ডি, ঢাকা',
-  totalMembers: 8,
-};
+import type { PeriodSummary, UserMessStatus, TodayMeals, MessActivity } from '@/types/mess';
 
 const INITIAL_PERIOD_SUMMARY: PeriodSummary = {
   periodId: 'period-2026-10',
@@ -88,7 +82,15 @@ const DEFAULT_TODAY_MEALS: TodayMeals = {
 };
 
 export function App() {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated, isLoading: authLoading, logout } = useAuth();
+  const {
+    member,
+    workspace,
+    hasWorkspace,
+    isLoading: workspaceLoading,
+    refetchWorkspace,
+  } = useWorkspace();
+
   const [isDark, setIsDark] = useState<boolean>(() => {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
@@ -159,7 +161,7 @@ export function App() {
   };
 
   // 1. Loading Splash Screen
-  if (isLoading) {
+  if (authLoading || (isAuthenticated && workspaceLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-primary-bg">
         <div className="flex flex-col items-center gap-3">
@@ -177,7 +179,12 @@ export function App() {
     return <AuthScreen />;
   }
 
-  // 3. Authenticated: Mobile Dashboard
+  // 3. Authenticated but No Mess/Workspace: Onboarding View
+  if (!hasWorkspace || !workspace) {
+    return <NoWorkspaceView onSuccess={refetchWorkspace} />;
+  }
+
+  // 4. Authenticated & In a Mess: Mobile Dashboard
   return (
     <div className="min-h-screen bg-primary-bg text-pure-color transition-colors">
       {/* Toast Notification */}
@@ -193,7 +200,12 @@ export function App() {
       <div className="mx-auto flex min-h-screen max-w-md flex-col bg-primary-bg shadow-2xl relative">
         {/* App Top Bar */}
         <MessHeader
-          messInfo={INITIAL_MESS_INFO}
+          messInfo={{
+            id: workspace.id,
+            name: workspace.name,
+            address: workspace.description || undefined,
+            totalMembers: 8,
+          }}
           periodSummary={INITIAL_PERIOD_SUMMARY}
           isDark={isDark}
           onToggleTheme={() => setIsDark((prev) => !prev)}
@@ -213,6 +225,8 @@ export function App() {
                 userStatus={{
                   ...INITIAL_USER_STATUS,
                   userName: user?.name || INITIAL_USER_STATUS.userName,
+                  role: member?.role || 'member',
+                  isManager: member?.role === 'owner' || member?.role === 'manager',
                 }}
               />
 
