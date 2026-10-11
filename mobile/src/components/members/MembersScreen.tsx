@@ -5,14 +5,10 @@ import {
   Share2,
   CalendarCheck,
   Search,
-  Shield,
-  Utensils,
-  Wallet,
-  Receipt,
   UserMinus,
   RefreshCw,
-  Mail,
   Crown,
+  ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getBanglaPeriodName, toBanglaNumber } from '@/lib/period-utils';
@@ -109,6 +105,14 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
     return combinedMembers.reduce((sum, m) => sum + m.deposits, 0);
   }, [combinedMembers]);
 
+  const dueCount = useMemo(() => {
+    return combinedMembers.filter((m) => m.balance < 0).length;
+  }, [combinedMembers]);
+
+  const surplusCount = useMemo(() => {
+    return combinedMembers.filter((m) => m.balance >= 0).length;
+  }, [combinedMembers]);
+
   // Filtered members
   const filteredMembers = useMemo(() => {
     let list = combinedMembers;
@@ -150,87 +154,81 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
   const periodName = getBanglaPeriodName(periodYear, periodMonth);
 
   return (
-    <div className="space-y-4 pb-6">
-      {/* Overview Banner */}
-      <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
-        <div className="relative z-10 flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
-                সদস্যদের তালিকা ও হিসাব
-              </span>
-              <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[11px] font-medium text-emerald-200">
-                {periodName}
-              </span>
+    <div className="space-y-3.5 pb-6">
+      {/* 1. Sleek Compact Header & Metric Strip */}
+      <section className="rounded-2xl border border-border-color bg-card-bg p-3.5 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Users className="size-4" />
             </div>
-            <h1 className="mt-1.5 text-2xl font-black tracking-tight">{workspaceName}</h1>
-            <p className="mt-0.5 text-xs text-teal-100/80">
-              মোট {toBanglaNumber(combinedMembers.length)} জন সদস্য সক্রিয়
-            </p>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-sm font-bold text-pure-color">{workspaceName}</h1>
+                <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
+                  {periodName}
+                </span>
+              </div>
+              <p className="text-[11px] text-subtitle-color">
+                মোট {toBanglaNumber(combinedMembers.length)} জন সদস্য
+              </p>
+            </div>
           </div>
 
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              disabled={isLoading}
-              className="flex size-9 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 active:scale-95"
-              aria-label="রিফ্রেশ করুন"
-            >
-              <RefreshCw className={cn('size-4', isLoading && 'animate-spin')} />
-            </button>
-          )}
+          <div className="flex items-center gap-1.5">
+            {onRefresh && (
+              <button
+                type="button"
+                onClick={onRefresh}
+                disabled={isLoading}
+                className="flex size-8 items-center justify-center rounded-xl border border-border-color bg-card-bg text-subtitle-color transition hover:text-pure-color active:scale-95"
+                aria-label="রিফ্রেশ করুন"
+              >
+                <RefreshCw className={cn('size-3.5', isLoading && 'animate-spin')} />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* 4 Stats Cards */}
-        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-teal-200">
-              <Users className="size-3.5" />
-              <span className="text-[10px] font-medium">মোট মেম্বার</span>
-            </div>
-            <p className="mt-1 text-base font-bold tabular-nums">
+        {/* 4 Compact Stat Chips */}
+        <div className="grid grid-cols-4 divide-x divide-border-color/60 rounded-xl bg-surface-alt/70 py-2 text-center">
+          <div className="px-1">
+            <span className="text-[10px] font-medium text-subtitle-color">সদস্য</span>
+            <p className="mt-0.5 text-xs font-black tabular-nums text-pure-color">
               {toBanglaNumber(combinedMembers.length)} জন
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-teal-200">
-              <Utensils className="size-3.5" />
-              <span className="text-[10px] font-medium">মোট মিল</span>
-            </div>
-            <p className="mt-1 text-base font-bold tabular-nums">
+          <div className="px-1">
+            <span className="text-[10px] font-medium text-subtitle-color">মোট মিল</span>
+            <p className="mt-0.5 text-xs font-black tabular-nums text-pure-color">
               {toBanglaNumber(totalMealsAll)} টি
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-rose-300">
-              <Receipt className="size-3.5" />
-              <span className="text-[10px] font-medium">মোট ডিউ/বকেয়া</span>
-            </div>
-            <p className="mt-1 text-base font-bold tabular-nums text-rose-300">
+          <div className="px-1">
+            <span className="text-[10px] font-medium text-subtitle-color">মোট বকেয়া</span>
+            <p className="mt-0.5 text-xs font-black tabular-nums text-rose-600 dark:text-rose-400 truncate">
               ৳{toBanglaNumber(Math.round(totalDueAmount).toLocaleString('bn-BD'))}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-teal-200">
-              <Wallet className="size-3.5" />
-              <span className="text-[10px] font-medium">মোট জমা</span>
-            </div>
-            <p className="mt-1 text-base font-bold tabular-nums">
+          <div className="px-1">
+            <span className="text-[10px] font-medium text-subtitle-color">মোট জমা</span>
+            <p className="mt-0.5 text-xs font-black tabular-nums text-emerald-700 dark:text-emerald-400 truncate">
               ৳{toBanglaNumber(Math.round(totalDepositsAll).toLocaleString('bn-BD'))}
             </p>
           </div>
         </div>
       </section>
 
-      {/* Action Row */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* 2. Action Row */}
+      <div className="grid grid-cols-2 gap-2">
         {/* Share Invite Code */}
         <button
+          type="button"
           onClick={() => setIsShareModalOpen(true)}
-          className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl bg-secondary-bg border border-border-color py-2.5 px-3 text-xs font-bold text-pure-color shadow-2xs transition active:scale-95 hover:bg-card-bg"
+          className="flex items-center justify-center gap-1.5 rounded-2xl border border-border-color bg-card-bg py-2.5 px-3 text-xs font-bold text-pure-color shadow-2xs transition active:scale-95 hover:bg-hover-bg"
         >
           <Share2 className="size-3.5 text-primary" />
           <span>মেস কোড শেয়ার</span>
@@ -239,27 +237,34 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
         {/* Add Member */}
         {(isManager || isOwner) && (
           <button
+            type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl bg-primary py-2.5 px-3 text-xs font-bold text-white shadow-xs transition active:scale-95 hover:opacity-95"
+            className="flex items-center justify-center gap-1.5 rounded-2xl bg-primary py-2.5 px-3 text-xs font-bold text-white shadow-xs transition active:scale-95 hover:opacity-95"
           >
             <UserPlus className="size-3.5" />
             <span>+ সদস্য যোগ</span>
           </button>
         )}
-
-        {/* Start New Month (Owner only) */}
-        {isOwner && (
-          <button
-            onClick={() => setIsNewMonthModalOpen(true)}
-            className="w-full flex items-center justify-center gap-1.5 rounded-2xl bg-indigo-700/80 hover:bg-indigo-700 py-2.5 px-3 text-xs font-bold text-white shadow-xs transition active:scale-95"
-          >
-            <CalendarCheck className="size-3.5" />
-            <span>নতুন মাস শুরু ও পিরিয়ড ক্লোজ</span>
-          </button>
-        )}
       </div>
 
-      {/* Search & Filter */}
+      {/* Start New Month (Owner only, subtle & clean banner) */}
+      {isOwner && (
+        <button
+          type="button"
+          onClick={() => setIsNewMonthModalOpen(true)}
+          className="w-full flex items-center justify-between rounded-2xl border border-indigo-500/20 bg-indigo-50/70 dark:bg-indigo-950/30 px-3.5 py-2.5 text-xs font-semibold text-indigo-900 dark:text-indigo-300 transition active:scale-98 hover:bg-indigo-100/70 dark:hover:bg-indigo-900/40"
+        >
+          <div className="flex items-center gap-2">
+            <div className="flex size-6 items-center justify-center rounded-lg bg-indigo-600 text-white">
+              <CalendarCheck className="size-3.5" />
+            </div>
+            <span>নতুন মাস শুরু ও পিরিয়ড ক্লোজ করুন</span>
+          </div>
+          <ChevronRight className="size-4 opacity-60" />
+        </button>
+      )}
+
+      {/* 3. Search & Filter Bar */}
       <div className="space-y-2">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 size-3.5 -translate-y-1/2 text-subtitle-color" />
@@ -272,12 +277,13 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
           />
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 rounded-xl bg-secondary-bg/70 p-1">
+        {/* Filter Pills with real counts */}
+        <div className="flex items-center gap-1.5 rounded-xl bg-surface-alt p-1">
           <button
+            type="button"
             onClick={() => setFilter('all')}
             className={cn(
-              'flex-1 rounded-lg py-1.5 text-center text-xs font-semibold transition',
+              'flex-1 rounded-lg py-1.5 text-center text-xs font-bold transition',
               filter === 'all'
                 ? 'bg-card-bg text-pure-color shadow-2xs'
                 : 'text-subtitle-color hover:text-pure-color'
@@ -285,32 +291,47 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
           >
             সবাই ({toBanglaNumber(combinedMembers.length)})
           </button>
+
           <button
+            type="button"
             onClick={() => setFilter('due')}
             className={cn(
-              'flex-1 rounded-lg py-1.5 text-center text-xs font-semibold transition',
+              'flex-1 rounded-lg py-1.5 text-center text-xs font-bold transition flex items-center justify-center gap-1',
               filter === 'due'
                 ? 'bg-card-bg text-rose-600 dark:text-rose-400 shadow-2xs'
                 : 'text-subtitle-color hover:text-pure-color'
             )}
           >
-            বাকি আছে
+            <span>বাকি আছে</span>
+            <span
+              className={cn(
+                'text-[10px] px-1 rounded-full',
+                dueCount > 0 ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 font-extrabold' : ''
+              )}
+            >
+              ({toBanglaNumber(dueCount)})
+            </span>
           </button>
+
           <button
+            type="button"
             onClick={() => setFilter('surplus')}
             className={cn(
-              'flex-1 rounded-lg py-1.5 text-center text-xs font-semibold transition',
+              'flex-1 rounded-lg py-1.5 text-center text-xs font-bold transition flex items-center justify-center gap-1',
               filter === 'surplus'
-                ? 'bg-card-bg text-emerald-600 dark:text-emerald-400 shadow-2xs'
+                ? 'bg-card-bg text-emerald-700 dark:text-emerald-400 shadow-2xs'
                 : 'text-subtitle-color hover:text-pure-color'
             )}
           >
-            উদ্বৃত্ত আছে
+            <span>উদ্বৃত্ত আছে</span>
+            <span className="text-[10px]">
+              ({toBanglaNumber(surplusCount)})
+            </span>
           </button>
         </div>
       </div>
 
-      {/* Member Cards List */}
+      {/* 4. Member Cards List */}
       <section className="space-y-3">
         {isLoading ? (
           <div className="space-y-3">
@@ -334,7 +355,7 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
               <article
                 key={m.id}
                 className={cn(
-                  'rounded-2xl border p-4 shadow-2xs transition-colors',
+                  'rounded-2xl border p-3.5 shadow-2xs transition-colors',
                   m.isMe
                     ? 'border-emerald-500/40 bg-emerald-500/5 dark:bg-emerald-950/20'
                     : 'border-border-color bg-card-bg'
@@ -346,38 +367,38 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
                     <div className="relative flex size-10 shrink-0 items-center justify-center rounded-2xl bg-secondary-bg text-sm font-black text-pure-color shadow-2xs">
                       {m.name.charAt(0) || 'M'}
                       {m.role === 'owner' && (
-                        <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-white">
+                        <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-white shadow-2xs">
                           <Crown className="size-2.5" />
                         </span>
                       )}
                     </div>
 
                     <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center flex-wrap gap-1.5">
                         <p className="truncate text-xs font-bold text-pure-color">
                           {m.name}
                         </p>
                         {m.isMe && (
-                          <span className="rounded-full bg-emerald-100 dark:bg-emerald-900/60 px-1.5 py-0.2 text-[9px] font-bold text-emerald-800 dark:text-emerald-300">
+                          <span className="rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700 dark:text-emerald-400">
                             আপনি
+                          </span>
+                        )}
+                        {m.role !== 'member' && (
+                          <span className="rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 dark:text-amber-400">
+                            {m.role === 'owner' ? 'মালিক' : 'ম্যানেজার'}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2 text-[10px] text-subtitle-color mt-0.5">
-                        <span className="flex items-center gap-0.5">
-                          <Shield className="size-2.5" />
-                          {m.role === 'owner'
-                            ? 'মেস মালিক'
-                            : m.role === 'manager'
-                            ? 'ম্যানেজার'
-                            : 'সদস্য'}
-                        </span>
-                        {m.email && (
-                          <span className="truncate max-w-[140px] flex items-center gap-0.5">
-                            <Mail className="size-2.5" />
+                      <div className="mt-0.5">
+                        {m.email ? (
+                          <p className="truncate text-[11px] text-subtitle-color max-w-[170px]">
                             {m.email}
-                          </span>
+                          </p>
+                        ) : (
+                          <p className="text-[11px] text-subtitle-color">
+                            {m.isOffline ? 'অফলাইন সদস্য' : 'অ্যাক্টিভ সদস্য'}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -387,7 +408,7 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
                   <div className="text-right shrink-0">
                     <p
                       className={cn(
-                        'text-xs font-extrabold tabular-nums',
+                        'text-xs font-black tabular-nums',
                         isDue
                           ? 'text-rose-600 dark:text-rose-400'
                           : 'text-emerald-700 dark:text-emerald-400'
@@ -397,10 +418,10 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
                     </p>
                     <span
                       className={cn(
-                        'rounded-full px-2 py-0.2 text-[9px] font-semibold inline-block mt-0.5',
+                        'rounded-full px-2 py-0.5 text-[9px] font-bold inline-block mt-0.5 border',
                         isDue
-                          ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                          : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                          ? 'border-rose-500/30 bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
+                          : 'border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
                       )}
                     >
                       {isDue ? 'বকেয়া আছে' : 'উদ্বৃত্ত পাবে'}
@@ -410,21 +431,21 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
 
                 {/* Metrics 3-Col Grid */}
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-xl bg-secondary-bg/80 p-2">
+                  <div className="rounded-xl bg-surface-alt/70 p-2">
                     <p className="text-[10px] text-subtitle-color">মোট মিল</p>
                     <p className="text-xs font-bold text-pure-color tabular-nums mt-0.5">
                       {toBanglaNumber(m.meals)} টি
                     </p>
                   </div>
 
-                  <div className="rounded-xl bg-secondary-bg/80 p-2">
+                  <div className="rounded-xl bg-surface-alt/70 p-2">
                     <p className="text-[10px] text-subtitle-color">মোট জমা</p>
                     <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 tabular-nums mt-0.5">
                       ৳{toBanglaNumber(Math.round(m.deposits).toLocaleString('bn-BD'))}
                     </p>
                   </div>
 
-                  <div className="rounded-xl bg-secondary-bg/80 p-2">
+                  <div className="rounded-xl bg-surface-alt/70 p-2">
                     <p className="text-[10px] text-subtitle-color">মিল খরচ</p>
                     <p className="text-xs font-bold text-rose-600 dark:text-rose-400 tabular-nums mt-0.5">
                       ৳{toBanglaNumber(Math.round(m.mealCost).toLocaleString('bn-BD'))}

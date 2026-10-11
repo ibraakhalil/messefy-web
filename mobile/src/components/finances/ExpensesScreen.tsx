@@ -35,6 +35,10 @@ interface ExpensesScreenProps {
   currentMemberId: string;
   isManager: boolean;
   mealRate?: number;
+  hideBanner?: boolean;
+  hideActionRow?: boolean;
+  onOpenExpense?: () => void;
+  onOpenDeposit?: () => void;
   onSuccessToast?: (msg: string) => void;
 }
 
@@ -61,6 +65,10 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({
   currentMemberId,
   isManager,
   mealRate = 0,
+  hideBanner = false,
+  hideActionRow = false,
+  onOpenExpense,
+  onOpenDeposit,
   onSuccessToast,
 }) => {
   const [filter, setFilter] = useState<FilterType>('all');
@@ -188,91 +196,95 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({
   return (
     <div className="space-y-4 pb-6">
       {/* Financial Overview Card */}
-      <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
-        <div className="relative z-10 flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
-                বাজার ও আর্থিক লেজার
-              </span>
-              <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[11px] font-medium text-emerald-200">
-                {periodName}
-              </span>
+      {!hideBanner && (
+        <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
+          <div className="relative z-10 flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
+                  বাজার ও আর্থিক লেজার
+                </span>
+                <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[11px] font-medium text-emerald-200">
+                  {periodName}
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-emerald-100/80">মেস ব্যালেন্স ও ক্যাশ ফান্ড</p>
+              <h1 className="mt-0.5 text-2xl font-black tracking-tight tabular-nums flex items-baseline gap-1">
+                <span>{netFund >= 0 ? '+' : '-'}৳{toBanglaNumber(Math.abs(Math.round(netFund)).toLocaleString('bn-BD'))}</span>
+                <span className="text-xs font-semibold text-emerald-300">
+                  ({netFund >= 0 ? 'ক্যাশ জমা আছে' : 'ঘাটতি আছে'})
+                </span>
+              </h1>
             </div>
-            <p className="mt-2 text-xs text-emerald-100/80">মেস ব্যালেন্স ও ক্যাশ ফান্ড</p>
-            <h1 className="mt-0.5 text-2xl font-black tracking-tight tabular-nums flex items-baseline gap-1">
-              <span>{netFund >= 0 ? '+' : '-'}৳{toBanglaNumber(Math.abs(Math.round(netFund)).toLocaleString('bn-BD'))}</span>
-              <span className="text-xs font-semibold text-emerald-300">
-                ({netFund >= 0 ? 'ক্যাশ জমা আছে' : 'ঘাটতি আছে'})
-              </span>
-            </h1>
+
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="flex size-9 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 active:scale-95"
+              aria-label="রিফ্রেশ করুন"
+            >
+              <RefreshCw className={cn('size-4', isRefreshing && 'animate-spin')} />
+            </button>
           </div>
 
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="flex size-9 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 active:scale-95"
-            aria-label="রিফ্রেশ করুন"
-          >
-            <RefreshCw className={cn('size-4', isRefreshing && 'animate-spin')} />
-          </button>
-        </div>
-
-        {/* 3 Stats Overview Tiles */}
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          {/* Total Expenses */}
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1 text-rose-300">
-              <TrendingDown className="size-3.5" />
-              <span className="text-[10px] font-medium">মোট বাজার</span>
+          {/* 3 Stats Overview Tiles */}
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {/* Total Expenses */}
+            <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
+              <div className="flex items-center gap-1 text-rose-300">
+                <TrendingDown className="size-3.5" />
+                <span className="text-[10px] font-medium">মোট বাজার</span>
+              </div>
+              <p className="mt-1 text-sm font-bold tabular-nums">
+                ৳{toBanglaNumber(Math.round(totalExpenses).toLocaleString('bn-BD'))}
+              </p>
             </div>
-            <p className="mt-1 text-sm font-bold tabular-nums">
-              ৳{toBanglaNumber(Math.round(totalExpenses).toLocaleString('bn-BD'))}
-            </p>
-          </div>
 
-          {/* Total Deposits */}
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1 text-emerald-300">
-              <TrendingUp className="size-3.5" />
-              <span className="text-[10px] font-medium">মোট জমা</span>
+            {/* Total Deposits */}
+            <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
+              <div className="flex items-center gap-1 text-emerald-300">
+                <TrendingUp className="size-3.5" />
+                <span className="text-[10px] font-medium">মোট জমা</span>
+              </div>
+              <p className="mt-1 text-sm font-bold tabular-nums">
+                ৳{toBanglaNumber(Math.round(totalDeposits).toLocaleString('bn-BD'))}
+              </p>
             </div>
-            <p className="mt-1 text-sm font-bold tabular-nums">
-              ৳{toBanglaNumber(Math.round(totalDeposits).toLocaleString('bn-BD'))}
-            </p>
-          </div>
 
-          {/* Meal Rate */}
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1 text-amber-300">
-              <DollarSign className="size-3.5" />
-              <span className="text-[10px] font-medium">মিল রেট</span>
+            {/* Meal Rate */}
+            <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
+              <div className="flex items-center gap-1 text-amber-300">
+                <DollarSign className="size-3.5" />
+                <span className="text-[10px] font-medium">মিল রেট</span>
+              </div>
+              <p className="mt-1 text-sm font-bold tabular-nums">
+                ৳{toBanglaNumber(mealRate.toFixed(2))}
+              </p>
             </div>
-            <p className="mt-1 text-sm font-bold tabular-nums">
-              ৳{toBanglaNumber(mealRate.toFixed(2))}
-            </p>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Action Buttons Row */}
-      <div className="grid grid-cols-2 gap-2.5">
-        <button
-          onClick={() => setIsExpenseModalOpen(true)}
-          className="flex items-center justify-center gap-1.5 rounded-2xl bg-orange-600 py-3 text-xs font-bold text-white shadow-xs transition active:scale-95 hover:bg-orange-700"
-        >
-          <Plus className="size-4" />
-          <span>+ বাজার খরচ</span>
-        </button>
+      {!hideActionRow && (
+        <div className="grid grid-cols-2 gap-2.5">
+          <button
+            onClick={() => (onOpenExpense ? onOpenExpense() : setIsExpenseModalOpen(true))}
+            className="flex items-center justify-center gap-1.5 rounded-2xl bg-orange-600 py-3 text-xs font-bold text-white shadow-xs transition active:scale-95 hover:bg-orange-700"
+          >
+            <Plus className="size-4" />
+            <span>+ বাজার খরচ</span>
+          </button>
 
-        <button
-          onClick={() => setIsDepositModalOpen(true)}
-          className="flex items-center justify-center gap-1.5 rounded-2xl bg-emerald-700 py-3 text-xs font-bold text-white shadow-xs transition active:scale-95 hover:bg-emerald-800"
-        >
-          <Plus className="size-4" />
-          <span>+ টাকা জমা</span>
-        </button>
-      </div>
+          <button
+            onClick={() => (onOpenDeposit ? onOpenDeposit() : setIsDepositModalOpen(true))}
+            className="flex items-center justify-center gap-1.5 rounded-2xl bg-emerald-700 py-3 text-xs font-bold text-white shadow-xs transition active:scale-95 hover:bg-emerald-800"
+          >
+            <Plus className="size-4" />
+            <span>+ টাকা জমা</span>
+          </button>
+        </div>
+      )}
 
       {/* Search & Filter Bar */}
       <div className="space-y-2">

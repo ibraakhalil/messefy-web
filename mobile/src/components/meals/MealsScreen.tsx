@@ -31,7 +31,10 @@ interface MealsScreenProps {
   periodMonth: number;
   currentMemberId: string;
   isManager: boolean;
+  hideBanner?: boolean;
+  hideActionRow?: boolean;
   onSuccessToast?: (msg: string) => void;
+  onOpenMealEntry?: () => void;
 }
 
 interface DaySummary {
@@ -65,7 +68,10 @@ export const MealsScreen: React.FC<MealsScreenProps> = ({
   periodMonth,
   currentMemberId,
   isManager,
+  hideBanner = false,
+  hideActionRow = false,
   onSuccessToast,
+  onOpenMealEntry,
 }) => {
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
   const [searchMember, setSearchMember] = useState('');
@@ -173,76 +179,75 @@ export const MealsScreen: React.FC<MealsScreenProps> = ({
   return (
     <div className="space-y-4 pb-6">
       {/* Header Banner */}
-      <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
-        <div className="relative z-10 flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
-                মিল শিট ও হিসাব
-              </span>
-              <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[11px] font-medium text-emerald-200">
-                চলতি মাস
-              </span>
+      {!hideBanner && (
+        <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
+          <div className="relative z-10 flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
+                  মিল শিট ও হিসাব
+                </span>
+                <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[11px] font-medium text-emerald-200">
+                  চলতি মাস
+                </span>
+              </div>
+              <h1 className="mt-1.5 text-2xl font-black tracking-tight">{periodName}</h1>
+              <p className="mt-0.5 text-xs text-emerald-100/80">
+                প্রতিদিনের মিল গণনা ও মাসিক শিট
+              </p>
             </div>
-            <h1 className="mt-1.5 text-2xl font-black tracking-tight">{periodName}</h1>
-            <p className="mt-0.5 text-xs text-emerald-100/80">
-              প্রতিদিনের মিল গণনা ও মাসিক শিট
-            </p>
+
+            <button
+              onClick={() => refetch()}
+              disabled={isRefetching}
+              className="flex size-9 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 active:scale-95"
+              aria-label="রিফ্রেশ করুন"
+            >
+              <RefreshCw className={cn('size-4', isRefetching && 'animate-spin')} />
+            </button>
           </div>
 
-          <button
-            onClick={() => refetch()}
-            disabled={isRefetching}
-            className="flex size-9 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 active:scale-95"
-            aria-label="রিফ্রেশ করুন"
-          >
-            <RefreshCw className={cn('size-4', isRefetching && 'animate-spin')} />
-          </button>
-        </div>
-
-        {/* 4 Stats Cards */}
-        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-emerald-200">
-              <Utensils className="size-3.5" />
-              <span className="text-[10px] font-medium">মোট মিল</span>
+          {/* 4 Stats Cards */}
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
+              <div className="flex items-center gap-1.5 text-emerald-200">
+                <Utensils className="size-3.5" />
+                <span className="text-[10px] font-medium">মোট মিল</span>
+              </div>
+              <p className="mt-1 text-lg font-bold tabular-nums">
+                {toBanglaNumber(totalMeals)}
+              </p>
             </div>
-            <p className="mt-1 text-lg font-bold tabular-nums">
-              {toBanglaNumber(totalMeals)}
-            </p>
-          </div>
 
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-emerald-200">
-              <CalendarDays className="size-3.5" />
-              <span className="text-[10px] font-medium">রেকর্ডকৃত দিন</span>
+            <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
+              <div className="flex items-center gap-1.5 text-emerald-200">
+                <CalendarDays className="size-3.5" />
+                <span className="text-[10px] font-medium">রেকর্ডকৃত দিন</span>
+              </div>
+              <p className="mt-1 text-lg font-bold tabular-nums">
+                {toBanglaNumber(recordedDays)} দিন
+              </p>
             </div>
-            <p className="mt-1 text-lg font-bold tabular-nums">
-              {toBanglaNumber(recordedDays)} দিন
-            </p>
-          </div>
 
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-emerald-200">
-              <TrendingUp className="size-3.5" />
-              <span className="text-[10px] font-medium">দৈনিক গড়</span>
+            <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
+              <div className="flex items-center gap-1.5 text-emerald-200">
+                <TrendingUp className="size-3.5" />
+                <span className="text-[10px] font-medium">দৈনিক গড়</span>
+              </div>
+              <p className="mt-1 text-lg font-bold tabular-nums">
+                {toBanglaNumber(avgMealsPerDay)}
+              </p>
             </div>
-            <p className="mt-1 text-lg font-bold tabular-nums">
-              {toBanglaNumber(avgMealsPerDay)}
-            </p>
-          </div>
 
-          <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
-            <div className="flex items-center gap-1.5 text-emerald-200">
-              <Users className="size-3.5" />
-              <span className="text-[10px] font-medium">মেম্বার সংখ্যা</span>
+            <div className="rounded-2xl bg-white/10 p-2.5 backdrop-blur-md">
+              <Users className="size-3.5 text-emerald-200" />
+              <p className="mt-1 text-lg font-bold tabular-nums">
+                {toBanglaNumber(chartData?.members.length || 0)} জন
+              </p>
             </div>
-            <p className="mt-1 text-lg font-bold tabular-nums">
-              {toBanglaNumber(chartData?.members.length || 0)} জন
-            </p>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Action Row & Search */}
       <div className="flex items-center justify-between gap-2.5">
@@ -257,13 +262,15 @@ export const MealsScreen: React.FC<MealsScreenProps> = ({
           />
         </div>
 
-        <button
-          onClick={() => setIsEntryModalOpen(true)}
-          className="flex shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-3.5 py-2 text-xs font-bold text-white shadow-xs transition active:scale-95"
-        >
-          <Plus className="size-4" />
-          <span>মিল এন্ট্রি</span>
-        </button>
+        {!hideActionRow && (
+          <button
+            onClick={() => (onOpenMealEntry ? onOpenMealEntry() : setIsEntryModalOpen(true))}
+            className="flex shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-3.5 py-2 text-xs font-bold text-white shadow-xs transition active:scale-95"
+          >
+            <Plus className="size-4" />
+            <span>মিল এন্ট্রি</span>
+          </button>
+        )}
       </div>
 
       {/* Daily Breakdown List */}

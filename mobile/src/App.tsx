@@ -20,9 +20,9 @@ import { MyStatusCard } from '@/components/home/MyStatusCard';
 import { TodayMealCard } from '@/components/home/TodayMealCard';
 import { QuickActions } from '@/components/home/QuickActions';
 import { RecentActivityList } from '@/components/home/RecentActivityList';
-import { MealsScreen } from '@/components/meals/MealsScreen';
+import { AccountingScreen } from '@/components/accounting/AccountingScreen';
+import { ReportsScreen } from '@/components/reports/ReportsScreen';
 import { MealEntryModal } from '@/components/meals/MealEntryModal';
-import { ExpensesScreen } from '@/components/finances/ExpensesScreen';
 import { DepositEntryModal } from '@/components/finances/DepositEntryModal';
 import { ExpenseEntryModal } from '@/components/finances/ExpenseEntryModal';
 import { MembersScreen } from '@/components/members/MembersScreen';
@@ -362,7 +362,7 @@ export function App() {
               {/* 5. Live Recent Activity Feed */}
               <RecentActivityList
                 activities={liveActivities}
-                onViewAll={() => setActiveTab('expenses')}
+                onViewAll={() => setActiveTab('accounting')}
                 isLoading={isSummaryLoading}
               />
 
@@ -398,18 +398,8 @@ export function App() {
                 onSuccessToast={triggerToast}
               />
             </>
-          ) : activeTab === 'meals' ? (
-            <MealsScreen
-              workspaceId={workspace.id}
-              periodId={activePeriodId}
-              periodYear={summary?.period.year || 2026}
-              periodMonth={summary?.period.month || 1}
-              currentMemberId={member.id}
-              isManager={isManager}
-              onSuccessToast={triggerToast}
-            />
-          ) : activeTab === 'expenses' ? (
-            <ExpensesScreen
+          ) : activeTab === 'accounting' ? (
+            <AccountingScreen
               workspaceId={workspace.id}
               periodId={activePeriodId}
               periodYear={summary?.period.year || 2026}
@@ -418,6 +408,21 @@ export function App() {
               currentMemberId={member.id}
               isManager={isManager}
               mealRate={summary?.totals.mealRate || 0}
+              totalMeals={summary?.totals.totalMeals || 0}
+              totalExpenses={summary?.totals.totalExpenses || 0}
+              totalDeposits={summary?.totals.totalDeposits || 0}
+              netBalance={summary?.totals.netBalance || 0}
+              onSuccessToast={triggerToast}
+            />
+          ) : activeTab === 'reports' ? (
+            <ReportsScreen
+              workspaceName={workspace.name}
+              periodYear={summary?.period.year || 2026}
+              periodMonth={summary?.period.month || 1}
+              summary={summary || null}
+              isLoading={isSummaryLoading}
+              onRefresh={handleRefresh}
+              isRefreshing={isSummaryRefetching}
               onSuccessToast={triggerToast}
             />
           ) : activeTab === 'members' ? (

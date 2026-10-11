@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 import { toBanglaNumber } from '@/lib/period-utils';
 import { haptics } from '@/lib/haptics';
+import { Switch } from '@/components/ui/switch';
 import { EditProfileModal } from './EditProfileModal';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { LogoutConfirmModal } from './LogoutConfirmModal';
@@ -249,23 +250,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               </p>
             </div>
           </div>
-          <button
-            onClick={() => {
+          <Switch
+            checked={isDark}
+            onCheckedChange={() => {
               haptics.selection();
               onToggleTheme();
             }}
-            className={cn(
-              'relative h-6 w-11 rounded-full transition-colors duration-200 focus:outline-hidden',
-              isDark ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-700'
-            )}
-          >
-            <span
-              className={cn(
-                'inline-block size-5 transform rounded-full bg-white shadow-md transition-transform duration-200',
-                isDark ? 'translate-x-5' : 'translate-x-0.5'
-              )}
-            />
-          </button>
+            aria-label="ডার্ক মোড টগল করুন"
+          />
         </div>
 
         {/* Haptics Feedback Toggle */}
@@ -281,20 +273,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               </p>
             </div>
           </div>
-          <button
-            onClick={handleToggleHaptics}
-            className={cn(
-              'relative h-6 w-11 rounded-full transition-colors duration-200 focus:outline-hidden',
-              hapticsActive ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-700'
-            )}
-          >
-            <span
-              className={cn(
-                'inline-block size-5 transform rounded-full bg-white shadow-md transition-transform duration-200',
-                hapticsActive ? 'translate-x-5' : 'translate-x-0.5'
-              )}
-            />
-          </button>
+          <Switch
+            checked={hapticsActive}
+            onCheckedChange={handleToggleHaptics}
+            aria-label="টাচ হ্যাপটিক্স টগল করুন"
+          />
         </div>
 
         {/* Password / Security */}

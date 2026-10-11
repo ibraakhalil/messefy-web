@@ -10,8 +10,8 @@ import {
   ChevronDown,
   Menu,
   Home,
-  Utensils,
-  Receipt,
+  ReceiptText,
+  BarChart3,
   Users,
   ChevronRight,
 } from 'lucide-react';
@@ -80,8 +80,8 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
     icon: React.ComponentType<{ className?: string }>;
   }[] = [
     { tab: 'home', label: 'হোম ড্যাশবোর্ড', icon: Home },
-    { tab: 'meals', label: 'মিল হিসাব ও শিট', icon: Utensils },
-    { tab: 'expenses', label: 'বাজার খরচ ও লেজার', icon: Receipt },
+    { tab: 'accounting', label: 'মিল ও বাজার হিসাব', icon: ReceiptText },
+    { tab: 'reports', label: 'মাসিক রিপোর্ট ও অডিট', icon: BarChart3 },
     { tab: 'members', label: 'সদস্য তালিকা ও ব্যালেন্স', icon: Users },
     { tab: 'profile', label: 'আমার প্রোফাইল ও সেটিংস', icon: User },
   ];
