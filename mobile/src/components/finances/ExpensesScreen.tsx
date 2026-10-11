@@ -24,6 +24,7 @@ import {
 } from '@/hooks/use-finances';
 import { DepositEntryModal } from './DepositEntryModal';
 import { ExpenseEntryModal } from './ExpenseEntryModal';
+import { toast } from 'sonner';
 import type { WorkspaceMember } from '@/types/workspace';
 
 interface ExpensesScreenProps {
@@ -180,14 +181,16 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({
     try {
       if (item.type === 'deposit') {
         await deleteDeposit({ depositId: item.rawId, periodId });
+        toast.success('ডিপোজিট সফলভাবে মুছে ফেলা হয়েছে');
         onSuccessToast?.('ডিপোজিট সফলভাবে মুছে ফেলা হয়েছে');
       } else {
         await deleteExpense({ expenseId: item.rawId, periodId });
+        toast.success('বাজার খরচ সফলভাবে মুছে ফেলা হয়েছে');
         onSuccessToast?.('বাজার খরচ সফলভাবে মুছে ফেলা হয়েছে');
       }
     } catch (err: unknown) {
       console.error('Failed to delete transaction:', err);
-      window.alert('মুছে ফেলতে সমস্যা হয়েছে');
+      toast.error('মুছে ফেলতে সমস্যা হয়েছে');
     }
   };
 

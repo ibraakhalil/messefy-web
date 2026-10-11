@@ -13,6 +13,7 @@ import {
 import { cn } from '@/lib/utils';
 import { getBanglaPeriodName, toBanglaNumber } from '@/lib/period-utils';
 import { useMemberActions } from '@/hooks/use-member-actions';
+import { toast } from 'sonner';
 import { AddMemberModal } from './AddMemberModal';
 import { ShareInviteModal } from './ShareInviteModal';
 import { StartNewMonthModal } from './StartNewMonthModal';
@@ -144,10 +145,11 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
 
     try {
       await removeMember({ memberId: targetMemberId });
+      toast.success('সদস্যকে মেস থেকে রিমুভ করা হয়েছে');
       onSuccessToast?.('সদস্যকে মেস থেকে রিমুভ করা হয়েছে');
     } catch (err: unknown) {
       console.error('Failed to remove member:', err);
-      window.alert('সদস্য রিমুভ করতে সমস্যা হয়েছে');
+      toast.error('সদস্য রিমুভ করতে সমস্যা হয়েছে');
     }
   };
 

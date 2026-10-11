@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
+import { toast } from 'sonner';
 import { getBanglaPeriodName, toBanglaNumber } from '@/lib/period-utils';
 import type { WorkspaceSummaryResponse, SummaryMember } from '@/services/summary-service';
 
@@ -106,9 +107,11 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({
       }
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
+      toast.success('পুরো রিপোর্ট টেক্সট কপি করা হয়েছে!');
       onSuccessToast?.('পুরো রিপোর্ট টেক্সট কপি করা হয়েছে!');
     } catch (err) {
       console.error('Clipboard copy error:', err);
+      toast.error('কপি করা সম্ভব হয়নি');
       onSuccessToast?.('কপি করা সম্ভব হয়নি');
     }
   };

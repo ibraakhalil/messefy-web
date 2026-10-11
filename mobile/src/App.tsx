@@ -29,6 +29,8 @@ import { MembersScreen } from '@/components/members/MembersScreen';
 import { ProfileScreen } from '@/components/profile/ProfileScreen';
 import { OfflineBanner } from '@/components/common/OfflineBanner';
 import { BottomNavbar, type NavTab } from '@/components/navigation/BottomNavbar';
+import { toast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import type { TodayMeals, MessActivity } from '@/types/mess';
 
 export function App() {
@@ -55,7 +57,6 @@ export function App() {
   const [isMealEntryModalOpen, setIsMealEntryModalOpen] = useState(false);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Workspace members query for deposits and meal assignments
   const { data: workspaceMembers = [] } = useWorkspaceMembers(workspace?.id);
@@ -78,8 +79,7 @@ export function App() {
   }, [isDark]);
 
   const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    toast.success(msg);
   };
 
   // Compute today's meal entry from live backend chart
@@ -276,15 +276,6 @@ export function App() {
   // 4. Authenticated & In a Mess: Mobile Dashboard
   return (
     <div className="min-h-screen bg-primary-bg text-pure-color transition-colors">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 animate-bounce">
-          <div className="rounded-full bg-emerald-700 dark:bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-lg">
-            {toastMessage}
-          </div>
-        </div>
-      )}
-
       {/* Mobile Wrapper */}
       <div className="mx-auto flex min-h-screen max-w-md flex-col bg-primary-bg shadow-2xl relative">
         {/* Offline Network Status Banner */}
@@ -475,6 +466,9 @@ export function App() {
 
         {/* Bottom Navigation */}
         <BottomNavbar currentTab={activeTab} onTabChange={setActiveTab} />
+
+        {/* Global Shadcn Sonner Toaster */}
+        <Toaster position="top-center" richColors closeButton />
       </div>
     </div>
   );

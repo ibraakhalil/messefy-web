@@ -1,7 +1,23 @@
 @import "tailwindcss";
-@import url('https://fonts.maateen.me/siyam-rupali/font.css');
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Siyam Rupali';
+  src: url('/fonts/siyam-rupali.woff2') format('woff2'),
+       url('/fonts/siyam-rupali.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* Option 1: Emerald Fintech / Linear Solid Palette */
