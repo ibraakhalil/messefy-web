@@ -26,6 +26,8 @@ import { ExpensesScreen } from '@/components/finances/ExpensesScreen';
 import { DepositEntryModal } from '@/components/finances/DepositEntryModal';
 import { ExpenseEntryModal } from '@/components/finances/ExpenseEntryModal';
 import { MembersScreen } from '@/components/members/MembersScreen';
+import { ProfileScreen } from '@/components/profile/ProfileScreen';
+import { OfflineBanner } from '@/components/common/OfflineBanner';
 import { BottomNavbar, type NavTab } from '@/components/navigation/BottomNavbar';
 import type { TodayMeals, MessActivity } from '@/types/mess';
 
@@ -285,6 +287,9 @@ export function App() {
 
       {/* Mobile Wrapper */}
       <div className="mx-auto flex min-h-screen max-w-md flex-col bg-primary-bg shadow-2xl relative">
+        {/* Offline Network Status Banner */}
+        <OfflineBanner />
+
         {/* App Top Bar */}
         <MessHeader
           messInfo={{
@@ -313,6 +318,7 @@ export function App() {
           onLogout={logout}
           onRefresh={handleRefresh}
           isRefreshing={isSummaryRefetching}
+          onNavigateProfile={() => setActiveTab('profile')}
         />
 
         {/* Main Body Content */}
@@ -427,6 +433,19 @@ export function App() {
               isLoading={isSummaryLoading}
               onRefresh={handleRefresh}
               onSuccessToast={triggerToast}
+            />
+          ) : activeTab === 'profile' ? (
+            <ProfileScreen
+              workspaceName={workspace.name}
+              workspaceAddress={workspace.description || undefined}
+              memberRole={member?.role || 'member'}
+              myMeals={myMemberSummary?.meals || 0}
+              myDeposit={myMemberSummary?.deposits || 0}
+              myBalance={myMemberSummary?.balance || 0}
+              isDark={isDark}
+              onToggleTheme={() => setIsDark((prev) => !prev)}
+              onSuccessToast={triggerToast}
+              onLogout={logout}
             />
           ) : (
             <div className="flex flex-col items-center justify-center py-20 text-center">

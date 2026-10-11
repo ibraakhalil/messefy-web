@@ -1,6 +1,7 @@
 import React from 'react';
 import { Home, Utensils, Receipt, Users, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { haptics } from '@/lib/haptics';
 
 export type NavTab = 'home' | 'meals' | 'expenses' | 'members' | 'profile';
 
@@ -28,7 +29,12 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ currentTab, onTabCha
           return (
             <button
               key={tab.id}
-              onClick={() => onTabChange(tab.id)}
+              onClick={() => {
+                if (currentTab !== tab.id) {
+                  haptics.selection();
+                }
+                onTabChange(tab.id);
+              }}
               className={cn(
                 'flex flex-col items-center justify-center py-1 px-3 rounded-xl transition active:scale-90',
                 isActive

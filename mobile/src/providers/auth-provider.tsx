@@ -64,6 +64,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(session.user);
   };
 
+  const updateUser = useCallback((updatedUser: UserProfile) => {
+    setUser(updatedUser);
+    authStorage.setUser(updatedUser);
+  }, []);
+
+  const updateProfile = useCallback(async (data: { name: string }) => {
+    const updated = await authService.updateProfile(data);
+    setUser(updated);
+    authStorage.setUser(updated);
+    return updated;
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -73,6 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        updateUser,
+        updateProfile,
         logout,
       }}
     >
@@ -80,3 +94,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Moon, Sun, Building2, LogOut, RotateCw } from 'lucide-react';
+import { Bell, Moon, Sun, Building2, LogOut, RotateCw, User } from 'lucide-react';
 import type { MessInfo, PeriodSummary } from '@/types/mess';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,7 @@ interface MessHeaderProps {
   onLogout?: () => void;
   onRefresh?: () => void;
   isRefreshing?: boolean;
+  onNavigateProfile?: () => void;
 }
 
 export const MessHeader: React.FC<MessHeaderProps> = ({
@@ -23,6 +24,7 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
   onLogout,
   onRefresh,
   isRefreshing = false,
+  onNavigateProfile,
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -104,6 +106,19 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
                 <p className="text-xs font-bold text-pure-color truncate">{userName}</p>
                 <p className="text-[10px] text-subtitle-color">লগইন করা আছে</p>
               </div>
+
+              {onNavigateProfile && (
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    onNavigateProfile();
+                  }}
+                  className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-pure-color hover:bg-secondary-bg transition text-left"
+                >
+                  <User className="size-3.5 text-emerald-600" />
+                  <span>আমার প্রোফাইল</span>
+                </button>
+              )}
 
               {onLogout && (
                 <button
