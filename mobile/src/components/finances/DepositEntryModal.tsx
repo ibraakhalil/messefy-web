@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  X,
   Wallet,
   Check,
   Loader2,
@@ -12,6 +11,13 @@ import { cn } from '@/lib/utils';
 import { toBanglaNumber } from '@/lib/period-utils';
 import { useCreateDeposit } from '@/hooks/use-finances';
 import type { WorkspaceMember } from '@/types/workspace';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface DepositEntryModalProps {
   isOpen: boolean;
@@ -42,8 +48,6 @@ export const DepositEntryModal: React.FC<DepositEntryModalProps> = ({
   const [formError, setFormError] = useState<string | null>(null);
 
   const { mutateAsync: createDeposit, isPending } = useCreateDeposit();
-
-  if (!isOpen) return null;
 
   const handleAmountPreset = (preset: number) => {
     setAmount(String(preset));
@@ -86,27 +90,24 @@ export const DepositEntryModal: React.FC<DepositEntryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-3xl border border-border-color bg-card-bg shadow-2xl overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent variant="bottom-sheet" className="p-0">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border-color px-5 py-4">
+        <DialogHeader className="border-b border-border-color px-5 py-4 text-left pr-12">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
               <Wallet className="size-4.5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-pure-color">মেসে টাকা জমা দিন</h3>
-              <p className="text-xs text-subtitle-color">মেম্বারদের ডিপোজিট হিসাব</p>
+              <DialogTitle className="text-base font-bold text-pure-color">
+                মেসে টাকা জমা দিন
+              </DialogTitle>
+              <DialogDescription className="text-xs text-subtitle-color mt-0.5">
+                মেম্বারদের ডিপোজিট হিসাব
+              </DialogDescription>
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary-bg text-subtitle-color hover:text-pure-color transition active:scale-95"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -223,7 +224,7 @@ export const DepositEntryModal: React.FC<DepositEntryModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

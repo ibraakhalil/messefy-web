@@ -254,7 +254,7 @@ export function App() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-primary-bg">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg animate-pulse">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-primary text-white shadow-xs animate-pulse">
             <Building2 className="size-7" />
           </div>
           <p className="text-xs font-semibold text-subtitle-color">মেসিফাই চালু হচ্ছে...</p>
@@ -319,6 +319,8 @@ export function App() {
           onRefresh={handleRefresh}
           isRefreshing={isSummaryRefetching}
           onNavigateProfile={() => setActiveTab('profile')}
+          currentTab={activeTab}
+          onNavigateTab={setActiveTab}
         />
 
         {/* Main Body Content */}

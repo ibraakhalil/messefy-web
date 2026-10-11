@@ -1,46 +1,52 @@
 @import "tailwindcss";
+@import url('https://fonts.maateen.me/siyam-rupali/font.css');
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Light Theme - Messefy Emerald Palette */
-  --primary: hsl(158 65% 27%);
+  /* Option 1: Emerald Fintech / Linear Solid Palette */
+  --primary: hsl(158 72% 31%);
   --primary-light: hsl(158 65% 38%);
-  --primary-bg: hsl(48 33% 98%);
+  --primary-bg: hsl(210 20% 98%);
   --primary-fg: hsl(0 0% 100%);
-  --secondary-bg: hsl(45 29% 95%);
+  --secondary-bg: hsl(210 16% 95%);
   --card-bg: hsl(0 0% 100%);
-  --card-shade: hsl(43 27% 93%);
-  --subtitle-color: hsl(160 10% 36%);
-  --subtitle-secondary: hsl(160 8% 48%);
-  --pure-color: hsl(164 35% 12%);
-  --icon-color: hsl(160 10% 36%);
-  --border-color: hsl(45 18% 86%);
+  --card-shade: hsl(210 16% 92%);
+  --subtitle-color: hsl(215 16% 45%);
+  --subtitle-secondary: hsl(215 14% 56%);
+  --pure-color: hsl(215 28% 12%);
+  --icon-color: hsl(215 16% 45%);
+  --border-color: hsl(214 20% 88%);
   --error: hsl(0 72% 51%);
-  --success: hsl(142 71% 36%);
+  --success: hsl(158 72% 31%);
   --warning: hsl(38 92% 50%);
 }
 
 .dark {
   /* Dark Theme */
   --primary: hsl(158 64% 42%);
-  --primary-light: hsl(158 64% 52%);
-  --primary-bg: hsl(164 35% 7%);
+  --primary-light: hsl(158 60% 50%);
+  --primary-bg: hsl(220 25% 7%);
   --primary-fg: hsl(0 0% 100%);
-  --secondary-bg: hsl(162 25% 11%);
-  --card-bg: hsl(163 24% 10%);
-  --card-shade: hsl(162 20% 15%);
-  --subtitle-color: hsl(154 10% 67%);
-  --subtitle-secondary: hsl(154 8% 55%);
-  --pure-color: hsl(48 30% 96%);
-  --icon-color: hsl(154 10% 67%);
-  --border-color: hsl(162 15% 21%);
+  --secondary-bg: hsl(220 20% 11%);
+  --card-bg: hsl(220 18% 13%);
+  --card-shade: hsl(220 16% 16%);
+  --subtitle-color: hsl(215 16% 65%);
+  --subtitle-secondary: hsl(215 14% 52%);
+  --pure-color: hsl(210 20% 98%);
+  --icon-color: hsl(215 16% 65%);
+  --border-color: hsl(220 16% 20%);
   --error: hsl(0 72% 51%);
-  --success: hsl(142 71% 45%);
+  --success: hsl(158 64% 42%);
   --warning: hsl(38 92% 50%);
 }
 
+
 @theme {
+  --font-sans: 'Inter', 'Siyam Rupali', 'Siyamrupali', 'Kalpurush', 'Hind Siliguri', system-ui, -apple-system, sans-serif;
+  --font-bangla: 'Siyam Rupali', 'Siyamrupali', 'Kalpurush', 'Hind Siliguri', 'Inter', system-ui, sans-serif;
+  --font-english: 'Inter', 'Siyam Rupali', 'Siyamrupali', system-ui, sans-serif;
+
   --color-primary: var(--primary);
   --color-primary-light: var(--primary-light);
   --color-primary-bg: var(--primary-bg);
@@ -65,12 +71,13 @@
     min-height: 100%;
     background-color: var(--color-primary-bg);
     color: var(--color-pure-color);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hind Siliguri', 'Kalpurush', sans-serif;
+    font-family: 'Inter', 'Siyam Rupali', 'Siyamrupali', 'Kalpurush', 'Hind Siliguri', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     user-select: none;
     -webkit-user-select: none;
     overscroll-behavior-y: contain;
   }
+
 
   /* Mobile Safe Area Inset Helpers */
   .safe-top {
@@ -87,3 +94,202 @@
     touch-action: manipulation;
   }
 }
+
+/* Drawer & Modal Smooth Animations */
+@keyframes drawerSlideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawerBackdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-drawer-slide {
+  animation: drawerSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+.animate-drawer-fade {
+  animation: drawerBackdropFadeIn 0.2s ease-out forwards;
+  will-change: opacity;
+}
+
+@keyframes drawerSlideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes drawerBackdropFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.animate-drawer-slide-out {
+  animation: drawerSlideOut 0.24s cubic-bezier(0.32, 0, 0.67, 0) forwards;
+  will-change: transform;
+}
+
+.animate-drawer-fade-out {
+  animation: drawerBackdropFadeOut 0.2s ease-in forwards;
+  will-change: opacity;
+}
+
+[data-state='open'].sheet-overlay-anim,
+.sheet-overlay-anim[data-state='open'] {
+  animation: drawerBackdropFadeIn 0.2s ease-out forwards;
+  will-change: opacity;
+}
+
+[data-state='closed'].sheet-overlay-anim,
+.sheet-overlay-anim[data-state='closed'] {
+  animation: drawerBackdropFadeOut 0.2s ease-in forwards;
+  will-change: opacity;
+}
+
+[data-state='open'].sheet-left-anim,
+.sheet-left-anim[data-state='open'] {
+  animation: drawerSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+[data-state='closed'].sheet-left-anim,
+.sheet-left-anim[data-state='closed'] {
+  animation: drawerSlideOut 0.24s cubic-bezier(0.32, 0, 0.67, 0) forwards;
+  will-change: transform;
+}
+
+@keyframes dialogZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dialogZoomOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes dialogSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dialogSlideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dropdownFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+[data-state='open'].dialog-overlay-anim,
+.dialog-overlay-anim[data-state='open'] {
+  animation: drawerBackdropFadeIn 0.2s ease-out forwards;
+  will-change: opacity;
+}
+
+[data-state='closed'].dialog-overlay-anim,
+.dialog-overlay-anim[data-state='closed'] {
+  animation: drawerBackdropFadeOut 0.2s ease-in forwards;
+  will-change: opacity;
+}
+
+[data-state='open'].dialog-content-anim,
+.dialog-content-anim[data-state='open'] {
+  animation: dialogZoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+[data-state='closed'].dialog-content-anim,
+.dialog-content-anim[data-state='closed'] {
+  animation: dialogZoomOut 0.18s ease-in forwards;
+  will-change: transform, opacity;
+}
+
+[data-state='open'].dialog-bottom-anim,
+.dialog-bottom-anim[data-state='open'] {
+  animation: dialogSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform;
+}
+
+[data-state='closed'].dialog-bottom-anim,
+.dialog-bottom-anim[data-state='closed'] {
+  animation: dialogSlideDown 0.2s ease-in forwards;
+  will-change: transform;
+}
+
+[data-state='open'].dropdown-content-anim,
+.dropdown-content-anim[data-state='open'] {
+  animation: dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+[data-state='closed'].dropdown-content-anim,
+.dropdown-content-anim[data-state='closed'] {
+  animation: dropdownFadeOut 0.12s ease-in forwards;
+  will-change: transform, opacity;
+}
+
+
+
+

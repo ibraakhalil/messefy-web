@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { X, Building2, Link as LinkIcon, MapPin, Loader2, AlertCircle } from 'lucide-react';
+import { Building2, Link as LinkIcon, MapPin, Loader2, AlertCircle } from 'lucide-react';
 import { useWorkspace } from '@/hooks/use-workspace';
 import { ZodError } from 'zod';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface CreateMessModalProps {
   isOpen: boolean;
@@ -16,8 +23,6 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  if (!isOpen) return null;
 
   // Auto-slugify when typing name if slug is untouched
   const handleNameChange = (val: string) => {
@@ -58,23 +63,24 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-border-color bg-card-bg p-6 shadow-2xl safe-bottom">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent variant="bottom-sheet" className="p-6 safe-bottom">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border-color/60">
+        <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
               <Building2 className="size-5" />
             </div>
-            <h2 className="text-base font-bold text-pure-color">নতুন মেস তৈরি করুন</h2>
+            <div>
+              <DialogTitle className="text-base font-bold text-pure-color">
+                নতুন মেস তৈরি করুন
+              </DialogTitle>
+              <DialogDescription className="text-xs text-subtitle-color mt-0.5">
+                আপনার মেসের নাম ও ইউনিক লিংক প্রদান করুন
+              </DialogDescription>
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary-bg text-subtitle-color hover:text-pure-color"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Error Alert */}
         {errorMessage && (
@@ -144,7 +150,7 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-700/20 transition active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+              className="w-full rounded-xl bg-primary hover:bg-primary-light py-3 text-sm font-semibold text-white shadow-xs transition active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -157,7 +163,7 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

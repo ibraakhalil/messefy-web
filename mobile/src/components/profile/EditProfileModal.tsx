@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { X, User, Check, Loader2, AlertCircle } from 'lucide-react';
+import { User, Check, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { haptics } from '@/lib/haptics';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -18,8 +25,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [name, setName] = useState(user?.name || '');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,29 +55,24 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-sm rounded-3xl bg-card-bg border border-border-color p-5 shadow-2xl animate-in zoom-in-95 duration-200">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-sm p-5">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border-color/60">
+        <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <div className="size-9 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
               <User className="size-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-pure-color">প্রোফাইল পরিবর্তন</h2>
-              <p className="text-[11px] text-subtitle-color">আপনার প্রদর্শিত নাম আপডেট করুন</p>
+              <DialogTitle className="font-bold text-base text-pure-color">
+                প্রোফাইল পরিবর্তন
+              </DialogTitle>
+              <DialogDescription className="text-[11px] text-subtitle-color mt-0.5">
+                আপনার প্রদর্শিত নাম আপডেট করুন
+              </DialogDescription>
             </div>
           </div>
-          <button
-            onClick={() => {
-              haptics.selection();
-              onClose();
-            }}
-            className="size-8 rounded-full bg-secondary-bg hover:bg-card-shade flex items-center justify-center text-subtitle-color hover:text-pure-color transition active:scale-90"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Error Alert */}
         {errorMsg && (
@@ -127,7 +127,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 py-2.5 text-xs font-semibold text-white shadow-md shadow-emerald-700/20 hover:opacity-95 transition active:scale-95 flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 rounded-2xl bg-primary hover:bg-primary-light py-2.5 text-xs font-semibold text-white shadow-xs transition active:scale-95 flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               {isLoading ? (
                 <>
@@ -143,7 +143,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

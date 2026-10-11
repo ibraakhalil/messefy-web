@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { X, Lock, Check, KeyRound, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Lock, Check, KeyRound, AlertCircle, ShieldCheck } from 'lucide-react';
 import { haptics } from '@/lib/haptics';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -17,8 +24,6 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,29 +47,24 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="relative w-full max-w-sm rounded-3xl bg-card-bg border border-border-color p-5 shadow-2xl animate-in zoom-in-95 duration-200">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-sm p-5">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border-color/60">
+        <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <div className="size-9 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
               <Lock className="size-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-pure-color">পাসওয়ার্ড পরিবর্তন</h2>
-              <p className="text-[11px] text-subtitle-color">অ্যাকাউন্টের নিরাপত্তা জোরদার করুন</p>
+              <DialogTitle className="font-bold text-base text-pure-color">
+                পাসওয়ার্ড পরিবর্তন
+              </DialogTitle>
+              <DialogDescription className="text-[11px] text-subtitle-color mt-0.5">
+                অ্যাকাউন্টের নিরাপত্তা জোরদার করুন
+              </DialogDescription>
             </div>
           </div>
-          <button
-            onClick={() => {
-              haptics.selection();
-              onClose();
-            }}
-            className="size-8 rounded-full bg-secondary-bg hover:bg-card-shade flex items-center justify-center text-subtitle-color hover:text-pure-color transition active:scale-90"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Security Notice */}
         <div className="mt-3 flex items-start gap-2 rounded-2xl bg-emerald-500/10 p-2.5 text-[11px] text-emerald-800 dark:text-emerald-300 border border-emerald-500/20">
@@ -140,14 +140,14 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 py-2.5 text-xs font-semibold text-white shadow-md shadow-emerald-700/20 hover:opacity-95 transition active:scale-95 flex items-center justify-center gap-1.5"
+              className="flex-1 rounded-2xl bg-primary hover:bg-primary-light py-2.5 text-xs font-semibold text-white shadow-xs transition active:scale-95 flex items-center justify-center gap-1.5"
             >
               <Check className="size-3.5" />
               <span>আপডেট করুন</span>
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

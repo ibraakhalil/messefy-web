@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  X,
   UserPlus,
   Mail,
   User,
@@ -12,6 +11,13 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMemberActions } from '@/hooks/use-member-actions';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface AddMemberModalProps {
   isOpen: boolean;
@@ -32,8 +38,6 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const { addMember, isAdding } = useMemberActions(workspaceId);
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,27 +85,24 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="flex max-h-[90vh] w-full max-w-md flex-col rounded-t-3xl sm:rounded-3xl border border-border-color bg-card-bg shadow-2xl overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent variant="bottom-sheet" className="p-0">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border-color px-5 py-4">
+        <DialogHeader className="border-b border-border-color px-5 py-4 text-left pr-12">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
               <UserPlus className="size-4.5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-pure-color">মেসে সদস্য যোগ করুন</h3>
-              <p className="text-xs text-subtitle-color">অনলাইন বা অফলাইন মেম্বার</p>
+              <DialogTitle className="text-base font-bold text-pure-color">
+                মেসে সদস্য যোগ করুন
+              </DialogTitle>
+              <DialogDescription className="text-xs text-subtitle-color mt-0.5">
+                অনলাইন বা অফলাইন মেম্বার
+              </DialogDescription>
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary-bg text-subtitle-color hover:text-pure-color transition active:scale-95"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -214,7 +215,7 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

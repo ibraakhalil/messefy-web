@@ -173,7 +173,7 @@ export const MealsScreen: React.FC<MealsScreenProps> = ({
   return (
     <div className="space-y-4 pb-6">
       {/* Header Banner */}
-      <section className="relative overflow-hidden rounded-3xl border border-emerald-800/40 bg-gradient-to-br from-emerald-800 via-teal-800 to-emerald-950 p-5 text-white shadow-lg">
+      <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
         <div className="relative z-10 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">

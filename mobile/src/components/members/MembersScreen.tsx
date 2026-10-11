@@ -152,14 +152,14 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
   return (
     <div className="space-y-4 pb-6">
       {/* Overview Banner */}
-      <section className="relative overflow-hidden rounded-3xl border border-border-color bg-gradient-to-br from-teal-900 via-slate-900 to-indigo-950 p-5 text-white shadow-lg">
+      <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
         <div className="relative z-10 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-teal-200">
+              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
                 সদস্যদের তালিকা ও হিসাব
               </span>
-              <span className="rounded-full bg-teal-500/30 px-2 py-0.5 text-[11px] font-medium text-teal-200">
+              <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[11px] font-medium text-emerald-200">
                 {periodName}
               </span>
             </div>

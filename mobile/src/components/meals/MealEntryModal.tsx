@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import {
-  X,
   Calendar,
   Plus,
   Minus,
@@ -20,6 +19,13 @@ import {
   toBanglaNumber,
 } from '@/lib/period-utils';
 import { useMealChart, useBatchCreateMeals, useUpsertMeal } from '@/hooks/use-meals';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface MealEntryModalProps {
   isOpen: boolean;
@@ -184,26 +190,17 @@ export const MealEntryModal: React.FC<MealEntryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-3xl border border-border-color bg-card-bg shadow-2xl overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent variant="bottom-sheet" className="p-0">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border-color px-5 py-4">
-          <div>
-            <h3 className="text-base font-bold text-pure-color flex items-center gap-1.5">
-              <span>{isManager ? 'মেস মিল এন্ট্রি ও আপডেট' : 'আমার মিল আপডেট'}</span>
-            </h3>
-            <p className="text-xs text-subtitle-color">
-              {formatBanglaDate(selectedDate)} ({formatBanglaWeekday(selectedDate)})
-            </p>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary-bg text-subtitle-color hover:text-pure-color transition active:scale-95"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        <DialogHeader className="border-b border-border-color px-5 py-4 text-left pr-12">
+          <DialogTitle className="text-base font-bold text-pure-color flex items-center gap-1.5">
+            <span>{isManager ? 'মেস মিল এন্ট্রি ও আপডেট' : 'আমার মিল আপডেট'}</span>
+          </DialogTitle>
+          <DialogDescription className="text-xs text-subtitle-color mt-0.5">
+            {formatBanglaDate(selectedDate)} ({formatBanglaWeekday(selectedDate)})
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Date Selector Row */}
         <div className="flex items-center justify-between gap-2 border-b border-border-color/60 bg-secondary-bg/50 px-5 py-2.5">
@@ -417,7 +414,7 @@ export const MealEntryModal: React.FC<MealEntryModalProps> = ({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

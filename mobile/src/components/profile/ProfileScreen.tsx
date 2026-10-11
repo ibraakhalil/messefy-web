@@ -122,9 +122,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       {/* 2. User Profile Card */}
       <div className="relative overflow-hidden rounded-3xl bg-card-bg border border-border-color p-4 shadow-sm">
         <div className="flex items-center gap-3.5">
-          {/* Avatar with gradient & glow */}
+          {/* Avatar with solid primary surface */}
           <div className="relative">
-            <div className="size-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-700 text-white font-bold text-xl flex items-center justify-center shadow-md ring-4 ring-emerald-500/10">
+            <div className="size-16 rounded-2xl bg-primary text-white font-bold text-xl flex items-center justify-center shadow-xs">
               {getInitials(user?.name)}
             </div>
             <span className="absolute -bottom-1 -right-1 size-4 rounded-full bg-emerald-500 ring-2 ring-card-bg flex items-center justify-center">

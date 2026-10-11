@@ -188,18 +188,18 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({
   return (
     <div className="space-y-4 pb-6">
       {/* Financial Overview Card */}
-      <section className="relative overflow-hidden rounded-3xl border border-border-color bg-gradient-to-br from-indigo-900 via-slate-900 to-emerald-950 p-5 text-white shadow-lg">
+      <section className="relative overflow-hidden rounded-3xl border border-primary-light/20 bg-primary p-5 text-white shadow-xs">
         <div className="relative z-10 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-200">
+              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-100">
                 বাজার ও আর্থিক লেজার
               </span>
-              <span className="rounded-full bg-indigo-500/30 px-2 py-0.5 text-[11px] font-medium text-indigo-200">
+              <span className="rounded-full bg-emerald-500/30 px-2 py-0.5 text-[11px] font-medium text-emerald-200">
                 {periodName}
               </span>
             </div>
-            <p className="mt-2 text-xs text-slate-300">মেস ব্যালেন্স ও ক্যাশ ফান্ড</p>
+            <p className="mt-2 text-xs text-emerald-100/80">মেস ব্যালেন্স ও ক্যাশ ফান্ড</p>
             <h1 className="mt-0.5 text-2xl font-black tracking-tight tabular-nums flex items-baseline gap-1">
               <span>{netFund >= 0 ? '+' : '-'}৳{toBanglaNumber(Math.abs(Math.round(netFund)).toLocaleString('bn-BD'))}</span>
               <span className="text-xs font-semibold text-emerald-300">

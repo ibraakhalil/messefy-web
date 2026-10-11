@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import {
-  X,
   Share2,
   Copy,
   Check,
   MessageSquare,
   Building2,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface ShareInviteModalProps {
   isOpen: boolean;
@@ -25,8 +31,6 @@ export const ShareInviteModal: React.FC<ShareInviteModalProps> = ({
 }) => {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedMessage, setCopiedMessage] = useState(false);
-
-  if (!isOpen) return null;
 
   const inviteMessage = `আসসালামু আলাইকুম! আমাদের "${workspaceName}" মেসে আপনাকে স্বাগতম। মেসিফাই অ্যাপে যুক্ত হতে এই মেস আইডি ব্যবহার করুন:\n\n${workspaceId}\n\nঅ্যাপ থেকে "মেসে যোগ দিন" অপশনে গিয়ে আইডিটি পেস্ট করুন।`;
 
@@ -69,27 +73,24 @@ export const ShareInviteModal: React.FC<ShareInviteModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="flex max-h-[90vh] w-full max-w-md flex-col rounded-t-3xl sm:rounded-3xl border border-border-color bg-card-bg shadow-2xl overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent variant="bottom-sheet" className="p-0">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border-color px-5 py-4">
+        <DialogHeader className="border-b border-border-color px-5 py-4 text-left pr-12">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
               <Share2 className="size-4.5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-pure-color">মেস ইনভাইটেশন কোড</h3>
-              <p className="text-xs text-subtitle-color">নতুন মেম্বারদের ইনভাইট করুন</p>
+              <DialogTitle className="text-base font-bold text-pure-color">
+                মেস ইনভাইটেশন কোড
+              </DialogTitle>
+              <DialogDescription className="text-xs text-subtitle-color mt-0.5">
+                নতুন মেম্বারদের ইনভাইট করুন
+              </DialogDescription>
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary-bg text-subtitle-color hover:text-pure-color transition active:scale-95"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -162,7 +163,7 @@ export const ShareInviteModal: React.FC<ShareInviteModalProps> = ({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

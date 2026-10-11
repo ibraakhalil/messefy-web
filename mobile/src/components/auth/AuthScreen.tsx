@@ -44,7 +44,7 @@ export const AuthScreen: React.FC = () => {
     <div className="flex min-h-screen flex-col justify-between bg-primary-bg px-5 py-8 text-pure-color transition-colors safe-top safe-bottom">
       {/* Top Branding */}
       <div className="mt-6 flex flex-col items-center text-center">
-        <div className="flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg ring-4 ring-emerald-500/20">
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-primary text-white shadow-xs">
           <Building2 className="size-8" />
         </div>
         <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-pure-color">
@@ -168,7 +168,7 @@ export const AuthScreen: React.FC = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-700/20 transition active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2 mt-2"
+            className="w-full rounded-xl bg-primary hover:bg-primary-light py-3 text-sm font-semibold text-white shadow-xs transition active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2 mt-2"
           >
             {isSubmitting ? (
               <>

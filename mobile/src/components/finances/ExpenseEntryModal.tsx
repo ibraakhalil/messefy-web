@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  X,
   Receipt,
   Check,
   Loader2,
@@ -11,6 +10,13 @@ import {
 import { cn } from '@/lib/utils';
 import { toBanglaNumber } from '@/lib/period-utils';
 import { useCreateExpense } from '@/hooks/use-finances';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface ExpenseEntryModalProps {
   isOpen: boolean;
@@ -46,8 +52,6 @@ export const ExpenseEntryModal: React.FC<ExpenseEntryModalProps> = ({
   const [formError, setFormError] = useState<string | null>(null);
 
   const { mutateAsync: createExpense, isPending } = useCreateExpense();
-
-  if (!isOpen) return null;
 
   const handleAmountPreset = (preset: number) => {
     setAmount(String(preset));
@@ -98,27 +102,24 @@ export const ExpenseEntryModal: React.FC<ExpenseEntryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-3xl border border-border-color bg-card-bg shadow-2xl overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent variant="bottom-sheet" className="p-0">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border-color px-5 py-4">
+        <DialogHeader className="border-b border-border-color px-5 py-4 text-left pr-12">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 shrink-0">
               <Receipt className="size-4.5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-pure-color">মেসের বাজার খরচ যোগ করুন</h3>
-              <p className="text-xs text-subtitle-color">দৈনিক বাজার ও আনুষঙ্গিক খরচ</p>
+              <DialogTitle className="text-base font-bold text-pure-color">
+                মেসের বাজার খরচ যোগ করুন
+              </DialogTitle>
+              <DialogDescription className="text-xs text-subtitle-color mt-0.5">
+                দৈনিক বাজার ও আনুষঙ্গিক খরচ
+              </DialogDescription>
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary-bg text-subtitle-color hover:text-pure-color transition active:scale-95"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 space-y-4">
@@ -247,7 +248,7 @@ export const ExpenseEntryModal: React.FC<ExpenseEntryModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { X, KeyRound, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { KeyRound, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useWorkspace } from '@/hooks/use-workspace';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 interface JoinMessModalProps {
   isOpen: boolean;
@@ -14,8 +21,6 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,23 +47,24 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-border-color bg-card-bg p-6 shadow-2xl safe-bottom">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent variant="bottom-sheet" className="p-6 safe-bottom">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-border-color/60">
+        <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0">
               <KeyRound className="size-5" />
             </div>
-            <h2 className="text-base font-bold text-pure-color">মেসে যুক্ত হন</h2>
+            <div>
+              <DialogTitle className="text-base font-bold text-pure-color">
+                মেসে যুক্ত হন
+              </DialogTitle>
+              <DialogDescription className="text-xs text-subtitle-color mt-0.5">
+                মেস আইডি বা ইনভাইটেশন কোড দিয়ে জয়েন রিকোয়েস্ট পাঠান
+              </DialogDescription>
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-secondary-bg text-subtitle-color hover:text-pure-color"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Error / Success Alerts */}
         {errorMessage && (
@@ -98,7 +104,7 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
             <button
               type="submit"
               disabled={isSubmitting || Boolean(successMessage)}
-              className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 py-3 text-sm font-semibold text-white shadow-md shadow-blue-700/20 transition active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+              className="w-full rounded-xl bg-primary hover:bg-primary-light py-3 text-sm font-semibold text-white shadow-xs transition active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -111,7 +117,7 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

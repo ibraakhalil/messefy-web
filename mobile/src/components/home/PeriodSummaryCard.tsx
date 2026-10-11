@@ -36,7 +36,7 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({
 
   if (!isOpen) {
     return (
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-700 to-orange-800 p-5 text-white shadow-lg">
+      <div className="relative overflow-hidden rounded-2xl bg-amber-600 dark:bg-amber-700 p-5 text-white shadow-xs border border-amber-500/30">
         <div className="flex items-center gap-2">
           <AlertCircle className="size-5 text-amber-200" />
           <h2 className="text-sm font-bold">চলতি মাসের কোনো পিরিয়ড ওপেন নেই</h2>
@@ -49,17 +49,7 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 p-5 text-white shadow-lg shadow-emerald-950/15">
-      {/* Decorative background glows */}
-      <div
-        className="pointer-events-none absolute -right-12 -top-12 size-40 rounded-full bg-white/10 blur-2xl"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute -left-10 -bottom-10 size-36 rounded-full bg-teal-400/10 blur-xl"
-        aria-hidden="true"
-      />
-
+    <div className="relative overflow-hidden rounded-2xl bg-primary p-5 text-white shadow-xs border border-primary-light/20">
       {/* Top Banner inside card */}
       <div className="relative flex items-center justify-between pb-3 border-b border-white/15">
         <div className="flex items-center gap-2">

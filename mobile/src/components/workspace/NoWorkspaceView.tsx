@@ -18,7 +18,7 @@ export const NoWorkspaceView: React.FC<NoWorkspaceViewProps> = ({ onSuccess }) =
       {/* Top Bar with Logout */}
       <header className="flex items-center justify-between pb-4 border-b border-border-color">
         <div className="flex items-center gap-2">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-xs">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-white shadow-xs">
             <Building2 className="size-4.5" />
           </div>
           <div>
@@ -38,7 +38,7 @@ export const NoWorkspaceView: React.FC<NoWorkspaceViewProps> = ({ onSuccess }) =
 
       {/* Main Action Content */}
       <main className="my-auto py-8 text-center">
-        <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-950/60 dark:to-teal-950/40 text-emerald-700 dark:text-emerald-400 shadow-inner">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-secondary-bg text-primary border border-border-color shadow-xs">
           <Sparkles className="size-10" />
         </div>
 
