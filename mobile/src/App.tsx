@@ -363,7 +363,7 @@ export function App() {
                 onClose={() => setIsMealEntryModalOpen(false)}
                 workspaceId={workspace.id}
                 periodId={activePeriodId}
-                currentMemberId={member.id}
+                currentMemberId={member?.id || ''}
                 isManager={isManager}
                 onSuccessToast={triggerToast}
               />
@@ -375,7 +375,7 @@ export function App() {
                 workspaceId={workspace.id}
                 periodId={activePeriodId}
                 members={workspaceMembers}
-                currentMemberId={member.id}
+                currentMemberId={member?.id || ''}
                 isManager={isManager}
                 onSuccessToast={triggerToast}
               />
@@ -396,7 +396,7 @@ export function App() {
               periodYear={summary?.period.year || 2026}
               periodMonth={summary?.period.month || 1}
               members={workspaceMembers}
-              currentMemberId={member.id}
+              currentMemberId={member?.id || ''}
               isManager={isManager}
               mealRate={summary?.totals.mealRate || 0}
               totalMeals={summary?.totals.totalMeals || 0}
@@ -425,7 +425,7 @@ export function App() {
               periodMonth={summary?.period.month || 1}
               members={workspaceMembers}
               summaryMembers={summary?.members || []}
-              currentMemberId={member.id}
+              currentMemberId={member?.id || ''}
               isOwner={isOwner}
               isManager={isManager}
               isLoading={isSummaryLoading}

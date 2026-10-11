@@ -71,7 +71,7 @@ export const MembersScreen: React.FC<MembersScreenProps> = ({
       const email = m.user?.email || '';
       const meals = summaryInfo?.meals ?? 0;
       const deposits = summaryInfo?.deposits ?? 0;
-      const mealCost = summaryInfo?.mealCost ?? 0;
+      const mealCost = summaryInfo?.due ?? 0;
       const balance = summaryInfo?.balance ?? 0;
 
       return {

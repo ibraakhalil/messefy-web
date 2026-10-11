@@ -34,6 +34,8 @@ export interface SummaryMember {
   balance: number;
 }
 
+export type PeriodMemberSummary = SummaryMember;
+
 export interface RecentDepositItem {
   id: string;
   memberId: string;

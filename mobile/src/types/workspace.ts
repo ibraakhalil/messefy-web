@@ -17,7 +17,9 @@ export interface WorkspaceMember {
   id: string;
   workspaceId: string;
   userId: string;
+  name?: string | null;
   role: WorkspaceRole;
+  isOffline?: boolean;
   isActive: boolean;
   workspace?: Workspace;
   user?: UserProfile;
