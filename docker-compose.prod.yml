@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-messefydb}
+      POSTGRES_USER: ${POSTGRES_USER:-messefy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app-net
+
+  backend:
+    image: ghcr.io/${IMAGE_OWNER:-ibraakhalil}/messefy-backend:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 5555
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-messefy}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-messefydb}"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-5555}:5555"
+    networks:
+      - app-net
+
+  frontend:
+    image: ghcr.io/${IMAGE_OWNER:-ibraakhalil}/messefy-frontend:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      API_INTERNAL_URL: "http://backend:5555"
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "${FRONTEND_PORT:-3333}:3333"
+    networks:
+      - app-net
+
+volumes:
+  pgdata:
+
+networks:
+  app-net:
+    driver: bridge

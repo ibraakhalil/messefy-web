@@ -1,40 +1,47 @@
-# Stage 1: Building the application
-FROM node:20-alpine AS builder
-
-# Set working directory
+# Stage 1: Install dependencies using Bun
+FROM oven/bun:1-alpine AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+COPY package.json bun.lock* ./
+RUN bun install --frozen-lockfile
 
-# Install dependencies
-RUN npm ci
+# Stage 2: Build the Next.js standalone application
+FROM oven/bun:1-alpine AS builder
+WORKDIR /app
 
-# Copy all files
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the application
-ENV NEXT_DISABLE_TYPESCRIPT_TYPES=1
-RUN npm run build
-
-# Stage 2: Running the application
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-
-# Set environment to production
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Copy necessary files from builder
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/package-lock.json* ./package-lock.json
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/.env ./.env
-COPY --from=builder /app/public ./public
+# Client-side environment variables needed at build time
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-# Expose the port
+RUN bun run build
+
+# Stage 3: Minimal production runner with Node.js
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3333
+ENV HOSTNAME="0.0.0.0"
+
+# Create a secure non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy Next.js standalone server and static assets
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
 EXPOSE 3333
 
-# Set the command to run the application
-CMD ["npm", "start"]
+# Start the standalone Next.js server
+CMD ["node", "server.js"]

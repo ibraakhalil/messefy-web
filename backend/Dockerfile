@@ -1,34 +1,26 @@
-# Base image (latest Bun)
-FROM oven/bun:latest AS base
+# Base image (lightweight Bun Alpine)
+FROM oven/bun:1-alpine AS base
 WORKDIR /app
 
 # Dependencies
 FROM base AS deps
-COPY package.json bun.lockb* ./
+COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile
-
-# Build
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-# Only run db:gen if it exists, remove build step
-# RUN bun run db:gen
 
 # Final production image
 FROM base AS runner
 ENV NODE_ENV=production
 WORKDIR /app
 
-# Copy everything needed (adjust based on your app structure)
-COPY --from=builder /app/package.json .
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app ./
+# Copy installed dependencies and source code
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-# Use non-root user
+# Use non-root bun user
 RUN chown -R bun:bun /app
 USER bun
 
 EXPOSE 5555
-# Run the main file directly
+
+# Run the backend directly with Bun
 CMD ["bun", "run", "index.ts"]
