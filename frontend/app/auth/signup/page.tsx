@@ -12,6 +12,7 @@ import FormCheckbox from '@/components/ui/form-checkbox';
 import FormInput from '@/components/ui/form-input';
 import { createSignupSchema, type SignupFormValues } from '@/utils/validation';
 import axios from 'axios';
+import api from '@/utils/axios';
 import { useRouter } from 'next/navigation';
 import { GoogleIcon } from '@/components/svg/google-icon';
 import { env } from '@/config/env';
@@ -60,7 +61,7 @@ export default function SignupPage() {
         term: data.terms,
       };
 
-      await axios.post(`${env.NEXT_PUBLIC_API_URL}/auth/signup`, signupData);
+      await api.post('/auth/signup', signupData);
 
       toast.success(t('success'));
       router.push('/auth/signin');

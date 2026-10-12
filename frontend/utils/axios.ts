@@ -11,6 +11,12 @@ const api = axios.create({
 //Server & Client Aware Axios Interceptors
 api.interceptors.request.use(
   async (config) => {
+    // When executing server-side (Node/Next.js SSR), use internal Docker network
+    if (typeof window === 'undefined') {
+      const internalBase = process.env.API_INTERNAL_URL || env.API_INTERNAL_URL || 'http://backend:5555';
+      config.baseURL = internalBase;
+    }
+
     const session = typeof window === 'undefined' ? await auth() : await getSession();
 
     if (session?.accessToken) {
