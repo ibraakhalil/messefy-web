@@ -16,7 +16,8 @@ app.use(
         origin.includes('127.0.0.1') ||
         origin.includes('192.168.') ||
         origin.includes('10.0.2.2') ||
-        origin.includes('tauri.localhost')
+        origin.includes('tauri.localhost') ||
+        origin.startsWith('tauri://')
       ) {
         return origin || '*';
       }

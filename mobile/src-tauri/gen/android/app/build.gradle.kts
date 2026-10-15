@@ -18,7 +18,7 @@ android {
     compileSdk = 37
     namespace = "com.messefy.app"
     defaultConfig {
-        manifestPlaceholders["usesCleartextTraffic"] = "false"
+        manifestPlaceholders["usesCleartextTraffic"] = "true"
         applicationId = "com.messefy.app"
         minSdk = 24
         targetSdk = 37
