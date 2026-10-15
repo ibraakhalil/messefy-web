@@ -42,11 +42,20 @@ apiClient.interceptors.response.use(
       }
     }
 
-    const customMessage =
-      error.response?.data?.message ||
+    let customMessage =
       error.response?.data?.error ||
-      error.message ||
-      'নেটওয়ার্ক বা সার্ভারে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
+      error.response?.data?.message;
+
+    if (customMessage === 'Invalid email or password') {
+      customMessage = 'ইমেইল অথবা পাসওয়ার্ড সঠিক নয়।';
+    } else if (customMessage === 'Email already in use') {
+      customMessage = 'এই ইমেইল দিয়ে ইতোমধ্যে একটি অ্যাকাউন্ট রয়েছে।';
+    } else if (!customMessage) {
+      customMessage =
+        error.message === 'Network Error'
+          ? 'নেটওয়ার্ক সংযোগ পাওয়া যাচ্ছে না। ইন্টারনেট কানেকশন চেক করুন।'
+          : error.message || 'নেটওয়ার্ক বা সার্ভারে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
+    }
 
     return Promise.reject(new Error(customMessage));
   }
