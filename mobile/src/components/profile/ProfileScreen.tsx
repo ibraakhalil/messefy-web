@@ -15,7 +15,6 @@ import {
   Wallet,
   Coins,
   ChevronRight,
-  Info,
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
@@ -27,11 +26,14 @@ import { Switch } from '@/components/ui/switch';
 import { EditProfileModal } from './EditProfileModal';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import { LogoutConfirmModal } from './LogoutConfirmModal';
+import { RenameMessModal } from './RenameMessModal';
 
 interface ProfileScreenProps {
+  workspaceId?: string;
   workspaceName?: string;
   workspaceAddress?: string;
   memberRole?: string;
+  isOwner?: boolean;
   myMeals?: number;
   myDeposit?: number;
   myBalance?: number;
@@ -42,9 +44,11 @@ interface ProfileScreenProps {
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
+  workspaceId,
   workspaceName = 'মেস',
   workspaceAddress,
   memberRole = 'member',
+  isOwner = false,
   myMeals = 0,
   myDeposit = 0,
   myBalance = 0,
@@ -56,6 +60,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const { user } = useAuth();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isRenameMessOpen, setIsRenameMessOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [hapticsActive, setHapticsActive] = useState<boolean>(() => haptics.isEnabled());
 
@@ -179,7 +184,22 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               <Building2 className="size-4" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-pure-color">{workspaceName}</h4>
+              <div className="flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-pure-color">{workspaceName}</h4>
+                {isOwner && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptics.selection();
+                      setIsRenameMessOpen(true);
+                    }}
+                    title="মেসের নাম পরিবর্তন করুন"
+                    className="size-5 rounded-md hover:bg-secondary-bg flex items-center justify-center text-subtitle-color hover:text-emerald-600 dark:hover:text-emerald-400 transition"
+                  >
+                    <Edit3 className="size-3" />
+                  </button>
+                )}
+              </div>
               <p className="text-[10px] text-subtitle-color">
                 {workspaceAddress || 'বর্তমান মেসের সদস্য'}
               </p>
@@ -280,6 +300,34 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           />
         </div>
 
+        {/* Rename Mess Option */}
+        <button
+          type="button"
+          onClick={() => {
+            haptics.selection();
+            setIsRenameMessOpen(true);
+          }}
+          className="w-full flex items-center justify-between p-3.5 hover:bg-secondary-bg/50 transition text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="size-9 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Building2 className="size-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-semibold text-pure-color">মেসের নাম পরিবর্তন</p>
+                {isOwner ? (
+                  <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-600 dark:text-amber-400">
+                    মালিক
+                  </span>
+                ) : null}
+              </div>
+              <p className="text-[10px] text-subtitle-color">মেসের নাম ও বিবরণ এডিট করুন</p>
+            </div>
+          </div>
+          <ChevronRight className="size-4 text-subtitle-color" />
+        </button>
+
         {/* Password / Security */}
         <button
           onClick={() => {
@@ -301,21 +349,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         </button>
       </div>
 
-      {/* 5. App Specs & Islamic Note */}
-      <div className="rounded-3xl bg-card-bg border border-border-color p-4 text-center shadow-sm">
-        <div className="flex items-center justify-center gap-2 mb-1.5 text-emerald-600 dark:text-emerald-400">
-          <Info className="size-4" />
-          <span className="text-xs font-bold">Messefy Mobile v1.0.0</span>
-        </div>
-        <p className="text-[11px] text-subtitle-color">
-          Tauri 2.0 (Rust) + React 19 + TypeScript + Bun
-        </p>
-        <p className="mt-2 text-[10px] text-subtitle-color/80 italic font-medium">
-          «اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا» — হে আল্লাহ, আমাদের রিযিকে বরকত দান করুন।
-        </p>
-      </div>
-
-      {/* 6. Logout Button */}
+      {/* 5. Logout Button */}
       <button
         onClick={() => {
           haptics.warning();
@@ -328,6 +362,18 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       </button>
 
       {/* Modals */}
+      {workspaceId && (
+        <RenameMessModal
+          isOpen={isRenameMessOpen}
+          onClose={() => setIsRenameMessOpen(false)}
+          workspaceId={workspaceId}
+          currentName={workspaceName}
+          currentDescription={workspaceAddress}
+          isOwner={isOwner}
+          onSuccessToast={onSuccessToast}
+        />
+      )}
+
       <EditProfileModal
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}

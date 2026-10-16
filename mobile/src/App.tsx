@@ -435,9 +435,11 @@ export function App() {
             />
           ) : activeTab === 'profile' ? (
             <ProfileScreen
+              workspaceId={workspace.id}
               workspaceName={workspace.name}
               workspaceAddress={workspace.description || undefined}
               memberRole={member?.role || 'member'}
+              isOwner={isOwner}
               myMeals={myMemberSummary?.meals || 0}
               myDeposit={myMemberSummary?.deposits || 0}
               myBalance={myMemberSummary?.balance || 0}

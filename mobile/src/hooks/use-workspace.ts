@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { WorkspaceContext, type WorkspaceContextType } from '@/context/workspace-context';
-import { workspaceService } from '@/services/workspace-service';
+import { workspaceService, type UpdateWorkspaceInput } from '@/services/workspace-service';
 
 export function useWorkspace(): WorkspaceContextType {
   const context = useContext(WorkspaceContext);
@@ -17,5 +17,28 @@ export function useWorkspaceMembers(workspaceId?: string) {
     queryFn: () => (workspaceId ? workspaceService.getWorkspaceMembers(workspaceId) : []),
     enabled: Boolean(workspaceId),
     staleTime: 60 * 1000,
+  });
+}
+
+export function useUpdateWorkspace() {
+  const queryClient = useQueryClient();
+  const { refetchWorkspace } = useWorkspace();
+
+  return useMutation({
+    mutationFn: ({
+      workspaceId,
+      input,
+    }: {
+      workspaceId: string;
+      input: UpdateWorkspaceInput;
+    }) => workspaceService.updateWorkspace(workspaceId, input),
+    onSuccess: async (_, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['workspace'] }),
+        queryClient.invalidateQueries({ queryKey: ['workspace', variables.workspaceId] }),
+        queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] }),
+        refetchWorkspace(),
+      ]);
+    },
   });
 }

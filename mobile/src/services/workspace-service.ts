@@ -13,6 +13,13 @@ export const createWorkspaceSchema = z.object({
   description: z.string().trim().max(300).optional(),
 });
 
+export const updateWorkspaceSchema = z.object({
+  name: z.string().trim().min(2, 'মেসের নাম কমপক্ষে ২ অক্ষরের হতে হবে').max(100, 'মেসের নাম ১০০ অক্ষরের বেশি হতে পারবে না'),
+  description: z.string().trim().max(500, 'বিবরণ ৫০০ অক্ষরের বেশি হতে পারবে না').optional(),
+});
+
+export type UpdateWorkspaceInput = z.infer<typeof updateWorkspaceSchema>;
+
 export const workspaceService = {
   // Get currently active workspace membership for the logged-in user
   async getValidMember(): Promise<WorkspaceMember | null> {
@@ -59,6 +66,19 @@ export const workspaceService = {
   // Get all members of a workspace
   async getWorkspaceMembers(workspaceId: string): Promise<WorkspaceMember[]> {
     const response = await apiClient.get<WorkspaceMember[]>(`/workspaces/${workspaceId}/members`);
+    return response.data;
+  },
+
+  // Update workspace details (rename mess or update description)
+  async updateWorkspace(
+    workspaceId: string,
+    input: UpdateWorkspaceInput
+  ): Promise<Workspace> {
+    const validated = updateWorkspaceSchema.parse(input);
+    const response = await apiClient.patch<Workspace>(
+      `/workspaces/${workspaceId}`,
+      validated
+    );
     return response.data;
   },
 };
