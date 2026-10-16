@@ -95,13 +95,13 @@
   }
 
 
-  /* Mobile Safe Area Inset Helpers */
+  /* Mobile Safe Area Inset Helpers (Compatible across iOS & Android) */
   .safe-top {
-    padding-top: max(env(safe-area-inset-top), 1rem);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
   }
 
   .safe-bottom {
-    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.25rem);
   }
 
   /* Tap Highlight removal for mobile feel */

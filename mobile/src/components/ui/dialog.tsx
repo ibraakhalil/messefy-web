@@ -53,7 +53,8 @@ const DialogContent = React.forwardRef<
           variant === 'bottom-sheet'
             ? 'max-h-[90vh] max-w-lg rounded-t-3xl sm:rounded-3xl dialog-bottom-anim sm:dialog-content-anim overflow-hidden flex flex-col'
             : 'max-w-md rounded-3xl p-6 dialog-content-anim',
-          className
+          className,
+          variant === 'bottom-sheet' && 'pb-[env(safe-area-inset-bottom,0px)]'
         )}
         {...props}
       >

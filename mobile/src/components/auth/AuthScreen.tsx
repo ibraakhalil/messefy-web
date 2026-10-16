@@ -41,7 +41,7 @@ export const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-primary-bg px-5 py-8 text-pure-color transition-colors safe-top safe-bottom">
+    <div className="flex min-h-screen flex-col justify-between bg-primary-bg px-5 pt-[calc(env(safe-area-inset-top,0px)+2rem)] pb-[calc(env(safe-area-inset-bottom,0px)+2rem)] text-pure-color transition-colors">
       {/* Top Branding */}
       <div className="mt-6 flex flex-col items-center text-center">
         <div className="flex size-16 items-center justify-center rounded-2xl bg-primary text-white shadow-xs">

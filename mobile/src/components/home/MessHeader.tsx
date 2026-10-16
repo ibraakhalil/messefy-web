@@ -87,7 +87,7 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-card-bg/80 backdrop-blur-md border-b border-border-color px-4 py-3 transition-colors">
+    <header className="sticky top-0 z-40 bg-card-bg/80 backdrop-blur-md border-b border-border-color px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] pb-3 transition-colors">
       <div className="flex items-center justify-between">
         {/* Left Side: Hamburger Menu & Mess Title */}
         <div className="flex items-center gap-2.5">

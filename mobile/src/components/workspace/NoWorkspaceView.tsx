@@ -14,7 +14,7 @@ export const NoWorkspaceView: React.FC<NoWorkspaceViewProps> = ({ onSuccess }) =
   const [isJoinOpen, setIsJoinOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-primary-bg px-4 py-6 text-pure-color safe-top safe-bottom">
+    <div className="flex min-h-screen flex-col justify-between bg-primary-bg px-4 pt-[calc(env(safe-area-inset-top,0px)+1.5rem)] pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] text-pure-color">
       {/* Top Bar with Logout */}
       <header className="flex items-center justify-between pb-4 border-b border-border-color">
         <div className="flex items-center gap-2">
