@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, Plus, KeyRound, LogOut, Sparkles } from 'lucide-react';
+import { Plus, KeyRound, LogOut, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { CreateMessModal } from './CreateMessModal';
 import { JoinMessModal } from './JoinMessModal';
@@ -18,9 +18,11 @@ export const NoWorkspaceView: React.FC<NoWorkspaceViewProps> = ({ onSuccess }) =
       {/* Top Bar with Logout */}
       <header className="flex items-center justify-between pb-4 border-b border-border-color">
         <div className="flex items-center gap-2">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-white shadow-xs">
-            <Building2 className="size-4.5" />
-          </div>
+          <img
+            src="/brand-icon.png"
+            alt="মেসিফাই"
+            className="size-9 rounded-xl shadow-xs object-contain"
+          />
           <div>
             <h1 className="text-sm font-bold text-pure-color">মেসিফাই</h1>
             <p className="text-[11px] text-subtitle-color">স্বাগতম, {user?.name}</p>

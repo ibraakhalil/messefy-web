@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, Mail, Lock, User, Eye, EyeOff, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader2, AlertCircle, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { loginSchema, registerSchema } from '@/services/auth-service';
 import { ZodError } from 'zod';
@@ -44,9 +44,11 @@ export const AuthScreen: React.FC = () => {
     <div className="flex min-h-screen flex-col justify-between bg-primary-bg px-5 pt-[calc(env(safe-area-inset-top,0px)+2rem)] pb-[calc(env(safe-area-inset-bottom,0px)+2rem)] text-pure-color transition-colors">
       {/* Top Branding */}
       <div className="mt-6 flex flex-col items-center text-center">
-        <div className="flex size-16 items-center justify-center rounded-2xl bg-primary text-white shadow-xs">
-          <Building2 className="size-8" />
-        </div>
+        <img
+          src="/brand-icon.png"
+          alt="মেসিফাই লোগো"
+          className="size-16 rounded-2xl shadow-md object-contain"
+        />
         <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-pure-color">
           মেসিফাই
         </h1>

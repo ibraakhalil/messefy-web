@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useWorkspace, useWorkspaceMembers } from '@/hooks/use-workspace';
 import { useCurrentWorkspaceSummary } from '@/hooks/use-dashboard-summary';
@@ -254,9 +253,11 @@ export function App() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-primary-bg">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-primary text-white shadow-xs animate-pulse">
-            <Building2 className="size-7" />
-          </div>
+          <img
+            src="/brand-icon.png"
+            alt="মেসিফাই"
+            className="size-16 rounded-2xl shadow-md animate-pulse object-contain"
+          />
           <p className="text-xs font-semibold text-subtitle-color">মেসিফাই চালু হচ্ছে...</p>
         </div>
       </div>

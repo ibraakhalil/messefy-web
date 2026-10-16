@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import {
   Bell,
-  Moon,
-  Sun,
-  Building2,
   LogOut,
-  RotateCw,
   User,
-  ChevronDown,
   Menu,
   Home,
   ReceiptText,
@@ -27,19 +22,12 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 
 interface MessHeaderProps {
   messInfo: MessInfo;
   periodSummary: PeriodSummary;
-  isDark: boolean;
-  onToggleTheme: () => void;
+  isDark?: boolean;
+  onToggleTheme?: () => void;
   userName?: string;
   onLogout?: () => void;
   onRefresh?: () => void;
@@ -52,27 +40,11 @@ interface MessHeaderProps {
 export const MessHeader: React.FC<MessHeaderProps> = ({
   messInfo,
   periodSummary,
-  isDark,
-  onToggleTheme,
-  userName = 'User',
   onLogout,
-  onRefresh,
-  isRefreshing = false,
-  onNavigateProfile,
   currentTab = 'home',
   onNavigateTab,
 }) => {
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
-  };
 
   const sidebarNavItems: {
     tab: NavTab;
@@ -115,7 +87,7 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
         </div>
 
         {/* Right Action Icons */}
-        <div className="flex items-center gap-2 relative">
+        <div className="flex items-center gap-2">
           {/* Notifications */}
           <button
             aria-label="Notifications"
@@ -124,105 +96,6 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
             <Bell className="size-4" />
             <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-rose-500 ring-2 ring-card-bg" />
           </button>
-
-          {/* User Avatar with Shadcn DropdownMenu */}
-          <DropdownMenu open={showProfileMenu} onOpenChange={setShowProfileMenu}>
-            <DropdownMenuTrigger asChild>
-              <button
-                onClick={() => haptics.selection()}
-                aria-label="Profile menu"
-                className="relative size-9 rounded-full bg-primary text-white font-bold text-xs flex items-center justify-center shadow-xs active:scale-95 transition"
-              >
-                <span>{getInitials(userName)}</span>
-                <span className="absolute -bottom-0.5 -right-0.5 size-3.5 rounded-full bg-card-bg text-primary border border-border-color flex items-center justify-center shadow-xs transition-colors">
-                  <ChevronDown
-                    className={cn(
-                      'size-2.5 stroke-[2.5] transition-transform duration-200',
-                      showProfileMenu && 'rotate-180'
-                    )}
-                  />
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-48 p-1.5">
-              <div className="px-3 py-2 border-b border-border-color/60">
-                <p className="text-xs font-bold text-pure-color truncate">{userName}</p>
-                <p className="text-[10px] text-subtitle-color">লগইন করা আছে</p>
-              </div>
-
-              {/* Profile Link */}
-              {onNavigateProfile && (
-                <DropdownMenuItem
-                  onClick={() => {
-                    haptics.selection();
-                    onNavigateProfile();
-                  }}
-                  className="mt-1"
-                >
-                  <User className="size-3.5 text-primary" />
-                  <span>আমার প্রোফাইল</span>
-                </DropdownMenuItem>
-              )}
-
-              {/* Data Refresh / Reload Button */}
-              {onRefresh && (
-                <DropdownMenuItem
-                  onClick={() => {
-                    haptics.selection();
-                    onRefresh();
-                  }}
-                  disabled={isRefreshing}
-                >
-                  <RotateCw
-                    className={cn(
-                      'size-3.5 text-primary',
-                      isRefreshing && 'animate-spin'
-                    )}
-                  />
-                  <span>{isRefreshing ? 'রিফ্রেশ হচ্ছে...' : 'ডাটা রিফ্রেশ করুন'}</span>
-                </DropdownMenuItem>
-              )}
-
-              {/* Theme Toggle Button */}
-              <DropdownMenuItem
-                onClick={() => {
-                  haptics.selection();
-                  onToggleTheme();
-                }}
-                className="justify-between"
-              >
-                <div className="flex items-center gap-2.5">
-                  {isDark ? (
-                    <Sun className="size-3.5 text-amber-500" />
-                  ) : (
-                    <Moon className="size-3.5 text-primary" />
-                  )}
-                  <span>{isDark ? 'লাইট মোড' : 'ডার্ক মোড'}</span>
-                </div>
-                <span className="text-[10px] text-subtitle-color">
-                  {isDark ? 'চালু' : 'বন্ধ'}
-                </span>
-              </DropdownMenuItem>
-
-              {/* Divider */}
-              {onLogout && <DropdownMenuSeparator />}
-
-              {/* Logout Button */}
-              {onLogout && (
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => {
-                    haptics.warning();
-                    onLogout();
-                  }}
-                >
-                  <LogOut className="size-3.5" />
-                  <span>লগআউট করুন</span>
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
@@ -234,9 +107,11 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
             {/* Header Title */}
             <SheetHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
               <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-xl bg-primary text-white flex items-center justify-center shadow-xs shrink-0">
-                  <Building2 className="size-5" />
-                </div>
+                <img
+                  src="/brand-icon.png"
+                  alt="মেসিফাই"
+                  className="size-9 rounded-xl shadow-xs shrink-0 object-contain"
+                />
                 <div>
                   <SheetTitle className="text-sm font-bold text-pure-color">মেসিফাই</SheetTitle>
                   <SheetDescription className="text-[10px] text-subtitle-color">
@@ -262,9 +137,6 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
 
             {/* Navigation Links */}
             <nav className="space-y-1">
-              <p className="text-[10px] font-bold text-subtitle-color uppercase tracking-wider px-2 py-1">
-                গুরুত্বপূর্ণ মেনু
-              </p>
               {sidebarNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentTab === item.tab;
@@ -298,52 +170,11 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
               })}
             </nav>
 
-            {/* Quick Actions & Preferences */}
-            <div className="space-y-1 pt-2 border-t border-border-color/60">
-              <p className="text-[10px] font-bold text-subtitle-color uppercase tracking-wider px-2 py-1">
-                টুলস ও সেটিংস
-              </p>
 
-              {/* Refresh */}
-              {onRefresh && (
-                <button
-                  onClick={() => {
-                    haptics.selection();
-                    onRefresh();
-                  }}
-                  disabled={isRefreshing}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-pure-color hover:bg-secondary-bg transition active:scale-98 disabled:opacity-50"
-                >
-                  <RotateCw className={cn('size-4 text-primary', isRefreshing && 'animate-spin')} />
-                  <span>{isRefreshing ? 'রিফ্রেশ হচ্ছে...' : 'ডাটা রিফ্রেশ করুন'}</span>
-                </button>
-              )}
-
-              {/* Theme Toggle */}
-              <button
-                onClick={() => {
-                  haptics.selection();
-                  onToggleTheme();
-                }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold text-pure-color hover:bg-secondary-bg transition active:scale-98"
-              >
-                <div className="flex items-center gap-3">
-                  {isDark ? (
-                    <Sun className="size-4 text-amber-500" />
-                  ) : (
-                    <Moon className="size-4 text-primary" />
-                  )}
-                  <span>{isDark ? 'লাইট মোড' : 'ডার্ক মোড'}</span>
-                </div>
-                <span className="text-[10px] text-subtitle-color font-normal">
-                  {isDark ? 'চালু' : 'বন্ধ'}
-                </span>
-              </button>
-            </div>
           </div>
 
           {/* Bottom Footer & Logout */}
-          <div className="space-y-2 pt-3 border-t border-border-color/60">
+          <div className="pt-3 border-t border-border-color/60">
             {onLogout && (
               <button
                 onClick={() => {
@@ -357,13 +188,6 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
                 <span>লগআউট করুন</span>
               </button>
             )}
-
-            <div className="px-2 pt-1 text-center">
-              <p className="text-[10px] text-subtitle-color">Messefy Mobile v1.0.0</p>
-              <p className="text-[9px] text-subtitle-color/70 italic mt-0.5">
-                «اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا»
-              </p>
-            </div>
           </div>
         </SheetContent>
       </Sheet>
