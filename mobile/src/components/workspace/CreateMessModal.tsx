@@ -64,7 +64,7 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent variant="bottom-sheet" className="p-6 safe-bottom">
+      <DialogContent variant="bottom-sheet" className="p-6">
         {/* Header */}
         <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">

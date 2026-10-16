@@ -44,14 +44,17 @@ const SheetContent = React.forwardRef<
       className={cn(
         'fixed z-[101] flex flex-col justify-between bg-white dark:bg-[#0c1412] text-pure-color border-border-color shadow-2xl transition ease-in-out',
         side === 'left' &&
-          'inset-y-0 left-0 h-full w-72 max-w-[85vw] border-r sheet-left-anim data-[state=open]:animate-drawer-slide data-[state=closed]:animate-drawer-slide-out pt-[calc(env(safe-area-inset-top,0px)+0.5rem)] pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]',
+          'inset-y-0 left-0 h-full w-72 max-w-[85vw] border-r sheet-left-anim data-[state=open]:animate-drawer-slide data-[state=closed]:animate-drawer-slide-out',
         side === 'right' &&
-          'inset-y-0 right-0 h-full w-72 max-w-[85vw] border-l data-[state=open]:animate-drawer-slide data-[state=closed]:animate-drawer-slide-out pt-[calc(env(safe-area-inset-top,0px)+0.5rem)] pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]',
+          'inset-y-0 right-0 h-full w-72 max-w-[85vw] border-l data-[state=open]:animate-drawer-slide data-[state=closed]:animate-drawer-slide-out',
         side === 'top' &&
-          'inset-x-0 top-0 border-b pt-[calc(env(safe-area-inset-top,0px)+0.5rem)]',
+          'inset-x-0 top-0 border-b',
         side === 'bottom' &&
-          'inset-x-0 bottom-0 border-t pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]',
-        className
+          'inset-x-0 bottom-0 border-t',
+        className,
+        (side === 'left' || side === 'right') && 'pt-[calc(env(safe-area-inset-top,0px)+1rem)] pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]',
+        side === 'top' && 'pt-[calc(env(safe-area-inset-top,0px)+1rem)]',
+        side === 'bottom' && 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]'
       )}
       {...props}
     >

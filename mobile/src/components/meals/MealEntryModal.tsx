@@ -386,7 +386,7 @@ export const MealEntryModal: React.FC<MealEntryModalProps> = ({
         </div>
 
         {/* Footer with grand total & save button */}
-        <div className="border-t border-border-color bg-card-bg px-5 py-3.5 safe-bottom">
+        <div className="border-t border-border-color bg-card-bg px-5 py-3.5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[11px] text-subtitle-color">নির্বাচিত দিনের মোট মিল</p>
