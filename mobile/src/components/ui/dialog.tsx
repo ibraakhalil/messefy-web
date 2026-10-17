@@ -51,10 +51,9 @@ const DialogContent = React.forwardRef<
         className={cn(
           'pointer-events-auto relative w-full border border-border-color bg-card-bg shadow-2xl transition focus:outline-hidden text-pure-color',
           variant === 'bottom-sheet'
-            ? 'max-h-[90vh] max-w-lg rounded-t-3xl sm:rounded-3xl dialog-bottom-anim sm:dialog-content-anim overflow-hidden flex flex-col'
+            ? 'max-h-[90vh] max-w-lg rounded-t-3xl sm:rounded-3xl dialog-bottom-anim sm:dialog-content-anim overflow-hidden flex flex-col pb-[env(safe-area-inset-bottom,0px)]'
             : 'max-w-md rounded-3xl p-6 dialog-content-anim',
-          className,
-          variant === 'bottom-sheet' && 'pb-[env(safe-area-inset-bottom,0px)]'
+          className
         )}
         {...props}
       >

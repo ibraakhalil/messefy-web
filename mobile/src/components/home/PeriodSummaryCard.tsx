@@ -23,12 +23,12 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="relative overflow-hidden rounded-2xl bg-emerald-900/60 p-5 text-white shadow-lg animate-pulse">
-        <div className="h-4 w-32 bg-white/20 rounded-md mb-4" />
-        <div className="grid grid-cols-3 gap-2.5">
-          <div className="h-20 bg-white/10 rounded-xl" />
-          <div className="h-20 bg-white/10 rounded-xl" />
-          <div className="h-20 bg-white/10 rounded-xl" />
+      <div className="rounded-2xl border border-border-color bg-card-bg p-4 shadow-2xs animate-pulse">
+        <div className="h-4 w-32 bg-secondary-bg rounded-md mb-3" />
+        <div className="grid grid-cols-3 gap-2">
+          <div className="h-16 bg-secondary-bg rounded-xl" />
+          <div className="h-16 bg-secondary-bg rounded-xl" />
+          <div className="h-16 bg-secondary-bg rounded-xl" />
         </div>
       </div>
     );
@@ -36,69 +36,57 @@ export const PeriodSummaryCard: React.FC<PeriodSummaryCardProps> = ({
 
   if (!isOpen) {
     return (
-      <div className="relative overflow-hidden rounded-2xl bg-amber-600 dark:bg-amber-700 p-5 text-white shadow-xs border border-amber-500/30">
+      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 shadow-2xs">
         <div className="flex items-center gap-2">
-          <AlertCircle className="size-5 text-amber-200" />
-          <h2 className="text-sm font-bold">চলতি মাসের কোনো পিরিয়ড ওপেন নেই</h2>
+          <AlertCircle className="size-4 text-amber-600 dark:text-amber-400" />
+          <h2 className="text-xs font-semibold text-pure-color">চলতি মাসের কোনো পিরিয়ড ওপেন নেই</h2>
         </div>
-        <p className="mt-1.5 text-xs text-amber-100/90 leading-relaxed">
-          ম্যানেজার নতুন মাস শুরু করলে মিল ও খরচের হিসাব এখানে স্বয়ংক্রিয়ভাবে দৃশ্যমান হবে।
+        <p className="mt-1 text-xs text-subtitle-color leading-normal">
+          ম্যানেজার নতুন মাস শুরু করলে মিল ও খরচের হিসাব এখানে দৃশ্যমান হবে।
         </p>
       </div>
     );
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-primary p-5 text-white shadow-xs border border-primary-light/20">
-      {/* Top Banner inside card */}
-      <div className="relative flex items-center justify-between pb-3 border-b border-white/15">
+    <div className="rounded-2xl border border-border-color bg-card-bg p-4 shadow-2xs transition-colors">
+      {/* Top Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-border-color/60">
         <div className="flex items-center gap-2">
-          <span className="flex size-6 items-center justify-center rounded-lg bg-white/20 text-white shadow-xs">
-            <Sparkles className="size-3.5" />
-          </span>
-          <span className="text-xs font-semibold tracking-wide text-emerald-100">
+          <Calendar className="size-4 text-primary shrink-0" />
+          <span className="text-xs font-semibold text-pure-color leading-normal">
             {periodName}
           </span>
         </div>
-        <div className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-medium text-emerald-50 backdrop-blur-xs">
-          <Calendar className="size-3" />
-          <span>বাকি {daysRemaining} দিন</span>
-        </div>
+        <span className="rounded-md bg-secondary-bg px-2 py-0.5 text-[11px] font-medium text-subtitle-color">
+          বাকি {daysRemaining} দিন
+        </span>
       </div>
 
-      {/* Primary Highlights - 3 Column Stats */}
-      <div className="relative mt-4 grid grid-cols-3 gap-2.5 text-center">
+      {/* 3 Column Stats */}
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         {/* Meal Rate */}
-        <div className="rounded-xl bg-white/10 p-3 backdrop-blur-xs transition hover:bg-white/15">
-          <div className="mx-auto flex size-8 items-center justify-center rounded-lg bg-emerald-400/20 text-emerald-200">
-            <TrendingUp className="size-4" />
-          </div>
-          <p className="mt-2 text-base font-bold tracking-tight text-white">
+        <div className="rounded-xl bg-secondary-bg/60 p-2.5">
+          <p className="text-sm font-bold text-pure-color tabular-nums">
             {formatCurrency(mealRate)}
           </p>
-          <p className="text-[11px] font-medium text-emerald-100/80">মিল রেট</p>
+          <p className="text-[11px] text-subtitle-color mt-0.5">মিল রেট</p>
         </div>
 
         {/* Total Meals */}
-        <div className="rounded-xl bg-white/10 p-3 backdrop-blur-xs transition hover:bg-white/15">
-          <div className="mx-auto flex size-8 items-center justify-center rounded-lg bg-amber-400/20 text-amber-200">
-            <Utensils className="size-4" />
-          </div>
-          <p className="mt-2 text-base font-bold tracking-tight text-white">
+        <div className="rounded-xl bg-secondary-bg/60 p-2.5">
+          <p className="text-sm font-bold text-pure-color tabular-nums">
             {totalMeals}
           </p>
-          <p className="text-[11px] font-medium text-emerald-100/80">মোট মিল</p>
+          <p className="text-[11px] text-subtitle-color mt-0.5">মোট মিল</p>
         </div>
 
         {/* Total Expenses */}
-        <div className="rounded-xl bg-white/10 p-3 backdrop-blur-xs transition hover:bg-white/15">
-          <div className="mx-auto flex size-8 items-center justify-center rounded-lg bg-rose-400/20 text-rose-200">
-            <Receipt className="size-4" />
-          </div>
-          <p className="mt-2 text-base font-bold tracking-tight text-white">
+        <div className="rounded-xl bg-secondary-bg/60 p-2.5">
+          <p className="text-sm font-bold text-pure-color tabular-nums">
             {formatCurrency(totalExpenses)}
           </p>
-          <p className="text-[11px] font-medium text-emerald-100/80">মোট খরচ</p>
+          <p className="text-[11px] text-subtitle-color mt-0.5">মোট খরচ</p>
         </div>
       </div>
     </div>

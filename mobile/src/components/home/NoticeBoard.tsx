@@ -149,38 +149,13 @@ export const NoticeBoard: React.FC<NoticeBoardProps> = ({
 
   return (
     <>
-      <div
-        className={cn(
-          'relative overflow-hidden rounded-2xl border bg-card-bg p-4 shadow-sm transition-all',
-          badgeConfig.cardBorder
-        )}
-      >
-        {/* Subtle accent glow at the top */}
-        {isUrgent && (
-          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-rose-500 via-rose-400 to-rose-500" />
-        )}
-        {isImportant && (
-          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500" />
-        )}
-
+      <div className="rounded-2xl border border-border-color bg-card-bg p-4 shadow-2xs transition-colors">
         {/* Header Bar */}
         <div className="flex items-center justify-between gap-2 mb-2.5">
           <div className="flex items-center gap-2">
-            <div
-              className={cn(
-                'flex size-7.5 items-center justify-center rounded-xl',
-                badgeConfig.glowBg,
-                isUrgent ? 'text-rose-500' : isImportant ? 'text-amber-500' : 'text-primary-color'
-              )}
-            >
-              {isUrgent ? (
-                <AlertTriangle className="size-4 animate-bounce" />
-              ) : (
-                <Megaphone className="size-4" />
-              )}
-            </div>
+            <Megaphone className="size-4 text-primary shrink-0" />
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-pure-color">নোটিস বোর্ড</span>
+              <span className="text-xs font-semibold text-pure-color">নোটিস বোর্ড</span>
               <span
                 className={cn(
                   'rounded-full border px-2 py-0.5 text-[10px] font-bold tracking-wide',
@@ -248,7 +223,7 @@ export const NoticeBoard: React.FC<NoticeBoardProps> = ({
         {/* Notice Content */}
         {currentNotice && (
           <div className="space-y-1.5">
-            <h3 className="text-sm font-semibold text-pure-color leading-snug flex items-center gap-1.5">
+            <h3 className="text-sm font-semibold text-pure-color leading-normal flex items-center gap-1.5">
               <Pin className="size-3.5 text-primary-color shrink-0" />
               <span>{currentNotice.title}</span>
             </h3>
@@ -257,20 +232,22 @@ export const NoticeBoard: React.FC<NoticeBoardProps> = ({
               <p
                 className={cn(
                   'text-xs text-subtitle-color leading-relaxed whitespace-pre-line',
-                  !isExpanded && currentNotice.content.length > 120 ? 'line-clamp-2' : ''
+                  !isExpanded && currentNotice.content.length > 240 ? 'line-clamp-4' : ''
                 )}
               >
                 {currentNotice.content}
               </p>
 
-              {currentNotice.content.length > 120 && (
-                <button
-                  type="button"
-                  onClick={() => setIsExpanded((prev) => !prev)}
-                  className="mt-1 text-[11px] font-semibold text-primary-color hover:underline"
-                >
-                  {isExpanded ? 'কম দেখুন' : 'আরও পড়ুন...'}
-                </button>
+              {currentNotice.content.length > 240 && (
+                <div className="flex justify-end mt-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsExpanded((prev) => !prev)}
+                    className="text-[11px] font-semibold text-primary hover:underline active:opacity-80"
+                  >
+                    {isExpanded ? 'কম দেখুন' : 'আরও পড়ুন...'}
+                  </button>
+                </div>
               )}
             </div>
 
@@ -283,7 +260,7 @@ export const NoticeBoard: React.FC<NoticeBoardProps> = ({
               {currentNotice.author?.name && (
                 <div className="flex items-center gap-1">
                   <User className="size-3" />
-                  <span>জারি করেছেন: {currentNotice.author.name}</span>
+                  <span>{currentNotice.author.name}</span>
                 </div>
               )}
             </div>

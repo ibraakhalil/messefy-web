@@ -16,13 +16,12 @@ import { NoWorkspaceView } from '@/components/workspace/NoWorkspaceView';
 import { MessHeader } from '@/components/home/MessHeader';
 import { NoticeBoard } from '@/components/home/NoticeBoard';
 import { PeriodSummaryCard } from '@/components/home/PeriodSummaryCard';
-import { MyStatusCard } from '@/components/home/MyStatusCard';
 import { TodayMealCard } from '@/components/home/TodayMealCard';
 import { QuickActions } from '@/components/home/QuickActions';
 import { RecentActivityList } from '@/components/home/RecentActivityList';
 import { AccountingScreen } from '@/components/accounting/AccountingScreen';
 import { ReportsScreen } from '@/components/reports/ReportsScreen';
-import { MealEntryModal } from '@/components/meals/MealEntryModal';
+import { MealEntryPage } from '@/components/meals/MealEntryPage';
 import { DepositEntryModal } from '@/components/finances/DepositEntryModal';
 import { ExpenseEntryModal } from '@/components/finances/ExpenseEntryModal';
 import { MembersScreen } from '@/components/members/MembersScreen';
@@ -338,16 +337,7 @@ export function App() {
                 isLoading={isSummaryLoading}
               />
 
-              {/* 2. Live Personal Status (Balance, Deposits, Meals) */}
-              <MyStatusCard
-                myMeals={myMemberSummary?.meals || 0}
-                myDeposit={myMemberSummary?.deposits || 0}
-                balance={myMemberSummary?.balance || 0}
-                role={member?.role || 'member'}
-                isLoading={isSummaryLoading}
-              />
-
-              {/* 3. Today's Meal Counter & Status */}
+              {/* 2. Today's Meal Counter & Status */}
               <TodayMealCard
                 todayMeals={todayMeals}
                 onUpdateLunch={handleUpdateLunch}
@@ -366,8 +356,8 @@ export function App() {
                 isLoading={isSummaryLoading}
               />
 
-              {/* Quick Meal Entry Modal triggered from Home Quick Actions */}
-              <MealEntryModal
+              {/* Meal Entry Page triggered from Home Quick Actions with Left Animation */}
+              <MealEntryPage
                 isOpen={isMealEntryModalOpen}
                 onClose={() => setIsMealEntryModalOpen(false)}
                 workspaceId={workspace.id}

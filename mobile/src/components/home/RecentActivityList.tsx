@@ -75,7 +75,7 @@ export const RecentActivityList: React.FC<RecentActivityListProps> = ({
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold text-pure-color leading-tight">
+                    <p className="text-xs font-semibold text-pure-color leading-normal">
                       {item.title}
                     </p>
                     <p className="text-[11px] text-subtitle-color">

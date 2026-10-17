@@ -66,7 +66,7 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent variant="bottom-sheet" className="p-6">
+      <DialogContent variant="bottom-sheet" className="p-6 pb-[calc(env(safe-area-inset-bottom,0px)+1.5rem)] sm:pb-6">
         {/* Header */}
         <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">

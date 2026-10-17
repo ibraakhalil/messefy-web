@@ -60,7 +60,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick }) => 
               >
                 <Icon className="size-5" />
               </div>
-              <span className="mt-1.5 text-xs font-semibold text-pure-color leading-tight">
+              <span className="mt-1.5 text-xs font-semibold text-pure-color leading-normal">
                 {item.label}
               </span>
             </button>

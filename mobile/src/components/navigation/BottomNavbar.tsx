@@ -12,10 +12,10 @@ interface BottomNavbarProps {
 
 export const BottomNavbar: React.FC<BottomNavbarProps> = ({ currentTab, onTabChange }) => {
   const tabs = [
-    { id: 'accounting' as NavTab, label: 'হিসাব-নিকাশ', icon: ReceiptText },
+    { id: 'accounting' as NavTab, label: 'হিসাব', icon: ReceiptText },
     { id: 'reports' as NavTab, label: 'রিপোর্ট', icon: BarChart3 },
     { id: 'home' as NavTab, label: 'হোম', icon: Home },
-    { id: 'members' as NavTab, label: 'মেম্বারস', icon: Users },
+    { id: 'members' as NavTab, label: 'সদস্য', icon: Users },
     { id: 'profile' as NavTab, label: 'প্রোফাইল', icon: User },
   ];
 
@@ -48,7 +48,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ currentTab, onTabCha
               />
               <span
                 className={cn(
-                  'mt-1 text-[10px] leading-tight tracking-tight truncate max-w-full text-center transition-colors duration-200',
+                  'mt-1 text-[11px] leading-normal whitespace-nowrap text-center transition-colors duration-200',
                   isActive
                     ? 'text-emerald-700 dark:text-emerald-400 font-bold'
                     : 'text-subtitle-color font-medium'

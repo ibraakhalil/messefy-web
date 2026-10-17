@@ -111,7 +111,7 @@ export const NoWorkspaceView: React.FC<NoWorkspaceViewProps> = ({ onSuccess }) =
                     </span>
                   </div>
                   <p className="mt-0.5 text-xs text-subtitle-color leading-snug text-left">
-                    আপনি যদি ম্যানেজার হন, নতুন মেস বানিয়ে সদস্য ও মিল পরিচালনা করুন।
+                    মেস তৈরি করে সদস্য ও মিল পরিচালনা করুন।
                   </p>
                 </div>
               </div>
@@ -148,7 +148,7 @@ export const NoWorkspaceView: React.FC<NoWorkspaceViewProps> = ({ onSuccess }) =
                     </span>
                   </div>
                   <p className="mt-0.5 text-xs text-subtitle-color leading-snug text-left">
-                    ম্যানেজার থেকে পাওয়া ইনভাইট কোড দিয়ে সদস্য হিসেবে যোগ দিন।
+                    ম্যানেজারের ইনভাইট কোড দিয়ে মেসে যোগ দিন।
                   </p>
                 </div>
               </div>

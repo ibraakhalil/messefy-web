@@ -75,7 +75,7 @@ export const MessHeader: React.FC<MessHeaderProps> = ({
           </button>
           <div>
             <div className="flex items-center gap-1.5">
-              <h1 className="font-bold text-pure-color text-base leading-tight">
+              <h1 className="font-bold text-pure-color text-base leading-normal">
                 {messInfo.name}
               </h1>
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
