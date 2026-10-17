@@ -10,6 +10,7 @@ import { mealRoute } from './meal.route';
 import { depositRoute } from './deposit.route';
 import { expenseRoute } from './expense.route';
 import { summaryRoute } from './summary.route';
+import { noticeRoute } from './notice.route';
 
 const router = new Hono();
 
@@ -23,6 +24,7 @@ router.route('/meals', mealRoute);
 router.route('/deposits', depositRoute);
 router.route('/expenses', expenseRoute);
 router.route('/summary', summaryRoute);
+router.route('/notices', noticeRoute);
 
 router.notFound((c) => c.json({ message: 'Abracadabra! The page you are looking for does not exist.' }, 404));
 

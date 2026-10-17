@@ -64,6 +64,13 @@
       "when": 1761246036252,
       "tag": "0008_silent_sabretooth",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792259589551,
+      "tag": "0009_vengeful_proteus",
+      "breakpoints": true
     }
   ]
 }

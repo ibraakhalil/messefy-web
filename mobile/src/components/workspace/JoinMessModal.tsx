@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { KeyRound, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { KeyRound, Loader2, AlertCircle, CheckCircle2, ClipboardPaste } from 'lucide-react';
 import { useWorkspace } from '@/hooks/use-workspace';
+import { haptics } from '@/lib/haptics';
 import {
   Dialog,
   DialogContent,
@@ -22,20 +23,37 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const handlePaste = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          setWorkspaceId(text.trim());
+          haptics.selection();
+        }
+      }
+    } catch {
+      // Browser permission denied or not supported
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
     setIsSubmitting(true);
+    haptics.impact('light');
 
     try {
       await joinWorkspace(workspaceId.trim());
+      haptics.notification('success');
       setSuccessMessage('ইনভাইটেশন সফলভাবে পাঠানো হয়েছে! মেস ম্যানেজার অনুমোদন দিলে যুক্ত হতে পারবেন।');
       setTimeout(() => {
         onSuccess();
         onClose();
       }, 2000);
     } catch (err: unknown) {
+      haptics.notification('error');
       if (err instanceof Error) {
         setErrorMessage(err.message);
       } else {
@@ -52,7 +70,7 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
         {/* Header */}
         <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 shrink-0">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 shrink-0 border border-sky-500/20">
               <KeyRound className="size-5" />
             </div>
             <div>
@@ -84,19 +102,29 @@ export const JoinMessModal: React.FC<JoinMessModalProps> = ({ isOpen, onClose, o
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-subtitle-color mb-1">
-              মেস আইডি বা ইনভাইটেশন কোড *
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-semibold text-subtitle-color">
+                মেস আইডি বা ইনভাইটেশন কোড *
+              </label>
+              <button
+                type="button"
+                onClick={handlePaste}
+                className="flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline active:scale-95 transition"
+              >
+                <ClipboardPaste className="size-3" />
+                <span>পেস্ট করুন</span>
+              </button>
+            </div>
             <input
               type="text"
               required
               value={workspaceId}
               onChange={(e) => setWorkspaceId(e.target.value)}
               placeholder="যেমন: d290f1ee-6c54-4b01-90e6-d701748f0851"
-              className="w-full rounded-xl border border-border-color bg-input-bg px-3.5 py-2.5 text-sm text-pure-color placeholder:text-subtitle-secondary focus:border-blue-600 focus:outline-hidden focus:ring-2 focus:ring-blue-500/20 font-mono text-xs"
+              className="w-full rounded-xl border border-border-color bg-input-bg px-3.5 py-2.5 text-xs font-mono text-pure-color placeholder:text-subtitle-secondary focus:border-sky-500 focus:outline-hidden focus:ring-2 focus:ring-sky-500/20"
             />
             <p className="mt-1 text-[11px] text-subtitle-secondary">
-              আপনার মেস ম্যানেজারের কাছ থেকে পাওয়া মেস আইডিটি এখানে পেস্ট করুন।
+              আপনার মেস ম্যানেজারের কাছ থেকে পাওয়া মেস আইডি বা কোডটি এখানে দিন।
             </p>
           </div>
 

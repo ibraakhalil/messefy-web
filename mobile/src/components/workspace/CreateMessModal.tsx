@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, Link as LinkIcon, MapPin, Loader2, AlertCircle } from 'lucide-react';
 import { useWorkspace } from '@/hooks/use-workspace';
+import { haptics } from '@/lib/haptics';
 import { ZodError } from 'zod';
 import {
   Dialog,
@@ -40,6 +41,7 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
     e.preventDefault();
     setErrorMessage(null);
     setIsSubmitting(true);
+    haptics.impact('light');
 
     try {
       await createWorkspace({
@@ -47,9 +49,11 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
         slug: slug.trim(),
         description: description.trim() || undefined,
       });
+      haptics.notification('success');
       onSuccess();
       onClose();
     } catch (err: unknown) {
+      haptics.notification('error');
       if (err instanceof ZodError) {
         setErrorMessage(err.issues[0]?.message || 'সঠিক তথ্য দিন');
       } else if (err instanceof Error) {
@@ -68,7 +72,7 @@ export const CreateMessModal: React.FC<CreateMessModalProps> = ({ isOpen, onClos
         {/* Header */}
         <DialogHeader className="pb-3 border-b border-border-color/60 text-left pr-8">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0 border border-emerald-500/20">
               <Building2 className="size-5" />
             </div>
             <div>

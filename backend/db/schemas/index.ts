@@ -7,4 +7,5 @@ export * from './period.schema';
 export * from './meal.schema';
 export * from './transaction.schema';
 export * from './adjustment.schema';
+export * from './notice.schema';
 export * from './relations';

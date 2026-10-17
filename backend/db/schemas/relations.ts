@@ -7,6 +7,7 @@ import { periods } from './period.schema';
 import { mealEntries } from './meal.schema';
 import { adjustments } from './adjustment.schema';
 import { deposits, expenses } from './transaction.schema';
+import { notices } from './notice.schema';
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
   user: one(users, {
@@ -36,6 +37,7 @@ export const workspaceRelations = relations(workspaces, ({ many }) => ({
   deposits: many(deposits),
   expenses: many(expenses),
   adjustments: many(adjustments),
+  notices: many(notices),
 }));
 
 export const periodsRelations = relations(periods, ({ one, many }) => ({
@@ -109,5 +111,16 @@ export const userRelations = relations(users, ({ one }) => ({
   member: one(members, {
     fields: [users.id],
     references: [members.userId],
+  }),
+}));
+
+export const noticesRelations = relations(notices, ({ one }) => ({
+  workspace: one(workspaces, {
+    fields: [notices.workspaceId],
+    references: [workspaces.id],
+  }),
+  author: one(users, {
+    fields: [notices.authorId],
+    references: [users.id],
   }),
 }));

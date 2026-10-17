@@ -6,6 +6,7 @@
     "db:down": "docker compose down",
     "db:logs": "docker compose logs db -f",
     "db:setup": "cd backend && bun run db:setup",
+    "db:migrate": "cd backend && bun run db:migrate",
     "db:studio": "cd backend && bun run studio",
     "mobile:dev": "cd mobile && bun run dev",
     "mobile:tauri": "cd mobile && bun run tauri:dev",

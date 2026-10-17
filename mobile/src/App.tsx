@@ -14,6 +14,7 @@ import { useMealChart, useUpsertMeal } from '@/hooks/use-meals';
 import { AuthScreen } from '@/components/auth/AuthScreen';
 import { NoWorkspaceView } from '@/components/workspace/NoWorkspaceView';
 import { MessHeader } from '@/components/home/MessHeader';
+import { NoticeBoard } from '@/components/home/NoticeBoard';
 import { PeriodSummaryCard } from '@/components/home/PeriodSummaryCard';
 import { MyStatusCard } from '@/components/home/MyStatusCard';
 import { TodayMealCard } from '@/components/home/TodayMealCard';
@@ -319,6 +320,13 @@ export function App() {
         <main className="flex-1 space-y-4 px-4 pt-3.5 pb-24 overflow-y-auto">
           {activeTab === 'home' ? (
             <>
+              {/* Notice Board at the very top */}
+              <NoticeBoard
+                workspaceId={workspace.id}
+                isManager={isManager}
+                onToast={triggerToast}
+              />
+
               {/* 1. Live Period Hero Card (Meal rate, Total meals, Total costs) */}
               <PeriodSummaryCard
                 mealRate={summary?.totals.mealRate || 0}

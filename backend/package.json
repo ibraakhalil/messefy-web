@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "bun run --watch index.ts",
     "db:gen": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "NODE_ENV=development bun run db/seeds/index.ts",
     "db:setup": "bun run db:push && bun run db:seed",
