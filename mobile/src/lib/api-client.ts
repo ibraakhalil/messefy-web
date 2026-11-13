@@ -48,8 +48,14 @@ apiClient.interceptors.response.use(
 
     if (customMessage === 'Invalid email or password') {
       customMessage = 'ইমেইল অথবা পাসওয়ার্ড সঠিক নয়।';
-    } else if (customMessage === 'Email already in use') {
+    } else if (customMessage === 'Email already in use' || customMessage === 'Email already registered') {
       customMessage = 'এই ইমেইল দিয়ে ইতোমধ্যে একটি অ্যাকাউন্ট রয়েছে।';
+    } else if (
+      customMessage?.startsWith('Failed query:') ||
+      customMessage === 'Internal server error' ||
+      (error.response?.status && error.response.status >= 500)
+    ) {
+      customMessage = 'সার্ভার বা ডাটাবেজ সংযোগে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।';
     } else if (!customMessage) {
       customMessage =
         error.message === 'Network Error'

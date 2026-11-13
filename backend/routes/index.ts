@@ -33,13 +33,18 @@ router.onError((err, c) => {
 
   const status = err instanceof HTTPException ? err.status : 500;
   const message = err instanceof HTTPException ? err.message : 'Internal server error';
+  const causeMessage = err.cause instanceof Error ? err.cause.message : undefined;
+  const isRawSqlLeak = err.message.startsWith('Failed query:');
 
   return c.json(
     {
       status: 'error',
       code: status,
       message,
-      ...(process.env.NODE_ENV !== 'production' && status === 500 && { error: err.message }),
+      ...(process.env.NODE_ENV !== 'production' &&
+        status === 500 && {
+          error: isRawSqlLeak ? causeMessage || 'Database query failed' : err.message,
+        }),
     },
     status,
   );
